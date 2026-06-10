@@ -69,15 +69,6 @@ export default function Home() {
       </section>
 
       <div className="lp">
-        {/* ── Proof strip ── */}
-        <section className="lp-section lp-section--narrow">
-          <div className="lp-proof-strip">
-            <span className="lp-proof-label">Trades on</span>
-            {["Raydium", "Orca", "Meteora", "PumpSwap", "Invariant", "FluxBeam"].map((dex) => (
-              <span key={dex} className="lp-proof-dex">{dex}</span>
-            ))}
-          </div>
-        </section>
 
         {/* ── How it works ── */}
         <section className="lp-section" id="how-it-works">

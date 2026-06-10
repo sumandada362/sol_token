@@ -17,10 +17,23 @@ export default function Footer() {
             <div className="site-footer-group">
               <div className="site-footer-group-title">Product</div>
               <ul>
-                <li><Link href="/create">Create</Link></li>
-                <li><Link href="/pool">Pool</Link></li>
+                <li><Link href="/create">Create Token</Link></li>
+                <li><Link href="/pool">Add Liquidity</Link></li>
+                <li><Link href="/pool/add">Manage Pool</Link></li>
                 <li><Link href="/burn">Burn</Link></li>
+                <li><Link href="/tools/multisender">Multisender</Link></li>
                 <li><Link href="/dashboard">Analytics</Link></li>
+              </ul>
+            </div>
+
+            <div className="site-footer-group">
+              <div className="site-footer-group-title">Tools</div>
+              <ul>
+                <li><Link href="/tools/mint-tokens">Mint Tokens</Link></li>
+                <li><Link href="/tools/update-metadata">Update Metadata</Link></li>
+                <li><Link href="/tools/revoke-mint">Revoke Authorities</Link></li>
+                <li><Link href="/tools/market/create">OpenBook Market</Link></li>
+                <li><Link href="/tools/unit-converter">SOL Converter</Link></li>
               </ul>
             </div>
 
@@ -28,6 +41,7 @@ export default function Footer() {
               <div className="site-footer-group-title">Resources</div>
               <ul>
                 <li><Link href="/docs">Docs</Link></li>
+                <li><Link href="/blog">Blog</Link></li>
                 <li><Link href="/docs/faq">FAQ</Link></li>
                 <li><Link href="/pricing">Pricing</Link></li>
                 <li><Link href="/explore">Explore</Link></li>

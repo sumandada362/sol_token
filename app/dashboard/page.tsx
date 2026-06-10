@@ -18,6 +18,17 @@ const activity = [
   { type: "Pool", token: "SINU", detail: "Liquidity added on Orca", time: "5d ago" },
 ];
 
+const quickTools = [
+  { href: "/tools/multisender", label: "Multisender", icon: "◈", desc: "Bulk send tokens" },
+  { href: "/tools/mint-tokens", label: "Mint Tokens", icon: "⊕", desc: "Increase supply" },
+  { href: "/tools/update-metadata", label: "Metadata", icon: "✎", desc: "Edit token info" },
+  { href: "/tools/revoke-mint", label: "Revoke Mint", icon: "⊘", desc: "Cap supply" },
+  { href: "/tools/revoke-freeze", label: "Revoke Freeze", icon: "⊗", desc: "Trust signal" },
+  { href: "/tools/make-immutable", label: "Immutable", icon: "◻", desc: "Lock metadata" },
+  { href: "/tools/market/create", label: "OpenBook", icon: "⬡", desc: "Create market" },
+  { href: "/pool/add", label: "Add Liquidity", icon: "⊞", desc: "Top up pool" },
+];
+
 export default function DashboardPage() {
   return (
     <div className="app-page">
@@ -74,6 +85,21 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Quick tools */}
+        <div className="dash-section">
+          <h2 className="dash-section-title">Quick tools</h2>
+          <div className="dash-tools-grid">
+            {quickTools.map((t) => (
+              <Link key={t.href} href={t.href} className="dash-tool-card">
+                <span className="dash-tool-icon">{t.icon}</span>
+                <span className="dash-tool-label">{t.label}</span>
+                <span className="dash-tool-desc">{t.desc}</span>
+              </Link>
+            ))}
+          </div>
+          <Link href="/tools" className="dash-all-tools-link">View all tools →</Link>
         </div>
 
         {/* Recent activity */}
