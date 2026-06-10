@@ -24,7 +24,7 @@ export default function Navbar() {
     { href: "/create", label: "Create" },
     { href: "/tools", label: "Tools" },
     { href: "/explore", label: "Explore" },
-    { href: "/pricing", label: "Pricing" },
+    { href: "/blog", label: "Blog" },
     { href: "/docs", label: "Docs" },
   ];
 

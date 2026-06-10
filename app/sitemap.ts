@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/",
     "/create",
     "/explore",
-    "/pricing",
     "/pool",
     "/pool/add",
     "/pool/remove",

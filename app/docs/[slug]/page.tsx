@@ -32,7 +32,7 @@ const articles: Record<string, { title: string; sections: { heading: string; bod
       { heading: "What wallets are supported?", body: "Phantom, Solflare, and Backpack. We'll add more wallets based on demand." },
       { heading: "Is the symbol really permanent?", body: "Yes. The token symbol is stored in on-chain metadata. Once a token is created, the symbol cannot be changed." },
       { heading: "What does revoking authorities mean?", body: "Revoking mint authority means no one can ever mint more tokens. Revoking freeze means no wallet can ever be frozen. Revoking update means metadata can never change. These increase community trust." },
-      { heading: "How much SOL do I need?", body: "~0.1 SOL for token creation, 0.1 SOL per liquidity pool, 0.5 SOL/yr for analytics. Plus small network rent (~0.002 SOL)." },
+      { heading: "How much SOL do I need?", body: "~0.1 SOL for token creation, 0.1 SOL per liquidity pool, 1 SOL/yr for analytics. Plus small network rent (~0.002 SOL)." },
     ],
   },
 };

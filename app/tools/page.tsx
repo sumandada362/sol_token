@@ -82,6 +82,18 @@ const tools = [
   },
 ];
 
+const feeNotes: Record<string, string> = {
+  "/tools/multisender":      "Plus ~0.002 SOL Solana rent per new recipient account",
+  "/tools/mint-tokens":      "Requires active mint authority on the token",
+  "/tools/update-metadata":  "Requires update authority; metadata storage rent extra",
+  "/tools/revoke-mint":      "Only Solana gas (~0.000005 SOL); no FORGE fee",
+  "/tools/revoke-freeze":    "Only Solana gas (~0.000005 SOL); no FORGE fee",
+  "/tools/make-immutable":   "Only Solana gas (~0.000005 SOL); no FORGE fee",
+  "/tools/market/create":    "Plus protocol deposit required by OpenBook v2",
+  "/tools/unit-converter":   "Fully client-side — no transaction, no fee",
+  "/tools/sol-converter":    "Fully client-side — no transaction, no fee",
+};
+
 const categories = [
   { id: "all", label: "All tools" },
   { id: "distribution", label: "Distribution" },
@@ -131,6 +143,102 @@ export default function ToolsPage() {
           <div className="lp-actions">
             <Link href="/create" className="lp-btn lp-btn--primary">Create a token</Link>
             <Link href="/docs" className="lp-btn lp-btn--secondary">Read the docs</Link>
+          </div>
+        </div>
+
+        {/* ── Tool fees breakdown ── */}
+        <div className="tools-fees-section">
+          <div className="tools-section-head">
+            <h2 className="tools-section-title">Fees breakdown</h2>
+            <p className="tools-section-sub">
+              All FORGE fees are flat and per-action. Network rent is paid directly to Solana — FORGE never receives it.
+            </p>
+          </div>
+          <div className="pricing-fee-table">
+            <div className="pricing-fee-head">
+              <span>Tool</span>
+              <span>FORGE fee</span>
+              <span>Notes</span>
+            </div>
+            {tools.map((t) => (
+              <div key={t.href} className="pricing-fee-row">
+                <Link href={t.href} className="pricing-fee-link">{t.name}</Link>
+                <span className={`pricing-fee-val${t.fee === "Free" ? " pricing-fee-val--free" : ""}`}>{t.fee}</span>
+                <span className="pricing-fee-note">{feeNotes[t.href]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── FAQ ── */}
+        <div className="tools-faq-section">
+          <div className="tools-section-head">
+            <h2 className="tools-section-title">Frequently asked</h2>
+          </div>
+          <div className="lp-faq">
+            <details className="lp-faq-item">
+              <summary>
+                <span>Are the free tools really free?</span>
+                <span className="lp-faq-icon" aria-hidden>+</span>
+              </summary>
+              <div className="lp-faq-answer">
+                Yes. Revoke Mint, Revoke Freeze, Make Immutable, and both converter tools have zero FORGE platform fee.
+                You only pay the standard Solana network fee (~0.000005 SOL per transaction), which goes directly to validators — not to FORGE.
+              </div>
+            </details>
+            <details className="lp-faq-item">
+              <summary>
+                <span>What are "pass-through" fees on OpenBook Market?</span>
+                <span className="lp-faq-icon" aria-hidden>+</span>
+              </summary>
+              <div className="lp-faq-answer">
+                Creating an OpenBook order-book market requires a SOL deposit to the OpenBook v2 protocol itself (not to FORGE).
+                This deposit covers the on-chain storage for your market accounts and is set by the protocol, not by us.
+                FORGE charges 0.05 SOL on top for the creation service.
+              </div>
+            </details>
+            <details className="lp-faq-item">
+              <summary>
+                <span>What if my transaction fails — am I still charged?</span>
+                <span className="lp-faq-icon" aria-hidden>+</span>
+              </summary>
+              <div className="lp-faq-answer">
+                No. FORGE platform fees are only deducted on a confirmed, successful transaction.
+                If your transaction fails or is rejected by the Solana runtime, you are not charged a FORGE fee.
+                You may still lose the small Solana gas fee (~0.000005 SOL) consumed by the attempt.
+              </div>
+            </details>
+            <details className="lp-faq-item">
+              <summary>
+                <span>Is Solana network rent included in quoted fees?</span>
+                <span className="lp-faq-icon" aria-hidden>+</span>
+              </summary>
+              <div className="lp-faq-answer">
+                No. Network rent — the SOL deposited to store account data on-chain — is separate from FORGE fees and goes directly to the Solana network.
+                For Multisender, each new recipient token account costs ~0.002 SOL in rent. Existing accounts cost nothing extra.
+                The fee table shows FORGE's portion only.
+              </div>
+            </details>
+            <details className="lp-faq-item">
+              <summary>
+                <span>Can fees change?</span>
+                <span className="lp-faq-icon" aria-hidden>+</span>
+              </summary>
+              <div className="lp-faq-answer">
+                FORGE fees are set in the on-chain program. Any change requires a program upgrade and will be announced
+                at least 14 days in advance via our X (Twitter) and Telegram channels before taking effect.
+              </div>
+            </details>
+            <details className="lp-faq-item">
+              <summary>
+                <span>How much SOL do I need in my wallet?</span>
+                <span className="lp-faq-icon" aria-hidden>+</span>
+              </summary>
+              <div className="lp-faq-answer">
+                For most tool operations, 0.1–0.2 SOL is plenty. For token creation with liquidity on multiple DEXs, budget 0.3–0.5 SOL
+                to cover FORGE fees, DEX pool initialization costs, and Solana rent. We recommend keeping at least 0.5 SOL available.
+              </div>
+            </details>
           </div>
         </div>
       </div>

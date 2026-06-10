@@ -1,3 +1,4 @@
+import type React from "react";
 import Link from "next/link";
 import CustomizeTokenPanel from "@/components/CustomizeTokenPanel";
 import Footer from "@/components/Footer";
@@ -33,10 +34,13 @@ export default function Home() {
             {/* Left — DEX pool info */}
             <div className="hero-dex">
               <span className="hero-dex-label">Pool your tokens on these DEXes</span>
-              <div className="hero-dex-names">
-                {["Raydium", "Orca", "Meteora", "PumpSwap", "Invariant", "FluxBeam"].map((dex) => (
-                  <span key={dex} className="hero-dex-name">{dex}</span>
-                ))}
+              <div className="hero-dex-ticker">
+                <div className="hero-dex-names">
+                  {(["Raydium", "Orca", "Meteora", "PumpSwap", "Invariant", "FluxBeam",
+                     "Raydium", "Orca", "Meteora", "PumpSwap", "Invariant", "FluxBeam"]).map((dex, i) => (
+                    <span key={i} className="hero-dex-name">{dex}</span>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -72,11 +76,11 @@ export default function Home() {
 
         {/* ── How it works ── */}
         <section className="lp-section" id="how-it-works">
-          <div className="lp-section-head lp-section-head--center">
+          <div className="lp-section-head lp-section-head--center" data-reveal>
             <p className="lp-eyebrow">How it works</p>
             <h2 className="lp-heading">Launch in 4 steps</h2>
           </div>
-          <div className="lp-steps">
+          <div className="lp-steps" data-stagger>
             {[
               { n: "1", title: "Connect", body: "Connect your Solana wallet — Phantom, Solflare, or Backpack." },
               { n: "2", title: "Configure", body: "Name your token, set supply, upload branding, and set authorities." },
@@ -94,11 +98,11 @@ export default function Home() {
 
         {/* ── Services grid ── */}
         <section className="lp-section">
-          <div className="lp-section-head lp-section-head--center">
+          <div className="lp-section-head lp-section-head--center" data-reveal>
             <p className="lp-eyebrow">Everything you need</p>
             <h2 className="lp-heading">One platform, full lifecycle</h2>
           </div>
-          <div className="lp-services">
+          <div className="lp-services" data-stagger>
             <ServiceCard
               href="/create"
               icon="◈"
@@ -131,7 +135,7 @@ export default function Home() {
               href="/dashboard"
               icon="◎"
               title="Analytics"
-              body="Deep metrics on price, volume, liquidity, and holder trends. 0.5 SOL/yr."
+              body="Deep metrics on price, volume, liquidity, and holder trends. 1 SOL/yr."
               cta="View analytics"
             />
           </div>
@@ -139,11 +143,11 @@ export default function Home() {
 
         {/* ── Why choose us ── */}
         <section className="lp-section">
-          <div className="lp-section-head lp-section-head--center">
+          <div className="lp-section-head lp-section-head--center" data-reveal>
             <p className="lp-eyebrow">Why FORGE</p>
             <h2 className="lp-heading">Built for builders</h2>
           </div>
-          <div className="lp-pillars">
+          <div className="lp-pillars" data-stagger>
             {[
               { icon: "🔑", title: "Non-custodial", body: "We never hold your keys. Every transaction is signed by your wallet alone." },
               { icon: "⚡", title: "Fast", body: "Go from zero to launched in under 2 minutes. No forms, no waiting." },
@@ -164,7 +168,7 @@ export default function Home() {
         {/* ── Security band ── */}
         <section className="lp-section">
           <div className="lp-grid">
-            <div className="lp-copy">
+            <div className="lp-copy" data-reveal>
               <p className="lp-eyebrow">Security</p>
               <h2 className="lp-heading">Authority &amp; mint status</h2>
               <p className="lp-body">
@@ -182,7 +186,7 @@ export default function Home() {
                 <a href="#" className="lp-link">View on explorer →</a>
               </div>
             </div>
-            <div className="lp-visual">
+            <div className="lp-visual" data-reveal style={{ "--delay": "150ms" } as React.CSSProperties}>
               <div className="lp-card">
                 <div className="lp-card-row">
                   <span>Mint authority</span>
@@ -208,7 +212,7 @@ export default function Home() {
         {/* ── Holders ── */}
         <section className="lp-section">
           <div className="lp-grid lp-grid--reverse">
-            <div className="lp-visual">
+            <div className="lp-visual" data-reveal>
               <div className="lp-card">
                 <div className="lp-card-title">Top holder concentration</div>
                 <Bar label="Top wallet" value={12} />
@@ -217,7 +221,7 @@ export default function Home() {
                 <Bar label="Circulating" value={28} />
               </div>
             </div>
-            <div className="lp-copy">
+            <div className="lp-copy" data-reveal style={{ "--delay": "150ms" } as React.CSSProperties}>
               <p className="lp-eyebrow">Holders</p>
               <h2 className="lp-heading">Who owns what &amp; concentration risk</h2>
               <p className="lp-body">
@@ -238,33 +242,57 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Pricing snapshot ── */}
+        {/* ── Fees ── */}
         <section className="lp-section">
-          <div className="lp-stats">
-            <p className="lp-eyebrow">Pricing</p>
-            <h2 className="lp-heading" style={{ maxWidth: "none" }}>Simple, flat fees</h2>
+          <div className="lp-section-head lp-section-head--center" data-reveal>
+            <p className="lp-eyebrow">Fees</p>
+            <h2 className="lp-heading">Simple, flat pricing</h2>
             <p className="lp-body lp-body--center">
-              No per-authority surcharges. No surprise costs. What you see is what you pay.
+              One-time per-action charges only. No subscriptions, no hidden costs, no surprises.
             </p>
-            <div className="lp-stat-grid">
-              <Stat value="0.1" label="SOL to create a token" />
-              <Stat value="0.1" label="SOL to add liquidity (per pool)" />
-              <Stat value="0.5" label="SOL for analytics / year" />
-              <Stat value="0" label="Hidden fees" />
+          </div>
+          <div className="lp-fee-table" data-reveal>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Create a token</span>
+              <span className="lp-fee-amount">0.1 SOL</span>
             </div>
-            <div className="lp-actions lp-actions--center" style={{ marginTop: "2.5rem" }}>
-              <Link href="/pricing" className="lp-btn lp-btn--secondary">Full pricing →</Link>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Add liquidity (per DEX pool)</span>
+              <span className="lp-fee-amount">0.1 SOL</span>
             </div>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Analytics dashboard (per year)</span>
+              <span className="lp-fee-amount">1 SOL</span>
+            </div>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Multisender / Mint / Metadata / OpenBook</span>
+              <span className="lp-fee-amount">0.05 SOL</span>
+            </div>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Revoke authorities (mint, freeze, update)</span>
+              <span className="lp-fee-amount lp-fee-amount--free">Free</span>
+            </div>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Unit &amp; price converters</span>
+              <span className="lp-fee-amount lp-fee-amount--free">Free</span>
+            </div>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Hidden fees</span>
+              <span className="lp-fee-amount lp-fee-amount--none">None</span>
+            </div>
+          </div>
+          <div className="lp-actions lp-actions--center" style={{ marginTop: "1.5rem" }}>
+            <Link href="/tools" className="lp-btn lp-btn--secondary">Full pricing &amp; FAQ →</Link>
           </div>
         </section>
 
         {/* ── Recent launches ── */}
         <section className="lp-section">
-          <div className="lp-section-head lp-section-head--center">
+          <div className="lp-section-head lp-section-head--center" data-reveal>
             <p className="lp-eyebrow">Recent launches</p>
             <h2 className="lp-heading">Live on Solana</h2>
           </div>
-          <div className="lp-token-grid">
+          <div className="lp-token-grid" data-stagger>
             {demoTokens.map((t) => (
               <Link key={t.mint} href={`/token/${t.mint}`} className="lp-token-card">
                 <div className="lp-token-avatar">{t.symbol.charAt(0)}</div>
@@ -283,14 +311,14 @@ export default function Home() {
 
         {/* ── Stats ── */}
         <section className="lp-section">
-          <div className="lp-stats">
+          <div className="lp-stats" data-reveal>
             <p className="lp-eyebrow">By the numbers</p>
             <h2 className="lp-heading">Trusted by builders across Solana</h2>
             <p className="lp-body lp-body--center">
               From first-time creators to established projects, FORGE keeps token
               launches fast, transparent, and safe.
             </p>
-            <div className="lp-stat-grid">
+            <div className="lp-stat-grid" data-stagger>
               <Stat value="12k+" label="Tokens launched" />
               <Stat value="6" label="DEXs for liquidity" />
               <Stat value="<2m" label="Average launch time" />
@@ -301,7 +329,7 @@ export default function Home() {
 
         {/* ── Final CTA ── */}
         <section className="lp-section">
-          <div className="lp-cta">
+          <div className="lp-cta" data-reveal="scale">
             <h2 className="lp-heading">Ready to launch?</h2>
             <p className="lp-body lp-body--center">
               Create your token, add liquidity, and start tracking — all from one non-custodial platform.
@@ -315,11 +343,11 @@ export default function Home() {
 
         {/* ── Testimonials ── */}
         <section className="lp-section">
-          <div className="lp-section-head lp-section-head--center">
+          <div className="lp-section-head lp-section-head--center" data-reveal>
             <h2 className="lp-heading">What people say</h2>
             <p className="lp-body">Builders trust FORGE to launch their vision.</p>
           </div>
-          <div className="lp-testimonials">
+          <div className="lp-testimonials" data-stagger>
             <Testimonial
               quote="I had my token live in minutes, not days."
               name="Marcus Chen"
@@ -340,11 +368,11 @@ export default function Home() {
 
         {/* ── FAQ ── */}
         <section className="lp-section">
-          <div className="lp-section-head lp-section-head--center">
+          <div className="lp-section-head lp-section-head--center" data-reveal>
             <h2 className="lp-heading">Questions</h2>
             <p className="lp-body">Everything you need to know about FORGE.</p>
           </div>
-          <div className="lp-faq">
+          <div className="lp-faq" data-stagger>
             <Faq q="Is my token safe?">
               We surface authority status, top-holder concentration, and wallet
               risk indicators. No guarantees exist in crypto, but we show what
@@ -364,7 +392,7 @@ export default function Home() {
             </Faq>
             <Faq q="What is analytics?">
               Unlock deep metrics on price, volume, liquidity, and holder trends
-              over time for 0.5 SOL per year.
+              over time for 1 SOL per year.
             </Faq>
           </div>
           <div className="lp-actions lp-actions--center" style={{ marginTop: "2.5rem" }}>
@@ -407,7 +435,7 @@ function Bar({ label, value }: { label: string; value: number }) {
         <span className="lp-mono">{value}%</span>
       </div>
       <div className="lp-bar-track">
-        <div className="lp-bar-fill" style={{ width: `${value}%` }} />
+        <div className="lp-bar-fill" style={{ "--bar-w": `${value}%` } as React.CSSProperties} />
       </div>
     </div>
   );

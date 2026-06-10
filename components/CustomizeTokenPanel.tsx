@@ -1,15 +1,58 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type ChangeEvent, type KeyboardEvent } from "react";
+import { useState, useEffect, useRef, type ChangeEvent, type KeyboardEvent } from "react";
 
 const MAX_TAGS = 3;
+const PHRASES  = ["Customize Token", "No Coding", "No Complexity"];
+const TYPE_MS  = 62;
+const ERASE_MS = 38;
+const HOLD_MS  = 1600;
+const PAUSE_MS = 300;
 
 export default function CustomizeTokenPanel() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [logoName, setLogoName] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState("");
+  const [titleText, setTitleText] = useState("");
+  const [phase, setPhase]         = useState<"typing" | "erasing">("typing");
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const reducedRef = useRef(false);
+
+  useEffect(() => {
+    reducedRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedRef.current) { setTitleText(PHRASES[0]); }
+  }, []);
+
+  useEffect(() => {
+    if (reducedRef.current) return;
+    const phrase = PHRASES[phraseIdx];
+
+    if (phase === "typing") {
+      if (titleText.length < phrase.length) {
+        const t = setTimeout(
+          () => setTitleText(phrase.slice(0, titleText.length + 1)),
+          TYPE_MS,
+        );
+        return () => clearTimeout(t);
+      }
+      const t = setTimeout(() => setPhase("erasing"), HOLD_MS);
+      return () => clearTimeout(t);
+    }
+
+    if (phase === "erasing") {
+      if (titleText.length > 0) {
+        const t = setTimeout(() => setTitleText((s) => s.slice(0, -1)), ERASE_MS);
+        return () => clearTimeout(t);
+      }
+      const t = setTimeout(() => {
+        setPhraseIdx((i) => (i + 1) % PHRASES.length);
+        setPhase("typing");
+      }, PAUSE_MS);
+      return () => clearTimeout(t);
+    }
+  }, [titleText, phase, phraseIdx]);
 
   const full = tags.length >= MAX_TAGS;
 
@@ -40,7 +83,10 @@ export default function CustomizeTokenPanel() {
 
   return (
     <div id="hero-panel">
-      <p className="panel-header">Customize Token</p>
+      <p className="panel-header" aria-label="Customize Token">
+        {titleText}
+        {!reducedRef.current && <span className="typewriter-cursor" aria-hidden>|</span>}
+      </p>
       <div className="panel-divider" />
       <div className="panel-inputs">
         <div className="input-group full">

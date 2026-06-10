@@ -131,7 +131,7 @@ export default async function TokenPage({ params }: { params: Promise<{ mint: st
           <Link href={`/burn?token=${mint}`} className="lp-btn lp-btn--secondary">Burn</Link>
           <div className="token-subscribe-box lp-card">
             <div className="token-subscribe-label">Deep analytics — price, volume, holder history</div>
-            <Link href="/dashboard" className="lp-btn lp-btn--secondary">Subscribe — 0.5 SOL/yr</Link>
+            <Link href="/dashboard" className="lp-btn lp-btn--secondary">Subscribe — 1 SOL/yr</Link>
           </div>
         </div>
       </div>

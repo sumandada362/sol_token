@@ -98,9 +98,9 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ mint
             <h2 className="analytics-upsell-title">Unlock full analytics</h2>
             <p className="lp-body">Get price, volume, liquidity history, holder growth, and configurable alerts for this token.</p>
             <div className="cost-summary" style={{ maxWidth: "360px", margin: "1.5rem 0" }}>
-              <div className="cost-row"><span>Analytics subscription</span><span className="lp-mono">0.5 SOL / year</span></div>
+              <div className="cost-row"><span>Analytics subscription</span><span className="lp-mono">1 SOL / year</span></div>
             </div>
-            <button className="lp-btn lp-btn--primary">Unlock full history — 0.5 SOL/yr</button>
+            <button className="lp-btn lp-btn--primary">Unlock full history — 1 SOL/yr</button>
           </div>
         )}
       </div>

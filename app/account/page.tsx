@@ -14,7 +14,7 @@ const subscriptions = [
 const history = [
   { type: "Token creation", amount: "0.102 SOL", date: "2026-06-08", tx: "sig1ABC" },
   { type: "Liquidity (Raydium)", amount: "0.40 SOL", date: "2026-06-08", tx: "sig2DEF" },
-  { type: "Analytics subscription", amount: "0.5 SOL", date: "2026-06-08", tx: "sig3GHI" },
+  { type: "Analytics subscription", amount: "1 SOL", date: "2026-06-08", tx: "sig3GHI" },
 ];
 
 export default function AccountPage() {

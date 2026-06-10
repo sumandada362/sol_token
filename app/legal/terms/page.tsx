@@ -26,7 +26,7 @@ const sections = [
   {
     id: "fees",
     title: "4. Fees",
-    body: `FORGE charges the following platform fees: 0.1 SOL to create a token; 0.1 SOL per liquidity pool; 0.5 SOL per year for analytics subscriptions. All fees are charged on-chain at the time of signing and are non-refundable once confirmed. Network rent and DEX setup costs are pass-through costs separate from platform fees. Fees are subject to change with notice.`,
+    body: `FORGE charges the following platform fees: 0.1 SOL to create a token; 0.1 SOL per liquidity pool; 1 SOL per year for analytics subscriptions. All fees are charged on-chain at the time of signing and are non-refundable once confirmed. Network rent and DEX setup costs are pass-through costs separate from platform fees. Fees are subject to change with notice.`,
   },
   {
     id: "user-responsibilities",

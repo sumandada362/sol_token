@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BgCanvas from "@/components/BgCanvas";
 import Navbar from "@/components/Navbar";
+import MotionProvider from "@/components/MotionProvider";
 
 export const metadata: Metadata = {
   title: "Vajra — Create & Launch Solana Tokens",
@@ -28,6 +29,7 @@ export default function RootLayout({
         <Navbar />
         {/* z-index: 1 — scrollable content (hero + every other section) */}
         <div id="content">{children}</div>
+        <MotionProvider />
       </body>
     </html>
   );
