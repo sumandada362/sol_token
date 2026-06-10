@@ -7,36 +7,27 @@ export default function Home() {
     <>
       {/* ── Hero ── */}
       <section className="hero">
+        {/* 1) hero text + description */}
         <div id="hero-text">
-          <p className="lp-eyebrow" style={{ marginBottom: "1rem" }}>Non-custodial · No code</p>
           <div className="headline">
-            Launch a Solana token.<br />
-            <span className="brand-blend">Pool it. Track it.</span>
+            Create &amp; Launch Your
+            <br />
+            <span className="brand-blend">Solana Token</span> in Minutes
           </div>
           <p className="tagline">
             <strong>FORGE</strong> is the fastest and safest way to create and launch
-            tokens on Solana. No coding, no complexity.
+            tokens on Solana Network. No Coding, No Complexity
           </p>
-          <div className="hero-trust-strip">
-            <span>Non-custodial</span>
-            <span className="hero-trust-dot" />
-            <span>6 DEXs</span>
-            <span className="hero-trust-dot" />
-            <span>Open source</span>
-            <span className="hero-trust-dot" />
-            <span>No hidden fees</span>
-          </div>
         </div>
 
+        {/* 2) Customize Token form (right on desktop, last on mobile) */}
         <CustomizeTokenPanel />
 
+        {/* 3) Create & Launch Token button */}
         <div id="cta-zone">
           <Link href="/create" className="hero-cta">
-            Create your token
+            Create &amp; Launch Token
           </Link>
-          <a href="#how-it-works" className="hero-cta-secondary">
-            See how it works
-          </a>
         </div>
       </section>
 
