@@ -23,11 +23,36 @@ export default function Home() {
         {/* 2) Customize Token form (right on desktop, last on mobile) */}
         <CustomizeTokenPanel />
 
-        {/* 3) Create & Launch Token button */}
+        {/* 3) Create & Launch Token button + DEX strip + token logos */}
         <div id="cta-zone">
           <Link href="/create" className="hero-cta">
             Create &amp; Launch Token
           </Link>
+
+          <div className="hero-strip">
+            <div className="hero-dex">
+              <span className="hero-dex-label">Trades on</span>
+              <div className="hero-dex-names">
+                {["Raydium", "Orca", "Meteora", "PumpSwap", "Invariant", "FluxBeam"].map((dex) => (
+                  <span key={dex} className="hero-dex-name">{dex}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="hero-token-logos">
+              {[
+                { symbol: "SOL",  name: "Solana",     bg: "linear-gradient(135deg,#9945FF,#19FB9B)" },
+                { symbol: "JUP",  name: "Jupiter",    bg: "linear-gradient(135deg,#29b6f6,#00e5ff)" },
+                { symbol: "BONK", name: "Bonk",       bg: "linear-gradient(135deg,#f97316,#fbbf24)" },
+                { symbol: "WIF",  name: "dogwifhat",  bg: "linear-gradient(135deg,#845ef7,#e879f9)" },
+                { symbol: "JTO",  name: "Jito",       bg: "linear-gradient(135deg,#3ddc97,#29b6f6)" },
+              ].map((t, i) => (
+                <div key={t.symbol} className="hero-token-coin" style={{ background: t.bg, zIndex: 5 - i }} title={t.name}>
+                  <span>{t.symbol}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 

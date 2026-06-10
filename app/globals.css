@@ -385,11 +385,15 @@ body {
     color: #5ec8ff;
 }
 
-/* Create & Launch CTA — bottom-left of the hero */
+/* Create & Launch CTA — bottom-left of the hero, also holds the DEX strip */
 #cta-zone {
     position: absolute;
-    bottom: 10%;
+    bottom: 6%;
     left: 6.5%;
+    width: 46%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
 }
 
 .hero-cta {
@@ -415,6 +419,88 @@ body {
 .hero-cta:hover {
     opacity: 0.88;
     transform: translateY(-2px);
+}
+
+/* DEX strip + token logos — sits below the CTA button */
+.hero-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem;
+    padding: 0.9rem 1.2rem;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+}
+
+.hero-dex {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 0;
+}
+
+.hero-dex-label {
+    font-size: clamp(0.65rem, 0.75vw, 0.75rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6f7889;
+}
+
+.hero-dex-names {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.6rem;
+}
+
+.hero-dex-name {
+    font-size: clamp(0.72rem, 0.85vw, 0.85rem);
+    font-weight: 600;
+    color: rgba(220, 225, 240, 0.55);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+}
+
+/* Token coin stack */
+.hero-token-logos {
+    display: flex;
+    flex-direction: row-reverse;   /* so first item renders on top visually */
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.hero-token-coin {
+    width: clamp(32px, 3.2vw, 42px);
+    height: clamp(32px, 3.2vw, 42px);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 2px solid rgba(3, 1, 9, 0.8);   /* matches body bg for overlap gap */
+    margin-left: clamp(-10px, -1.1vw, -8px); /* overlap each coin */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    cursor: default;
+    transition: transform 0.18s, z-index 0s;
+    position: relative;
+}
+
+.hero-token-coin:hover {
+    transform: translateY(-4px) scale(1.08);
+    z-index: 20 !important;
+}
+
+.hero-token-coin span {
+    font-family: 'Segoe UI', Inter, Arial, sans-serif;
+    font-size: clamp(0.48rem, 0.56vw, 0.6rem);
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-align: center;
+    pointer-events: none;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 /* ════════════ RESPONSIVE: tablet & mobile ════════════ */
@@ -445,15 +531,22 @@ body {
     }
     #hero-text .tagline { max-width: 100%; }
 
-    /* 2) Create & Launch Token button under the text */
+    /* 2) Create & Launch Token button + strip under the text */
     #cta-zone {
         order: 2;
         position: static;
         bottom: auto;
         left: auto;
         width: 100%;
+        max-width: 600px;
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+    }
+
+    .hero-strip {
+        width: 100%;
     }
 
     /* 3) Customize Token form last, centred, drop the edge-fade mask */
