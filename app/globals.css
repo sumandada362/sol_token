@@ -394,7 +394,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.4rem;
+    gap: 2.8rem;
 }
 
 .hero-cta {
