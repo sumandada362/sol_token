@@ -388,13 +388,13 @@ body {
 /* Create & Launch CTA — bottom-left of the hero, also holds the DEX strip */
 #cta-zone {
     position: absolute;
-    bottom: 6%;
+    bottom: 2%;
     left: 6.5%;
     width: 46%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 2.8rem;
+    gap: 1rem;
 }
 
 .hero-cta {
@@ -428,7 +428,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
-    padding: 1rem 1.4rem;
+    padding: 0.8rem 1.4rem;
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(14px) saturate(140%);
     -webkit-backdrop-filter: blur(14px) saturate(140%);
