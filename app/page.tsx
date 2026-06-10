@@ -1,41 +1,148 @@
 import Link from "next/link";
 import CustomizeTokenPanel from "@/components/CustomizeTokenPanel";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
     <>
+      {/* ── Hero ── */}
       <section className="hero">
-        {/* 1) hero text + description */}
         <div id="hero-text">
+          <p className="lp-eyebrow" style={{ marginBottom: "1rem" }}>Non-custodial · No code</p>
           <div className="headline">
-            Create &amp; Launch Your
-            <br />
-            <span className="brand-blend">Solana Token</span> in Minutes
+            Launch a Solana token.<br />
+            <span className="brand-blend">Pool it. Track it.</span>
           </div>
           <p className="tagline">
             <strong>FORGE</strong> is the fastest and safest way to create and launch
-            tokens on Solana Network. No Coding, No Complexity
+            tokens on Solana. No coding, no complexity.
           </p>
+          <div className="hero-trust-strip">
+            <span>Non-custodial</span>
+            <span className="hero-trust-dot" />
+            <span>6 DEXs</span>
+            <span className="hero-trust-dot" />
+            <span>Open source</span>
+            <span className="hero-trust-dot" />
+            <span>No hidden fees</span>
+          </div>
         </div>
 
-        {/* 2) Customize Token form (right on desktop, last on mobile) */}
         <CustomizeTokenPanel />
 
-        {/* 3) Create & Launch Token button */}
         <div id="cta-zone">
-          <Link href="/create-token" className="hero-cta">
-            Create &amp; Launch Token
+          <Link href="/create" className="hero-cta">
+            Create your token
           </Link>
+          <a href="#how-it-works" className="hero-cta-secondary">
+            See how it works
+          </a>
         </div>
       </section>
 
-      {/*
-        Everything below the hero sits in the background-less content layer
-        (#content, z-index: 1), so the fixed accretion-disc canvas (z-index: -1)
-        stays visible behind every section — sections use glass surfaces only.
-      */}
       <div className="lp">
-        {/* ── Security ── */}
+        {/* ── Proof strip ── */}
+        <section className="lp-section lp-section--narrow">
+          <div className="lp-proof-strip">
+            <span className="lp-proof-label">Trades on</span>
+            {["Raydium", "Orca", "Meteora", "PumpSwap", "Invariant", "FluxBeam"].map((dex) => (
+              <span key={dex} className="lp-proof-dex">{dex}</span>
+            ))}
+          </div>
+        </section>
+
+        {/* ── How it works ── */}
+        <section className="lp-section" id="how-it-works">
+          <div className="lp-section-head lp-section-head--center">
+            <p className="lp-eyebrow">How it works</p>
+            <h2 className="lp-heading">Launch in 4 steps</h2>
+          </div>
+          <div className="lp-steps">
+            {[
+              { n: "1", title: "Connect", body: "Connect your Solana wallet — Phantom, Solflare, or Backpack." },
+              { n: "2", title: "Configure", body: "Name your token, set supply, upload branding, and set authorities." },
+              { n: "3", title: "Add liquidity", body: "Choose one or more DEXs and set your initial liquidity amounts." },
+              { n: "4", title: "Track", body: "Monitor price, volume, holders, and concentration from your dashboard." },
+            ].map(({ n, title, body }) => (
+              <div key={n} className="lp-step">
+                <div className="lp-step-num">{n}</div>
+                <div className="lp-step-title">{title}</div>
+                <p className="lp-step-body">{body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Services grid ── */}
+        <section className="lp-section">
+          <div className="lp-section-head lp-section-head--center">
+            <p className="lp-eyebrow">Everything you need</p>
+            <h2 className="lp-heading">One platform, full lifecycle</h2>
+          </div>
+          <div className="lp-services">
+            <ServiceCard
+              href="/create"
+              icon="◈"
+              title="Create"
+              body="Deploy SPL or Token-2022 tokens with custom supply, metadata, and authorities in minutes."
+              cta="Create a token"
+            />
+            <ServiceCard
+              href="/pool"
+              icon="⇌"
+              title="Pool"
+              body="Add liquidity to Raydium, Orca, Meteora, PumpSwap, Invariant, or FluxBeam — or all at once."
+              cta="Add liquidity"
+            />
+            <ServiceCard
+              href="/burn"
+              icon="⊘"
+              title="Burn"
+              body="Permanently remove tokens from circulation to reduce supply and signal commitment."
+              cta="Burn tokens"
+            />
+            <ServiceCard
+              href="/token/example"
+              icon="⊕"
+              title="Security"
+              body="Check mint/freeze authority status, top-holder concentration, and risk flags for any token."
+              cta="Check security"
+            />
+            <ServiceCard
+              href="/dashboard"
+              icon="◎"
+              title="Analytics"
+              body="Deep metrics on price, volume, liquidity, and holder trends. 0.5 SOL/yr."
+              cta="View analytics"
+            />
+          </div>
+        </section>
+
+        {/* ── Why choose us ── */}
+        <section className="lp-section">
+          <div className="lp-section-head lp-section-head--center">
+            <p className="lp-eyebrow">Why FORGE</p>
+            <h2 className="lp-heading">Built for builders</h2>
+          </div>
+          <div className="lp-pillars">
+            {[
+              { icon: "🔑", title: "Non-custodial", body: "We never hold your keys. Every transaction is signed by your wallet alone." },
+              { icon: "⚡", title: "Fast", body: "Go from zero to launched in under 2 minutes. No forms, no waiting." },
+              { icon: "🔍", title: "Transparent", body: "All fees shown upfront. No hidden surcharges, no surprises." },
+              { icon: "🛡", title: "Secure", body: "Authority checker, concentration analysis, and risk flags baked in." },
+              { icon: "🌐", title: "Multi-DEX", body: "List on 6 DEXs simultaneously with a single signing flow." },
+              { icon: "📊", title: "Analytics", body: "Real-time and historical data for holders, volume, and price." },
+            ].map(({ icon, title, body }) => (
+              <div key={title} className="lp-pillar">
+                <div className="lp-pillar-icon">{icon}</div>
+                <div className="lp-pillar-title">{title}</div>
+                <p className="lp-pillar-body">{body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Security band ── */}
         <section className="lp-section">
           <div className="lp-grid">
             <div className="lp-copy">
@@ -52,7 +159,7 @@ export default function Home() {
                 <li className="lp-flag lp-flag--warn">Update authority active</li>
               </ul>
               <div className="lp-actions">
-                <a href="#" className="lp-btn lp-btn--secondary">Verify</a>
+                <Link href="/explore" className="lp-btn lp-btn--secondary">Verify a token</Link>
                 <a href="#" className="lp-link">View on explorer →</a>
               </div>
             </div>
@@ -105,10 +212,53 @@ export default function Home() {
                 <li>Concentration risk flagged above threshold</li>
               </ul>
               <div className="lp-actions">
-                <a href="#" className="lp-btn lp-btn--secondary">Check holders</a>
+                <Link href="/explore" className="lp-btn lp-btn--secondary">Check holders</Link>
                 <a href="#" className="lp-link">Full breakdown →</a>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ── Pricing snapshot ── */}
+        <section className="lp-section">
+          <div className="lp-stats">
+            <p className="lp-eyebrow">Pricing</p>
+            <h2 className="lp-heading" style={{ maxWidth: "none" }}>Simple, flat fees</h2>
+            <p className="lp-body lp-body--center">
+              No per-authority surcharges. No surprise costs. What you see is what you pay.
+            </p>
+            <div className="lp-stat-grid">
+              <Stat value="0.1" label="SOL to create a token" />
+              <Stat value="0.1" label="SOL to add liquidity (per pool)" />
+              <Stat value="0.5" label="SOL for analytics / year" />
+              <Stat value="0" label="Hidden fees" />
+            </div>
+            <div className="lp-actions lp-actions--center" style={{ marginTop: "2.5rem" }}>
+              <Link href="/pricing" className="lp-btn lp-btn--secondary">Full pricing →</Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Recent launches ── */}
+        <section className="lp-section">
+          <div className="lp-section-head lp-section-head--center">
+            <p className="lp-eyebrow">Recent launches</p>
+            <h2 className="lp-heading">Live on Solana</h2>
+          </div>
+          <div className="lp-token-grid">
+            {demoTokens.map((t) => (
+              <Link key={t.mint} href={`/token/${t.mint}`} className="lp-token-card">
+                <div className="lp-token-avatar">{t.symbol.charAt(0)}</div>
+                <div className="lp-token-info">
+                  <span className="lp-token-name">{t.name}</span>
+                  <span className="lp-token-symbol">{t.symbol}</span>
+                </div>
+                <div className="lp-token-meta">
+                  <span>{t.holders} holders</span>
+                  <span>{t.liquidity}</span>
+                </div>
+              </Link>
+            ))}
           </div>
         </section>
 
@@ -130,24 +280,23 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CTA ── */}
+        {/* ── Final CTA ── */}
         <section className="lp-section">
           <div className="lp-cta">
-            <h2 className="lp-heading">Take action now</h2>
+            <h2 className="lp-heading">Ready to launch?</h2>
             <p className="lp-body lp-body--center">
-              Manage liquidity, burn holdings, or unlock deep analytics for your
-              token — all from one place.
+              Create your token, add liquidity, and start tracking — all from one non-custodial platform.
             </p>
             <div className="lp-actions lp-actions--center">
-              <a href="#" className="lp-btn lp-btn--primary">Add liquidity</a>
-              <a href="#" className="lp-btn lp-btn--secondary">Burn supply</a>
+              <Link href="/create" className="lp-btn lp-btn--primary">Create your token</Link>
+              <Link href="/explore" className="lp-btn lp-btn--secondary">Explore tokens</Link>
             </div>
           </div>
         </section>
 
         {/* ── Testimonials ── */}
         <section className="lp-section">
-          <div className="lp-section-head">
+          <div className="lp-section-head lp-section-head--center">
             <h2 className="lp-heading">What people say</h2>
             <p className="lp-body">Builders trust FORGE to launch their vision.</p>
           </div>
@@ -170,13 +319,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── FAQ ── (native <details> — no client JS needed) */}
+        {/* ── FAQ ── */}
         <section className="lp-section">
           <div className="lp-section-head lp-section-head--center">
             <h2 className="lp-heading">Questions</h2>
-            <p className="lp-body">
-              Everything you need to know about your token and FORGE.
-            </p>
+            <p className="lp-body">Everything you need to know about FORGE.</p>
           </div>
           <div className="lp-faq">
             <Faq q="Is my token safe?">
@@ -201,87 +348,37 @@ export default function Home() {
               over time for 0.5 SOL per year.
             </Faq>
           </div>
-        </section>
-
-        {/* ── Contact ── */}
-        <section className="lp-section">
-          <div className="lp-grid lp-grid--contact">
-            <div className="lp-copy">
-              <p className="lp-eyebrow">Support</p>
-              <h2 className="lp-heading">Found an issue?</h2>
-              <p className="lp-body">Report a problem or request assistance.</p>
-              <ul className="lp-contact-list">
-                <li>
-                  <IconMail /> hello@forge.io
-                </li>
-                <li>
-                  <IconPhone /> +1 (555) 000-0000
-                </li>
-                <li>
-                  <IconPin /> 123 Sample St, Sydney NSW 2000 AU
-                </li>
-              </ul>
-            </div>
-            <form className="lp-form" action="#">
-              <div className="lp-form-row">
-                <label>
-                  First name
-                  <input type="text" name="firstName" />
-                </label>
-                <label>
-                  Last name
-                  <input type="text" name="lastName" />
-                </label>
-              </div>
-              <div className="lp-form-row">
-                <label>
-                  Email
-                  <input type="email" name="email" />
-                </label>
-                <label>
-                  Phone
-                  <input type="text" name="phone" />
-                </label>
-              </div>
-              <label>
-                Message
-                <textarea name="message" placeholder="Tell us what happened…" />
-              </label>
-              <label className="lp-checkbox">
-                <input type="checkbox" name="terms" /> I agree to the terms
-              </label>
-              <button type="submit" className="lp-btn lp-btn--primary">Send</button>
-            </form>
+          <div className="lp-actions lp-actions--center" style={{ marginTop: "2.5rem" }}>
+            <Link href="/docs/faq" className="lp-link">Read the full FAQ →</Link>
           </div>
         </section>
 
-        {/* ── Footer ── */}
-        <footer className="lp-footer">
-          <div className="lp-footer-top">
-            <Link href="/" className="lp-footer-logo">VAJRA</Link>
-            <ul className="lp-footer-links">
-              <li><Link href="/create-token">Create token</Link></li>
-              <li><a href="#">Explore tokens</a></li>
-              <li><a href="#">Add liquidity</a></li>
-              <li><a href="#">View analytics</a></li>
-              <li><a href="#">Burn holdings</a></li>
-            </ul>
-            <div className="lp-footer-social">
-              <a href="#" aria-label="X">𝕏</a>
-              <a href="#" aria-label="Discord">◇</a>
-              <a href="#" aria-label="Telegram">✈</a>
-              <a href="#" aria-label="GitHub">⌥</a>
-            </div>
-          </div>
-          <div className="lp-footer-divider" />
-          <p className="lp-footer-copy">© 2026 FORGE. All rights reserved.</p>
-        </footer>
+        <Footer />
       </div>
     </>
   );
 }
 
-/* ── small presentational helpers ── */
+/* ── demo data ── */
+const demoTokens = [
+  { mint: "ABC1", name: "Solana Inu", symbol: "SINU", holders: "1,240", liquidity: "12.4 SOL" },
+  { mint: "ABC2", name: "Moon Coin", symbol: "MOON", holders: "876", liquidity: "8.2 SOL" },
+  { mint: "ABC3", name: "Forge Token", symbol: "FRGE", holders: "3,201", liquidity: "45.0 SOL" },
+  { mint: "ABC4", name: "Wave Protocol", symbol: "WAVE", holders: "540", liquidity: "6.1 SOL" },
+];
+
+/* ── presentational helpers ── */
+
+function ServiceCard({ href, icon, title, body, cta }: { href: string; icon: string; title: string; body: string; cta: string }) {
+  return (
+    <Link href={href} className="lp-service-card">
+      <span className="lp-service-icon" aria-hidden>{icon}</span>
+      <div className="lp-service-title">{title}</div>
+      <p className="lp-service-body">{body}</p>
+      <span className="lp-service-cta">{cta} →</span>
+    </Link>
+  );
+}
 
 function Bar({ label, value }: { label: string; value: number }) {
   return (
@@ -306,15 +403,7 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function Testimonial({
-  quote,
-  name,
-  role,
-}: {
-  quote: string;
-  name: string;
-  role: string;
-}) {
+function Testimonial({ quote, name, role }: { quote: string; name: string; role: string }) {
   return (
     <figure className="lp-testimonial">
       <div className="lp-stars">★★★★★</div>
@@ -339,33 +428,5 @@ function Faq({ q, children }: { q: string; children: React.ReactNode }) {
       </summary>
       <div className="lp-faq-answer">{children}</div>
     </details>
-  );
-}
-
-/* ── inline icons (no icon library in this project) ── */
-
-function IconMail() {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <path d="m3 7 9 6 9-6" />
-    </svg>
-  );
-}
-
-function IconPhone() {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L20 13l1 4v3a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1Z" />
-    </svg>
-  );
-}
-
-function IconPin() {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-      <path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z" />
-      <circle cx="12" cy="10" r="2.5" />
-    </svg>
   );
 }
