@@ -568,10 +568,11 @@ body {
         bottom: auto;
         left: auto;
         width: 100%;
-        max-width: 600px;
+        max-width: none;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: flex-start;   /* button hugs the left edge */
+        align-self: flex-start;    /* break out of hero's align-items: center */
         gap: 1.2rem;
     }
 
