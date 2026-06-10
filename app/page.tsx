@@ -23,15 +23,16 @@ export default function Home() {
         {/* 2) Customize Token form (right on desktop, last on mobile) */}
         <CustomizeTokenPanel />
 
-        {/* 3) Create & Launch Token button + DEX strip + token logos */}
+        {/* 3) CTA button left-aligned, then DEX strip + token logos row */}
         <div id="cta-zone">
           <Link href="/create" className="hero-cta">
             Create &amp; Launch Token
           </Link>
 
           <div className="hero-strip">
+            {/* Left — DEX pool info */}
             <div className="hero-dex">
-              <span className="hero-dex-label">Trades on</span>
+              <span className="hero-dex-label">Pool your tokens on these DEXes</span>
               <div className="hero-dex-names">
                 {["Raydium", "Orca", "Meteora", "PumpSwap", "Invariant", "FluxBeam"].map((dex) => (
                   <span key={dex} className="hero-dex-name">{dex}</span>
@@ -39,18 +40,29 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Right — successful SPL token coins */}
             <div className="hero-token-logos">
-              {[
-                { symbol: "SOL",  name: "Solana",     bg: "linear-gradient(135deg,#9945FF,#19FB9B)" },
-                { symbol: "JUP",  name: "Jupiter",    bg: "linear-gradient(135deg,#29b6f6,#00e5ff)" },
-                { symbol: "BONK", name: "Bonk",       bg: "linear-gradient(135deg,#f97316,#fbbf24)" },
-                { symbol: "WIF",  name: "dogwifhat",  bg: "linear-gradient(135deg,#845ef7,#e879f9)" },
-                { symbol: "JTO",  name: "Jito",       bg: "linear-gradient(135deg,#3ddc97,#29b6f6)" },
-              ].map((t, i) => (
-                <div key={t.symbol} className="hero-token-coin" style={{ background: t.bg, zIndex: 5 - i }} title={t.name}>
-                  <span>{t.symbol}</span>
-                </div>
-              ))}
+              <span className="hero-tokens-label">Top SPL tokens</span>
+              <div className="hero-coins-row">
+                {[
+                  { symbol: "RAY",  name: "Raydium",    bg: "linear-gradient(135deg,#c93232,#f97316)",  icon: "◈" },
+                  { symbol: "JUP",  name: "Jupiter",    bg: "linear-gradient(135deg,#00b4d8,#7209b7)",  icon: "♃" },
+                  { symbol: "BONK", name: "Bonk",       bg: "linear-gradient(135deg,#f97316,#fbbf24)",  icon: "◉" },
+                  { symbol: "WIF",  name: "dogwifhat",  bg: "linear-gradient(135deg,#845ef7,#e879f9)",  icon: "◎" },
+                  { symbol: "PYTH", name: "Pyth",       bg: "linear-gradient(135deg,#5b30f7,#29b6f6)",  icon: "⬡" },
+                  { symbol: "ORCA", name: "Orca",       bg: "linear-gradient(135deg,#00c2a8,#0077ff)",  icon: "◐" },
+                ].map((t, i) => (
+                  <div
+                    key={t.symbol}
+                    className="hero-token-coin"
+                    style={{ background: t.bg, zIndex: 6 - i }}
+                    title={`${t.name} (${t.symbol})`}
+                  >
+                    <span className="hero-coin-icon">{t.icon}</span>
+                    <span className="hero-coin-sym">{t.symbol}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
