@@ -1,0 +1,11 @@
+# Don't auto-run `pnpm install` before every `pnpm run <script>`.
+# (Deps are already installed; this check was failing because of the
+#  ignored build scripts below, which blocked `pnpm dev`.)
+verifyDepsBeforeRun: false
+
+# sharp / unrs-resolver have native build scripts. We don't need them
+# (no next/image usage), so leave them un-built. Listing them here marks
+# the decision so pnpm stops warning / exiting non-zero.
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
