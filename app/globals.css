@@ -1365,7 +1365,6 @@ body {
     transition: color 0.2s;
 }
 .hero-cta-secondary:hover { color: #5ec8ff; }
-#cta-zone { display: flex; align-items: center; gap: 1.5rem; }
 
 /* Proof strip */
 .lp-section--narrow { padding-top: 3vh; padding-bottom: 3vh; }
