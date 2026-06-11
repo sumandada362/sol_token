@@ -39,7 +39,7 @@ export default function MultisenderTokenPage({ params }: { params: Promise<{ tok
         <div className="tool-header">
           <div className="tool-header-meta">
             <h1 className="page-title">Send {meta.symbol}</h1>
-            <div className="tool-fee-badge">0.05 SOL + rent</div>
+            <div className="tool-fee-badge">0.01 SOL / tx</div>
           </div>
           <p className="page-sub">
             Bulk-send {meta.name} ({meta.symbol}) to many wallets in one signing flow.
@@ -86,8 +86,8 @@ export default function MultisenderTokenPage({ params }: { params: Promise<{ tok
               <div className="cost-summary lp-card">
                 <div className="cost-summary-title">Cost summary</div>
                 <div className="cost-row">
-                  <span>Platform fee</span>
-                  <span className="lp-mono">0.05 SOL</span>
+                  <span>Platform fee (flat per transaction)</span>
+                  <span className="lp-mono">0.010 SOL</span>
                 </div>
                 <div className="cost-row">
                   <span>Account rent ({validLines.length} accounts)</span>
@@ -95,7 +95,7 @@ export default function MultisenderTokenPage({ params }: { params: Promise<{ tok
                 </div>
                 <div className="cost-row cost-row--total">
                   <span>Total (est.)</span>
-                  <span className="lp-mono">~{(0.05 + validLines.length * 0.002 + 0.001).toFixed(3)} SOL</span>
+                  <span className="lp-mono">~{(0.01 + validLines.length * 0.002 + 0.001).toFixed(3)} SOL</span>
                 </div>
               </div>
             )}

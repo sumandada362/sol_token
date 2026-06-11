@@ -16,7 +16,7 @@ const sections = [
   {
     id: "description",
     title: "2. Description of Service",
-    body: `FORGE is a non-custodial interface that enables users to: create SPL and Token-2022 tokens on Solana; create liquidity pools on third-party decentralized exchanges; burn token holdings; and access analytics data. FORGE does not custody funds or private keys, does not control the Solana network or any third-party DEX, and does not issue, endorse, or guarantee any token created through the Service.`,
+    body: `FORGE is a non-custodial interface that enables users to: create SPL and Token-2022 tokens on Solana; create liquidity pools on third-party decentralized exchanges; and burn token holdings. FORGE does not custody funds or private keys, does not control the Solana network or any third-party DEX, and does not issue, endorse, or guarantee any token created through the Service.`,
   },
   {
     id: "non-custodial",
@@ -26,7 +26,7 @@ const sections = [
   {
     id: "fees",
     title: "4. Fees",
-    body: `FORGE charges the following platform fees: 0.1 SOL to create a token; 0.1 SOL per liquidity pool; 1 SOL per year for analytics subscriptions. All fees are charged on-chain at the time of signing and are non-refundable once confirmed. Network rent and DEX setup costs are pass-through costs separate from platform fees. Fees are subject to change with notice.`,
+    body: `FORGE charges the following platform fees: 0.1 SOL to create a token; 0.1 SOL per liquidity pool; 0.1 SOL to mint additional tokens; 0.05 SOL to revoke mint authority; 0.05 SOL to revoke freeze authority; 0.01 SOL per address to freeze or unfreeze a token account. Burn, Burn LP tokens, and Make Immutable carry no FORGE fee. All fees are charged on-chain at the time of signing and are non-refundable once confirmed. Network rent and DEX setup costs are pass-through costs separate from platform fees. Fees are subject to change with notice.`,
   },
   {
     id: "user-responsibilities",

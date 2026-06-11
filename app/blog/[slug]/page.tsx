@@ -25,7 +25,7 @@ const articles: Article[] = [
     content: [
       {
         heading: "What you need",
-        body: "A Solana wallet (Phantom, Backpack, or Solflare) with at least 0.15 SOL to cover the platform fee (~0.1 SOL) and Solana rent (~0.002 SOL).",
+        body: "A Solana wallet (Phantom, Backpack, or Solflare) with at least 0.15 SOL for the base platform fee (0.1 SOL) and Solana rent (~0.002 SOL). Budget more if you plan to revoke authorities (+0.05 SOL each for mint/freeze) or add custom creator info (+0.1 SOL).",
       },
       {
         heading: "Step 1 — Fill in token details",
@@ -37,11 +37,11 @@ const articles: Article[] = [
       },
       {
         heading: "Step 3 — Set authority options",
-        body: "Decide whether to keep or revoke mint authority and freeze authority at creation. You can always revoke later using the FORGE Tools, but doing it at launch builds instant trust.",
+        body: "Decide whether to revoke mint authority (+0.05 SOL) and/or freeze authority (+0.05 SOL) at creation — both permanently cap those permissions and build instant trust. Make immutable (revoke update authority) is free. You can also enable custom creator info (+0.1 SOL) to embed your identity on-chain. All options can be toggled at creation; some can be done later via FORGE Tools.",
       },
       {
         heading: "Step 4 — Review and sign",
-        body: "Review the cost summary: platform fee (0.1 SOL) + network rent. Approve the transaction in your wallet. FORGE sends you directly to your token page on success.",
+        body: "Review the cost summary: base fee (0.1 SOL) + any add-ons you selected (revoke mint/freeze 0.05 SOL each, custom creator info 0.1 SOL) + network rent (~0.002 SOL). The total updates live as you toggle options. Approve the transaction in your wallet. FORGE sends you directly to your token page on success.",
       },
       {
         heading: "What's next?",
@@ -76,7 +76,7 @@ const articles: Article[] = [
       },
       {
         heading: "Step 3 — Review cost and sign",
-        body: "Raydium CPMM pool creation costs ~0.30 SOL network pass-through + 0.1 SOL platform fee. Confirm in your wallet.",
+        body: "Raydium CPMM pool creation costs ~0.50 SOL paid directly to Raydium + 0.1 SOL FORGE fee. DEX setup costs vary from 0.4–0.6 SOL depending on the DEX. Confirm in your wallet.",
       },
     ],
     related: ["how-to-create-solana-token", "how-to-create-openbook-market"],
@@ -103,7 +103,7 @@ const articles: Article[] = [
       },
       {
         heading: "Fees",
-        body: "0.05 SOL platform fee + ~0.002 SOL rent per new token account. Rent is a Solana network cost, not a FORGE fee.",
+        body: "0.01 SOL flat per transaction + ~0.002 SOL rent per new token account. Rent is a Solana network cost, not a FORGE fee.",
       },
     ],
     related: ["how-to-create-solana-token", "sol-to-lamports-converter-guide"],
@@ -157,7 +157,7 @@ const articles: Article[] = [
       },
       {
         heading: "How to do it",
-        body: "Go to FORGE → Tools → Revoke Mint. Select your token, check the confirmation box, and sign. The action is free (network gas only).",
+        body: "Go to FORGE → Tools → Revoke Mint. Select your token, check the confirmation box, and sign. The action costs 0.05 SOL FORGE fee + network gas.",
       },
     ],
     related: ["how-to-create-solana-token", "how-to-update-token-metadata"],
@@ -180,7 +180,7 @@ const articles: Article[] = [
       },
       {
         heading: "Cost",
-        body: "~3.5 SOL as a pass-through rent deposit to the OpenBook program + 0.05 SOL FORGE fee. The 3.5 SOL is not a fee — it's on-chain account storage that can theoretically be reclaimed if the market is closed.",
+        body: "~2.85 SOL as a pass-through rent deposit to the OpenBook program + 0.05 SOL FORGE fee. The 2.85 SOL is not a fee — it's on-chain account storage that can theoretically be reclaimed if the market is closed.",
       },
       {
         heading: "Parameters",
@@ -238,7 +238,7 @@ const articles: Article[] = [
       },
       {
         heading: "Fee",
-        body: "0.05 SOL platform fee + network gas (~0.001 SOL).",
+        body: "0.1 SOL platform fee + network gas (~0.001 SOL).",
       },
     ],
     related: ["how-to-revoke-mint-authority", "how-to-create-solana-token"],

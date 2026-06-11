@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
     "/",
     "/create",
-    "/explore",
+
     "/pool",
     "/pool/add",
     "/pool/remove",

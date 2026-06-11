@@ -1,21 +1,54 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import Footer from "@/components/Footer";
-
-type TxState = "idle" | "building" | "sign" | "submitting" | "confirming" | "confirmed";
+import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
 
 export default function MakeImmutablePage() {
-  const [token, setToken] = useState("frge");
+  const { publicKey } = useWallet();
+  const { setVisible } = useWalletModal();
+  const { execute } = useTransaction();
+
+  const [mint, setMint] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [txState, setTxState] = useState<TxState>("idle");
+  const [sig, setSig] = useState("");
+  const [error, setError] = useState("");
 
-  function handleRevoke() {
-    setTxState("building");
-    setTimeout(() => setTxState("sign"), 900);
-    setTimeout(() => setTxState("submitting"), 2200);
-    setTimeout(() => setTxState("confirming"), 3800);
-    setTimeout(() => setTxState("confirmed"), 5500);
+  async function handleRevoke() {
+    if (!publicKey) { setVisible(true); return; }
+    setError("");
+
+    try {
+      const { signature } = await execute(
+        () =>
+          fetch("/api/tx/revoke", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payer: publicKey.toBase58(), mint, type: "update" }),
+          }).then(async (r) => {
+            const d = await r.json();
+            if (!r.ok) throw new Error(d.error ?? "Failed to build transaction");
+            return d;
+          }),
+        {
+          onState: setTxState,
+          onConfirmed: async (s) => {
+            await fetch("/api/confirm", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ signature: s, action: "makeImmutable", wallet: publicKey.toBase58(), mint }),
+            });
+          },
+        }
+      );
+      setSig(signature);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Transaction failed");
+      setTxState("failed");
+    }
   }
 
   return (
@@ -37,10 +70,17 @@ export default function MakeImmutablePage() {
         {txState === "confirmed" ? (
           <div className="tx-success lp-card">
             <div className="tx-success-icon">◻</div>
-            <p className="tx-success-label">{token.toUpperCase()} is now immutable</p>
+            <p className="tx-success-label">Token is now immutable</p>
             <p className="burn-remaining">Metadata is permanently locked on-chain.</p>
+            <a
+              className="lp-mono"
+              href={`https://solscan.io/tx/${sig}?cluster=${process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet"}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View on Solscan ↗
+            </a>
             <div className="tx-success-actions">
-              <Link href={`/token/${token}`} className="lp-btn lp-btn--primary">View token</Link>
               <Link href="/dashboard" className="lp-btn lp-btn--secondary">Dashboard</Link>
             </div>
           </div>
@@ -48,20 +88,13 @@ export default function MakeImmutablePage() {
           <>
             <div className="lp-card burn-card">
               <div className="burn-field">
-                <label className="wizard-field-label">Token</label>
-                <select className="wizard-select" value={token} onChange={(e) => setToken(e.target.value)}>
-                  <option value="frge">FRGE — Forge Token</option>
-                  <option value="sinu">SINU — Solana Inu</option>
-                </select>
-              </div>
-
-              <div className="revoke-info-row">
-                <span className="revoke-info-label">Update authority</span>
-                <span className="lp-mono revoke-info-value">7xKq...3fBn (your wallet)</span>
-              </div>
-              <div className="revoke-info-row">
-                <span className="revoke-info-label">After this action</span>
-                <span className="revoke-info-value" style={{ color: "var(--accent-warn, #fbbf24)" }}>Immutable — no update authority</span>
+                <label className="wizard-field-label">Mint address</label>
+                <input
+                  className="wizard-input"
+                  placeholder="Token mint address"
+                  value={mint}
+                  onChange={(e) => setMint(e.target.value.trim())}
+                />
               </div>
 
               <div className="burn-warning">
@@ -69,22 +102,19 @@ export default function MakeImmutablePage() {
                 <div>
                   <strong>This action is permanent and cannot be undone.</strong><br />
                   After revoking, the name, symbol, logo, and all on-chain metadata fields are locked forever.
-                  Make sure your metadata is final before proceeding.
                 </div>
               </div>
 
               <label className="revoke-confirm-check">
-                <input
-                  type="checkbox"
-                  checked={confirmed}
-                  onChange={(e) => setConfirmed(e.target.checked)}
-                />
+                <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
                 I understand this permanently locks all on-chain metadata
               </label>
+
+              {error && <p className="tool-error">{error}</p>}
             </div>
 
             <div className="wizard-actions">
-              {txState !== "idle" ? (
+              {txState !== "idle" && txState !== "failed" ? (
                 <div className="tx-state">
                   <div className="tx-step active">
                     <span className="tx-step-spinner" />
@@ -97,10 +127,10 @@ export default function MakeImmutablePage() {
               ) : (
                 <button
                   className="lp-btn lp-btn--primary burn-btn"
-                  disabled={!confirmed}
+                  disabled={!confirmed || !mint}
                   onClick={handleRevoke}
                 >
-                  Make Immutable
+                  {publicKey ? "Make Immutable" : "Connect Wallet"}
                 </button>
               )}
             </div>

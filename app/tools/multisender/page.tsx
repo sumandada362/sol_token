@@ -32,7 +32,7 @@ export default function MultisenderPage() {
         <div className="tool-header">
           <div className="tool-header-meta">
             <h1 className="page-title">Multisender</h1>
-            <div className="tool-fee-badge">0.05 SOL + rent</div>
+            <div className="tool-fee-badge">0.001 SOL/recipient</div>
           </div>
           <p className="page-sub">Send tokens to hundreds of wallets in one batched signing flow.</p>
           <div className="tool-header-links">
@@ -96,8 +96,8 @@ export default function MultisenderPage() {
               <div className="cost-summary lp-card">
                 <div className="cost-summary-title">Cost summary</div>
                 <div className="cost-row">
-                  <span>Platform fee</span>
-                  <span className="lp-mono">0.05 SOL</span>
+                  <span>Platform fee ({validLines.length} × 0.001 SOL, min 0.02)</span>
+                  <span className="lp-mono">{Math.max(0.02, validLines.length * 0.001).toFixed(3)} SOL</span>
                 </div>
                 <div className="cost-row">
                   <span>Account rent ({validLines.length} accounts)</span>
@@ -109,7 +109,7 @@ export default function MultisenderPage() {
                 </div>
                 <div className="cost-row cost-row--total">
                   <span>Total (est.)</span>
-                  <span className="lp-mono">~{(0.05 + validLines.length * 0.002 + 0.001).toFixed(3)} SOL</span>
+                  <span className="lp-mono">~{(Math.max(0.02, validLines.length * 0.001) + validLines.length * 0.002 + 0.001).toFixed(3)} SOL</span>
                 </div>
               </div>
             )}

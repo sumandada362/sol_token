@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Docs — FORGE",
-  description: "Learn how to create tokens, add liquidity, burn tokens, and use analytics on FORGE.",
+  description: "Learn how to create tokens, add liquidity, and manage your Solana tokens on FORGE.",
 };
 
 const categories = [
@@ -28,13 +28,6 @@ const categories = [
     articles: [
       { slug: "burn-tokens", title: "Burn tokens", desc: "Permanently reduce your token&apos;s circulating supply." },
       { slug: "security-checker", title: "Security checker", desc: "How to read authority badges and concentration risk." },
-    ],
-  },
-  {
-    title: "Analytics",
-    articles: [
-      { slug: "analytics-overview", title: "Analytics overview", desc: "Price, volume, holder metrics — what&apos;s included." },
-      { slug: "alerts", title: "Configuring alerts", desc: "Set up price and holder threshold notifications." },
     ],
   },
   {

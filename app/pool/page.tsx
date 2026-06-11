@@ -4,12 +4,12 @@ import { useState } from "react";
 import Footer from "@/components/Footer";
 
 const DEXES = [
-  { id: "raydium", name: "Raydium", cost: "~0.30 SOL", desc: "Most volume. Best for new launches." },
-  { id: "orca", name: "Orca", cost: "~0.10 SOL", desc: "Concentrated liquidity. Great UX." },
-  { id: "meteora", name: "Meteora", cost: "~0.15 SOL", desc: "Dynamic pools. Strong for memecoins." },
-  { id: "pumpswap", name: "PumpSwap", cost: "~0.05 SOL", desc: "Pump.fun native. Low barrier." },
-  { id: "invariant", name: "Invariant", cost: "~0.10 SOL", desc: "Concentrated liquidity on Solana." },
-  { id: "fluxbeam", name: "FluxBeam", cost: "~0.08 SOL", desc: "Token-2022 compatible pools." },
+  { id: "raydium", name: "Raydium", cost: "~0.50 SOL", fee: 0.50, desc: "Most volume. Best for new launches." },
+  { id: "orca", name: "Orca", cost: "~0.40 SOL", fee: 0.40, desc: "Concentrated liquidity. Great UX." },
+  { id: "meteora", name: "Meteora", cost: "~0.45 SOL", fee: 0.45, desc: "Dynamic pools. Strong for memecoins." },
+  { id: "pumpswap", name: "PumpSwap", cost: "~0.40 SOL", fee: 0.40, desc: "Pump.fun native. Low barrier." },
+  { id: "invariant", name: "Invariant", cost: "~0.45 SOL", fee: 0.45, desc: "Concentrated liquidity on Solana." },
+  { id: "fluxbeam", name: "FluxBeam", cost: "~0.40 SOL", fee: 0.40, desc: "Token-2022 compatible pools." },
 ];
 
 export default function PoolPage() {
@@ -113,13 +113,14 @@ export default function PoolPage() {
                   const dex = DEXES.find((d) => d.id === id)!;
                   return (
                     <div key={id} className="cost-row">
-                      <span>{dex.name} setup</span>
+                      <span>{dex.name} pool setup (paid to {dex.name})</span>
                       <span className="lp-mono">{dex.cost}</span>
                     </div>
                   );
                 })}
-                <div className="cost-row"><span>Platform fee</span><span className="lp-mono">0.1 SOL</span></div>
-                <div className="cost-row cost-row--total"><span>Total (est.)</span><span className="lp-mono">~{(selected.length * 0.1 + 0.1).toFixed(1)} SOL</span></div>
+                <div className="cost-row"><span>FORGE fee ({selected.length} × 0.1 SOL)</span><span className="lp-mono">{(selected.length * 0.1).toFixed(1)} SOL</span></div>
+                <div className="cost-row cost-row--total"><span>Total (est.)</span><span className="lp-mono">~{(selected.reduce((sum, id) => sum + (DEXES.find((d) => d.id === id)?.fee ?? 0), 0) + selected.length * 0.1).toFixed(2)} SOL</span></div>
+                <p className="cost-summary-note">DEX setup costs (0.4–0.6 SOL each) go directly to the DEX protocol — not to FORGE.</p>
               </div>
             )}
 

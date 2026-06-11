@@ -4,17 +4,12 @@ import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Account — FORGE",
-  description: "Manage your wallet, subscriptions, and preferences.",
+  description: "Manage your wallet and preferences.",
 };
-
-const subscriptions = [
-  { token: "FRGE", name: "Forge Token", expires: "2027-06-10", active: true },
-];
 
 const history = [
   { type: "Token creation", amount: "0.102 SOL", date: "2026-06-08", tx: "sig1ABC" },
   { type: "Liquidity (Raydium)", amount: "0.40 SOL", date: "2026-06-08", tx: "sig2DEF" },
-  { type: "Analytics subscription", amount: "1 SOL", date: "2026-06-08", tx: "sig3GHI" },
 ];
 
 export default function AccountPage() {
@@ -41,33 +36,6 @@ export default function AccountPage() {
             <span className="wallet-chip-net-dot" />
             Mainnet
           </div>
-        </div>
-
-        {/* Subscriptions */}
-        <div className="dash-section">
-          <h2 className="dash-section-title">Analytics subscriptions</h2>
-          {subscriptions.length === 0 ? (
-            <div className="lp-card dash-empty">
-              <p>No active subscriptions.</p>
-              <Link href="/explore" className="lp-link">Browse tokens →</Link>
-            </div>
-          ) : (
-            <div className="lp-card">
-              {subscriptions.map((s) => (
-                <div key={s.token} className="account-sub-row">
-                  <div>
-                    <span className="account-sub-name">{s.name}</span>
-                    <span className="lp-mono account-sub-sym"> ({s.token})</span>
-                  </div>
-                  <div className="account-sub-expiry">Expires {s.expires}</div>
-                  <div className="account-sub-actions">
-                    <button className="lp-btn lp-btn--secondary">Renew</button>
-                    <button className="lp-btn lp-btn--secondary">Cancel</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Fee history */}

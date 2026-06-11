@@ -16,7 +16,7 @@ export default function NotFound() {
           </div>
           <div className="lp-actions lp-actions--center">
             <Link href="/" className="lp-btn lp-btn--primary">Back home</Link>
-            <Link href="/explore" className="lp-btn lp-btn--secondary">Explore tokens</Link>
+            <Link href="/tools" className="lp-btn lp-btn--secondary">Browse tools</Link>
           </div>
         </div>
       </div>

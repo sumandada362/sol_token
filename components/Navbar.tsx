@@ -1,14 +1,22 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
+import { useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+
+function shortAddress(addr: string) {
+  return `${addr.slice(0, 4)}…${addr.slice(-4)}`;
+}
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [connected, setConnected] = useState(false);
   const [chipOpen, setChipOpen] = useState(false);
-  const [address] = useState("7xKq...3fBn");
   const chipRef = useRef<HTMLDivElement>(null);
+
+  const { connected, publicKey, disconnect } = useWallet();
+  const { setVisible } = useWalletModal();
 
   useEffect(() => {
     function handleOutside(e: MouseEvent) {
@@ -23,10 +31,12 @@ export default function Navbar() {
   const navLinks = [
     { href: "/create", label: "Create" },
     { href: "/tools", label: "Tools" },
-    { href: "/explore", label: "Explore" },
     { href: "/blog", label: "Blog" },
     { href: "/docs", label: "Docs" },
   ];
+
+  const address = publicKey?.toBase58() ?? "";
+  const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet";
 
   return (
     <nav id="navbar">
@@ -47,7 +57,7 @@ export default function Navbar() {
         ))}
       </ul>
 
-      {connected ? (
+      {connected && publicKey ? (
         <div className="wallet-chip" ref={chipRef}>
           <button
             className="wallet-chip-btn"
@@ -56,35 +66,48 @@ export default function Navbar() {
             aria-haspopup="menu"
           >
             <span className="wallet-chip-dot" />
-            {address}
+            {shortAddress(address)}
             <span className="wallet-chip-caret" aria-hidden>▾</span>
           </button>
 
           {chipOpen && (
             <div className="wallet-chip-menu" role="menu">
-              <button role="menuitem" onClick={() => { navigator.clipboard.writeText("7xKq3fBnFullAddress"); setChipOpen(false); }}>
+              <button
+                role="menuitem"
+                onClick={() => { navigator.clipboard.writeText(address); setChipOpen(false); }}
+              >
                 Copy address
               </button>
-              <a role="menuitem" href="https://solscan.io" target="_blank" rel="noopener noreferrer" onClick={() => setChipOpen(false)}>
+              <a
+                role="menuitem"
+                href={`https://solscan.io/account/${address}?cluster=${network}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setChipOpen(false)}
+              >
                 View on Solscan
               </a>
-              <button role="menuitem" onClick={() => setChipOpen(false)}>
+              <button role="menuitem" onClick={() => { setVisible(true); setChipOpen(false); }}>
                 Change wallet
               </button>
               <div className="wallet-chip-divider" />
               <div className="wallet-chip-network">
                 <span className="wallet-chip-net-dot" />
-                Mainnet
+                {network.charAt(0).toUpperCase() + network.slice(1)}
               </div>
               <div className="wallet-chip-divider" />
-              <button role="menuitem" className="wallet-chip-disconnect" onClick={() => { setConnected(false); setChipOpen(false); }}>
+              <button
+                role="menuitem"
+                className="wallet-chip-disconnect"
+                onClick={() => { disconnect(); setChipOpen(false); }}
+              >
                 Disconnect
               </button>
             </div>
           )}
         </div>
       ) : (
-        <button className="nav-cta" onClick={() => setConnected(true)}>
+        <button className="nav-cta" onClick={() => setVisible(true)}>
           Connect Wallet
         </button>
       )}

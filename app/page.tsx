@@ -131,13 +131,6 @@ export default function Home() {
               body="Check mint/freeze authority status, top-holder concentration, and risk flags for any token."
               cta="Check security"
             />
-            <ServiceCard
-              href="/dashboard"
-              icon="◎"
-              title="Analytics"
-              body="Deep metrics on price, volume, liquidity, and holder trends. 1 SOL/yr."
-              cta="View analytics"
-            />
           </div>
         </section>
 
@@ -154,7 +147,6 @@ export default function Home() {
               { icon: "🔍", title: "Transparent", body: "All fees shown upfront. No hidden surcharges, no surprises." },
               { icon: "🛡", title: "Secure", body: "Authority checker, concentration analysis, and risk flags baked in." },
               { icon: "🌐", title: "Multi-DEX", body: "List on 6 DEXs simultaneously with a single signing flow." },
-              { icon: "📊", title: "Analytics", body: "Real-time and historical data for holders, volume, and price." },
             ].map(({ icon, title, body }) => (
               <div key={title} className="lp-pillar">
                 <div className="lp-pillar-icon">{icon}</div>
@@ -182,7 +174,7 @@ export default function Home() {
                 <li className="lp-flag lp-flag--warn">Update authority active</li>
               </ul>
               <div className="lp-actions">
-                <Link href="/explore" className="lp-btn lp-btn--secondary">Verify a token</Link>
+                <Link href="/token/example" className="lp-btn lp-btn--secondary">Verify a token</Link>
                 <a href="#" className="lp-link">View on explorer →</a>
               </div>
             </div>
@@ -209,39 +201,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Holders ── */}
-        <section className="lp-section">
-          <div className="lp-grid lp-grid--reverse">
-            <div className="lp-visual" data-reveal>
-              <div className="lp-card">
-                <div className="lp-card-title">Top holder concentration</div>
-                <Bar label="Top wallet" value={12} />
-                <Bar label="Top 10 wallets" value={38} />
-                <Bar label="Liquidity pool" value={22} />
-                <Bar label="Circulating" value={28} />
-              </div>
-            </div>
-            <div className="lp-copy" data-reveal style={{ "--delay": "150ms" } as React.CSSProperties}>
-              <p className="lp-eyebrow">Holders</p>
-              <h2 className="lp-heading">Who owns what &amp; concentration risk</h2>
-              <p className="lp-body">
-                See how supply is distributed across wallets. High concentration
-                means fewer hands control the token — we surface it so you can
-                decide.
-              </p>
-              <ul className="lp-checklist">
-                <li>Top holder owns 12% of supply</li>
-                <li>Top ten holders own 38% of supply</li>
-                <li>Concentration risk flagged above threshold</li>
-              </ul>
-              <div className="lp-actions">
-                <Link href="/explore" className="lp-btn lp-btn--secondary">Check holders</Link>
-                <a href="#" className="lp-link">Full breakdown →</a>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* ── Fees ── */}
         <section className="lp-section">
           <div className="lp-section-head lp-section-head--center" data-reveal>
@@ -253,7 +212,11 @@ export default function Home() {
           </div>
           <div className="lp-fee-table" data-reveal>
             <div className="lp-fee-row">
-              <span className="lp-fee-label">Create a token</span>
+              <span className="lp-fee-label">Create a token (base)</span>
+              <span className="lp-fee-amount">0.1 SOL</span>
+            </div>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Custom creator info (at creation)</span>
               <span className="lp-fee-amount">0.1 SOL</span>
             </div>
             <div className="lp-fee-row">
@@ -261,19 +224,27 @@ export default function Home() {
               <span className="lp-fee-amount">0.1 SOL</span>
             </div>
             <div className="lp-fee-row">
-              <span className="lp-fee-label">Analytics dashboard (per year)</span>
-              <span className="lp-fee-amount">1 SOL</span>
+              <span className="lp-fee-label">Multisender (bulk send)</span>
+              <span className="lp-fee-amount">0.01 SOL / tx</span>
             </div>
             <div className="lp-fee-row">
-              <span className="lp-fee-label">Multisender / Mint / Metadata / OpenBook</span>
+              <span className="lp-fee-label">Mint more tokens</span>
+              <span className="lp-fee-amount">0.1 SOL</span>
+            </div>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Metadata update / OpenBook market</span>
               <span className="lp-fee-amount">0.05 SOL</span>
             </div>
             <div className="lp-fee-row">
-              <span className="lp-fee-label">Revoke authorities (mint, freeze, update)</span>
-              <span className="lp-fee-amount lp-fee-amount--free">Free</span>
+              <span className="lp-fee-label">Revoke mint / freeze authority</span>
+              <span className="lp-fee-amount">0.05 SOL each</span>
             </div>
             <div className="lp-fee-row">
-              <span className="lp-fee-label">Unit &amp; price converters</span>
+              <span className="lp-fee-label">Freeze / Unfreeze account</span>
+              <span className="lp-fee-amount">0.01 SOL / address</span>
+            </div>
+            <div className="lp-fee-row">
+              <span className="lp-fee-label">Make immutable, burn, burn LP &amp; converters</span>
               <span className="lp-fee-amount lp-fee-amount--free">Free</span>
             </div>
             <div className="lp-fee-row">
@@ -336,7 +307,7 @@ export default function Home() {
             </p>
             <div className="lp-actions lp-actions--center">
               <Link href="/create" className="lp-btn lp-btn--primary">Create your token</Link>
-              <Link href="/explore" className="lp-btn lp-btn--secondary">Explore tokens</Link>
+              <Link href="/tools" className="lp-btn lp-btn--secondary">Browse tools</Link>
             </div>
           </div>
         </section>
@@ -390,10 +361,6 @@ export default function Home() {
               Yes. Use burn to remove tokens from circulation permanently. The
               transaction is irreversible.
             </Faq>
-            <Faq q="What is analytics?">
-              Unlock deep metrics on price, volume, liquidity, and holder trends
-              over time for 1 SOL per year.
-            </Faq>
           </div>
           <div className="lp-actions lp-actions--center" style={{ marginTop: "2.5rem" }}>
             <Link href="/docs/faq" className="lp-link">Read the full FAQ →</Link>
@@ -427,19 +394,6 @@ function ServiceCard({ href, icon, title, body, cta }: { href: string; icon: str
   );
 }
 
-function Bar({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="lp-bar">
-      <div className="lp-bar-head">
-        <span>{label}</span>
-        <span className="lp-mono">{value}%</span>
-      </div>
-      <div className="lp-bar-track">
-        <div className="lp-bar-fill" style={{ "--bar-w": `${value}%` } as React.CSSProperties} />
-      </div>
-    </div>
-  );
-}
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (

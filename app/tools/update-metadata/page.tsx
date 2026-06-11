@@ -1,27 +1,56 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import Footer from "@/components/Footer";
-
-type TxState = "idle" | "building" | "sign" | "submitting" | "confirming" | "confirmed";
+import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
 
 export default function UpdateMetadataPage() {
-  const [token, setToken] = useState("frge");
-  const [name, setName] = useState("Forge Token");
-  const [symbol, setSymbol] = useState("FRGE");
-  const [uri, setUri] = useState("");
-  const [description, setDescription] = useState("");
-  const [website, setWebsite] = useState("");
-  const [twitter, setTwitter] = useState("");
-  const [telegram, setTelegram] = useState("");
-  const [txState, setTxState] = useState<TxState>("idle");
+  const { publicKey } = useWallet();
+  const { setVisible } = useWalletModal();
+  const { execute } = useTransaction();
 
-  function handleUpdate() {
-    setTxState("building");
-    setTimeout(() => setTxState("sign"), 900);
-    setTimeout(() => setTxState("submitting"), 2200);
-    setTimeout(() => setTxState("confirming"), 3800);
-    setTimeout(() => setTxState("confirmed"), 5500);
+  const [mint, setMint] = useState("");
+  const [name, setName] = useState("");
+  const [symbol, setSymbol] = useState("");
+  const [uri, setUri] = useState("");
+  const [txState, setTxState] = useState<TxState>("idle");
+  const [sig, setSig] = useState("");
+  const [error, setError] = useState("");
+
+  async function handleUpdate() {
+    if (!publicKey) { setVisible(true); return; }
+    setError("");
+
+    try {
+      const { signature } = await execute(
+        () =>
+          fetch("/api/tx/update-metadata", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payer: publicKey.toBase58(), mint, name, symbol, uri }),
+          }).then(async (r) => {
+            const d = await r.json();
+            if (!r.ok) throw new Error(d.error ?? "Failed to build transaction");
+            return d;
+          }),
+        {
+          onState: setTxState,
+          onConfirmed: async (s) => {
+            await fetch("/api/confirm", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ signature: s, action: "updateMetadata", wallet: publicKey.toBase58(), mint, name, symbol, metadataUri: uri }),
+            });
+          },
+        }
+      );
+      setSig(signature);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Transaction failed");
+      setTxState("failed");
+    }
   }
 
   return (
@@ -32,9 +61,8 @@ export default function UpdateMetadataPage() {
             <h1 className="page-title">Update Metadata</h1>
             <div className="tool-fee-badge">0.05 SOL</div>
           </div>
-          <p className="page-sub">Edit your token&apos;s name, symbol, logo URI, and social links on-chain. Requires update authority.</p>
+          <p className="page-sub">Edit your token&apos;s name, symbol, and metadata URI on-chain. Requires update authority.</p>
           <div className="tool-header-links">
-            <Link href="/blog/how-to-update-token-metadata" className="tool-doc-link">Guide</Link>
             <Link href="/docs/update-metadata" className="tool-doc-link">Docs</Link>
           </div>
         </div>
@@ -42,35 +70,33 @@ export default function UpdateMetadataPage() {
         {txState === "confirmed" ? (
           <div className="tx-success lp-card">
             <div className="tx-success-icon">✓</div>
-            <p className="tx-success-label">Metadata updated for {symbol}</p>
+            <p className="tx-success-label">Metadata updated{symbol ? ` for ${symbol}` : ""}</p>
+            <a
+              className="lp-mono"
+              href={`https://solscan.io/tx/${sig}?cluster=${process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet"}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View on Solscan ↗
+            </a>
             <div className="tx-success-actions">
-              <button className="lp-btn lp-btn--secondary" onClick={() => setTxState("idle")}>Edit again</button>
-              <Link href={`/token/${token}`} className="lp-btn lp-btn--primary">View token</Link>
+              <button className="lp-btn lp-btn--secondary" onClick={() => { setTxState("idle"); setSig(""); }}>
+                Edit again
+              </button>
             </div>
           </div>
         ) : (
           <>
             <div className="lp-card burn-card">
               <div className="burn-field">
-                <label className="wizard-field-label">Token</label>
-                <select
-                  className="wizard-select"
-                  value={token}
-                  onChange={(e) => {
-                    setToken(e.target.value);
-                    if (e.target.value === "frge") { setName("Forge Token"); setSymbol("FRGE"); }
-                    if (e.target.value === "sinu") { setName("Solana Inu"); setSymbol("SINU"); }
-                  }}
-                >
-                  <option value="frge">FRGE — Forge Token</option>
-                  <option value="sinu">SINU — Solana Inu</option>
-                </select>
+                <label className="wizard-field-label">Mint address</label>
+                <input className="wizard-input" placeholder="Token mint address" value={mint} onChange={(e) => setMint(e.target.value.trim())} />
               </div>
 
               <div className="wizard-field-row">
                 <div className="burn-field" style={{ flex: 2 }}>
                   <label className="wizard-field-label">Name</label>
-                  <input className="wizard-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Token name" />
+                  <input className="wizard-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Token name" maxLength={30} />
                 </div>
                 <div className="burn-field" style={{ flex: 1 }}>
                   <label className="wizard-field-label">Symbol</label>
@@ -80,35 +106,15 @@ export default function UpdateMetadataPage() {
 
               <div className="burn-field">
                 <label className="wizard-field-label">Metadata URI</label>
-                <input className="wizard-input" value={uri} onChange={(e) => setUri(e.target.value)} placeholder="https://arweave.net/…" />
-              </div>
-
-              <div className="burn-field">
-                <label className="wizard-field-label">Description (off-chain)</label>
-                <textarea
+                <input
                   className="wizard-input"
-                  rows={3}
-                  style={{ resize: "vertical" }}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Short token description…"
+                  value={uri}
+                  onChange={(e) => setUri(e.target.value)}
+                  placeholder="https://ipfs.io/ipfs/…"
                 />
               </div>
 
-              <div className="wizard-field-row">
-                <div className="burn-field" style={{ flex: 1 }}>
-                  <label className="wizard-field-label">Website</label>
-                  <input className="wizard-input" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://…" />
-                </div>
-                <div className="burn-field" style={{ flex: 1 }}>
-                  <label className="wizard-field-label">X / Twitter</label>
-                  <input className="wizard-input" value={twitter} onChange={(e) => setTwitter(e.target.value)} placeholder="@handle" />
-                </div>
-                <div className="burn-field" style={{ flex: 1 }}>
-                  <label className="wizard-field-label">Telegram</label>
-                  <input className="wizard-input" value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="t.me/…" />
-                </div>
-              </div>
+              {error && <p className="tool-error">{error}</p>}
             </div>
 
             <div className="cost-summary lp-card">
@@ -119,7 +125,7 @@ export default function UpdateMetadataPage() {
             </div>
 
             <div className="wizard-actions">
-              {txState !== "idle" ? (
+              {txState !== "idle" && txState !== "failed" ? (
                 <div className="tx-state">
                   <div className="tx-step active">
                     <span className="tx-step-spinner" />
@@ -132,10 +138,10 @@ export default function UpdateMetadataPage() {
               ) : (
                 <button
                   className="lp-btn lp-btn--primary"
-                  disabled={!name || !symbol}
+                  disabled={!mint || !name || !symbol || !uri}
                   onClick={handleUpdate}
                 >
-                  Update Metadata
+                  {publicKey ? "Update Metadata" : "Connect Wallet"}
                 </button>
               )}
             </div>

@@ -21,9 +21,9 @@ export default function MarketCreatePage() {
   }
 
   const QUOTE_COSTS: Record<string, string> = {
-    sol: "~3.5 SOL",
-    usdc: "~3.5 SOL",
-    usdt: "~3.5 SOL",
+    sol: "~2.85 SOL",
+    usdc: "~2.85 SOL",
+    usdt: "~2.85 SOL",
   };
 
   return (
@@ -121,10 +121,10 @@ export default function MarketCreatePage() {
               <div className="cost-row"><span>Network fee</span><span className="lp-mono">~0.001 SOL</span></div>
               <div className="cost-row cost-row--total">
                 <span>Total (est.)</span>
-                <span className="lp-mono">~3.55 SOL</span>
+                <span className="lp-mono">~2.90 SOL</span>
               </div>
               <p className="cost-summary-note">
-                The ~3.5 SOL market creation cost goes directly to the OpenBook program as account rent.
+                The ~2.85 SOL market creation cost goes directly to the OpenBook program as account rent.
                 It is not a FORGE fee.
               </p>
             </div>

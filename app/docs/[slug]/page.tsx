@@ -7,10 +7,10 @@ const articles: Record<string, { title: string; sections: { heading: string; bod
     title: "Create a token",
     sections: [
       { heading: "Overview", body: "FORGE lets you deploy an SPL or Token-2022 token on Solana in under 2 minutes with no code required. The creation wizard guides you through connecting your wallet, configuring basics, adding branding, setting authority controls, and signing a single transaction." },
-      { heading: "Step 1 — Connect", body: "Click 'Connect Wallet' and choose Phantom, Solflare, or Backpack. Make sure you're on mainnet and have enough SOL for fees (~0.1 SOL platform fee + ~0.002 SOL network rent)." },
+      { heading: "Step 1 — Connect", body: "Click 'Connect Wallet' and choose Phantom, Solflare, or Backpack. Make sure you're on mainnet and have enough SOL for fees (0.1 SOL base fee + ~0.002 SOL network rent, plus add-ons if selected)." },
       { heading: "Step 2 — Basics", body: "Enter your token name, symbol (permanent — cannot change after creation), total supply, and decimals. 9 decimals is the standard for most SPL tokens." },
       { heading: "Step 3 — Branding", body: "Upload a logo (1:1 PNG or SVG recommended), write a description, and add optional social links (website, X, Telegram)." },
-      { heading: "Step 4 — Advanced", body: "Choose between SPL and Token-2022 standards. Optionally revoke mint, freeze, or update authorities — revoking these increases community trust. You can also enable vanity address generation (slower)." },
+      { heading: "Step 4 — Advanced", body: "Choose between SPL and Token-2022 standards. Optionally revoke mint authority (+0.05 SOL), revoke freeze authority (+0.05 SOL), make immutable (free), or add custom creator info (+0.1 SOL). The cost summary updates live. You can also enable vanity address generation (slower)." },
       { heading: "Step 5 — Review & sign", body: "Review your full configuration and cost breakdown. Click 'Create token' to initiate the transaction, then approve it in your wallet." },
       { heading: "After creation", body: "Your token will be deployed and you'll see the mint address. From there you can add liquidity, view the token page, or share the link." },
     ],
@@ -21,7 +21,7 @@ const articles: Record<string, { title: string; sections: { heading: string; bod
       { heading: "Overview", body: "Adding liquidity creates a trading pool for your token on one or more DEXs. Without liquidity, your token can't be traded on-market." },
       { heading: "Choosing a DEX", body: "FORGE supports Raydium, Orca, Meteora, PumpSwap, Invariant, and FluxBeam. You can select multiple DEXs and fund them in a single flow." },
       { heading: "Setting amounts", body: "For each DEX, enter the token amount and SOL amount you want to provide as initial liquidity. Use the 'Max' button to use your full balance." },
-      { heading: "Fees", body: "FORGE charges 0.1 SOL per pool. Each DEX also charges their own setup cost, shown upfront in the cost summary." },
+      { heading: "Fees", body: "FORGE charges 0.1 SOL per pool (per DEX). Each DEX also charges a one-time setup cost of 0.4–0.6 SOL paid directly to the DEX protocol — this varies by DEX and is shown upfront in the cost summary before you sign." },
     ],
   },
   "faq": {
@@ -32,7 +32,7 @@ const articles: Record<string, { title: string; sections: { heading: string; bod
       { heading: "What wallets are supported?", body: "Phantom, Solflare, and Backpack. We'll add more wallets based on demand." },
       { heading: "Is the symbol really permanent?", body: "Yes. The token symbol is stored in on-chain metadata. Once a token is created, the symbol cannot be changed." },
       { heading: "What does revoking authorities mean?", body: "Revoking mint authority means no one can ever mint more tokens. Revoking freeze means no wallet can ever be frozen. Revoking update means metadata can never change. These increase community trust." },
-      { heading: "How much SOL do I need?", body: "~0.1 SOL for token creation, 0.1 SOL per liquidity pool, 1 SOL/yr for analytics. Plus small network rent (~0.002 SOL)." },
+      { heading: "How much SOL do I need?", body: "0.1 SOL base for token creation + 0.05 SOL per authority revoked (mint/freeze) + 0.1 SOL for custom creator info (optional). Per liquidity pool: 0.1 SOL FORGE fee + 0.4–0.6 SOL DEX setup (paid to the DEX). Multisender: 0.01 SOL flat per transaction. Plus small Solana network rent (~0.002 SOL)." },
     ],
   },
 };

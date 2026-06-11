@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Dashboard — FORGE",
-  description: "Manage your Solana tokens, pools, and analytics subscriptions.",
+  description: "Manage your Solana tokens and pools.",
 };
 
 const myTokens = [
@@ -43,7 +43,6 @@ export default function DashboardPage() {
           <DashTile label="Tokens" value={myTokens.length.toString()} />
           <DashTile label="Pools" value="3" />
           <DashTile label="Total holders" value="4,441" />
-          <DashTile label="Subscriptions" value="1" />
         </div>
 
         {/* My tokens */}
@@ -79,7 +78,6 @@ export default function DashboardPage() {
                     <Link href={`/pool?token=${t.mint}`} className="dash-action-btn">Pool</Link>
                     <Link href={`/burn?token=${t.mint}`} className="dash-action-btn">Burn</Link>
                     <Link href={`/token/${t.mint}`} className="dash-action-btn">View</Link>
-                    <Link href={`/dashboard/analytics/${t.mint}`} className="dash-action-btn">Analytics</Link>
                   </div>
                 </div>
               ))}
