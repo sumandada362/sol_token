@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import ToolsGrid from "./ToolsGrid";
 
 export const metadata: Metadata = {
   title: "Token Tools — FORGE",
@@ -141,29 +142,7 @@ export default function ToolsPage() {
           <p className="page-sub">Everything you need to manage, distribute, and configure your Solana tokens.</p>
         </div>
 
-        <div className="tools-category-row">
-          {categories.map((c) => (
-            <span key={c.id} className={`tools-cat-chip${c.id === "all" ? " tools-cat-chip--active" : ""}`}>
-              {c.label}
-            </span>
-          ))}
-        </div>
-
-        <div className="tools-grid">
-          {tools.map((t) => (
-            <Link key={t.href} href={t.href} className="tool-card">
-              <div className="tool-card-icon">{t.icon}</div>
-              <div className="tool-card-body">
-                <div className="tool-card-name">{t.name}</div>
-                <div className="tool-card-desc">{t.desc}</div>
-              </div>
-              <div className="tool-card-footer">
-                <span className={`tool-card-fee${t.fee === "Free" ? " tool-card-fee--free" : ""}`}>{t.fee}</span>
-                <span className="tool-card-arrow">→</span>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <ToolsGrid tools={tools} categories={categories} />
 
         <div className="tools-cta lp-card">
           <h2 className="tools-cta-title">Just getting started?</h2>

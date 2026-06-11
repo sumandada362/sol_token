@@ -2,7 +2,7 @@ import { PublicKey, Transaction } from "@solana/web3.js";
 import { createSetAuthorityInstruction, AuthorityType, getMint } from "@solana/spl-token";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { mplTokenMetadata, updateV1, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token-metadata";
-import { publicKey as umiPublicKey, createNoopSigner, signerIdentity, none } from "@metaplex-foundation/umi";
+import { publicKey as umiPublicKey, createNoopSigner, signerIdentity } from "@metaplex-foundation/umi";
 import { toWeb3JsInstruction } from "@metaplex-foundation/umi-web3js-adapters";
 import { getConnection } from "./connection";
 import { feeIx, FEES } from "./fees";
@@ -46,13 +46,6 @@ export async function buildRevokeTx(input: RevokeInput): Promise<Transaction> {
     const builder = updateV1(umi, {
       mint: umiPublicKey(input.mint),
       authority: payerSigner,
-      data: {
-        name: metadata.name,
-        symbol: metadata.symbol,
-        uri: metadata.uri,
-        sellerFeeBasisPoints: metadata.sellerFeeBasisPoints,
-        creators: none(),
-      },
       isMutable: false,
     });
 

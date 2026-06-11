@@ -56,6 +56,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Disabled during testing — Strict Mode double-invokes effects and causes wallet disconnect loops
+  reactStrictMode: false,
   turbopack: {},
 
   async headers() {

@@ -14,6 +14,8 @@
  * Exit code: 0 = all passed, 1 = one or more failed.
  */
 
+export {};
+
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 
 type Result = { name: string; pass: boolean; detail: string };

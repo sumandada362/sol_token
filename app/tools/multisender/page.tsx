@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useRef, useCallback } from "react";
 import Footer from "@/components/Footer";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { parseError } from "@/lib/wallet/parseError";
 import { Transaction, PublicKey } from "@solana/web3.js";
 import { Connection } from "@solana/web3.js";
 
@@ -114,7 +115,7 @@ export default function MultisenderPage() {
 
       setPhase("quoted");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Quote failed");
+      setError(parseError(e, "multisender-quote"));
       setPhase("input");
     }
   }, [wallet.publicKey, validRows, mintInput, decimals]);
@@ -152,7 +153,7 @@ export default function MultisenderPage() {
         );
         saveJournal(response.uploadHash, updatedJournal);
         setJournal([...updatedJournal]);
-        setError(`Batch ${batch.index + 1} failed: ${e instanceof Error ? e.message : String(e)}`);
+        setError(`Batch ${batch.index + 1} failed: ${parseError(e, "multisender-send")}`);
         setPhase("quoted");
         return;
       }

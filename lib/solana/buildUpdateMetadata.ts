@@ -1,7 +1,7 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { mplTokenMetadata, updateV1, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token-metadata";
-import { publicKey as umiPublicKey, createNoopSigner, signerIdentity, none } from "@metaplex-foundation/umi";
+import { publicKey as umiPublicKey, createNoopSigner, signerIdentity } from "@metaplex-foundation/umi";
 import { toWeb3JsInstruction } from "@metaplex-foundation/umi-web3js-adapters";
 import { getConnection } from "./connection";
 import { feeIx, FEES } from "./fees";
@@ -27,9 +27,9 @@ export async function buildUpdateMetadataTx(input: UpdateMetadataInput): Promise
     data: {
       name: input.name,
       symbol: input.symbol,
-      uri: input.uri,
+      uri: input.uri || metadata.uri,
       sellerFeeBasisPoints: metadata.sellerFeeBasisPoints,
-      creators: none(),
+      creators: metadata.creators,
     },
   });
 

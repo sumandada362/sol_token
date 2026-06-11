@@ -7,6 +7,7 @@ import { Keypair } from "@solana/web3.js";
 import Footer from "@/components/Footer";
 import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
 import { PREFILL_KEY } from "@/components/CustomizeTokenPanel";
+import { parseError } from "@/lib/wallet/parseError";
 
 const STEPS = ["Connect", "Basics", "Branding", "Advanced", "Review", "Sign"];
 
@@ -101,7 +102,7 @@ export default function CreatePage() {
   const platformFee = 0.1
     + (form.revokeMint ? 0.05 : 0)
     + (form.revokeFreeze ? 0.05 : 0);
-  const totalFee = platformFee + 0.002;
+  const totalFee = platformFee + 0.018;
 
   async function handleCreate() {
     if (!publicKey) { setVisible(true); return; }
@@ -180,7 +181,7 @@ export default function CreatePage() {
       );
       setSig(signature);
     } catch (e) {
-      setTxError(e instanceof Error ? e.message : "Transaction failed");
+      setTxError(parseError(e, "create-token"));
       setTxState("failed");
     }
   }
@@ -370,7 +371,7 @@ export default function CreatePage() {
                 {form.revokeMint && <div className="cost-row"><span>Revoke mint authority</span><span className="lp-mono">0.05 SOL</span></div>}
                 {form.revokeFreeze && <div className="cost-row"><span>Revoke freeze authority</span><span className="lp-mono">0.05 SOL</span></div>}
                 {form.revokeUpdate && <div className="cost-row"><span>Make immutable</span><span className="lp-mono">Free</span></div>}
-                <div className="cost-row"><span>Network rent (est.)</span><span className="lp-mono">~0.002 SOL</span></div>
+                <div className="cost-row"><span>Network rent (est.)</span><span className="lp-mono">~0.018 SOL</span></div>
                 <div className="cost-row cost-row--total"><span>Total</span><span className="lp-mono">~{totalFee.toFixed(3)} SOL</span></div>
               </div>
               <div className="wizard-actions">

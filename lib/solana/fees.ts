@@ -8,6 +8,7 @@ export const FEES = {
   revokeFreeze: 0.05,
   makeImmutable: 0,
   burn: 0,
+  freezeAccount: 0.01,
 } as const;
 
 export function feeIx(payer: PublicKey, feeSol: number): TransactionInstruction | null {

@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 import { ConnectionProvider, WalletProvider as AdapterWalletProvider } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
@@ -12,13 +12,15 @@ const NETWORK = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as "devnet" | "mainnet-b
 // Prefer an explicit public RPC URL (e.g. Helius public endpoint) over the slow default
 const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_URL ?? clusterApiUrl(NETWORK);
 
+// Module-level singletons — prevents adapter recreation on React Strict Mode remounts
+const WALLETS = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
+
 export function WalletProvider({ children }: { children: ReactNode }) {
   const endpoint = RPC_ENDPOINT;
-  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <AdapterWalletProvider wallets={wallets} autoConnect>
+      <AdapterWalletProvider wallets={WALLETS} autoConnect>
         <WalletModalProvider>{children}</WalletModalProvider>
       </AdapterWalletProvider>
     </ConnectionProvider>

@@ -18,6 +18,8 @@ const schema = z.object({
     "revokeFreeze",
     "makeImmutable",
     "burn",
+    "freezeAccounts",
+    "unfreezeAccounts",
   ]),
   mint: z.string().optional(),
   wallet: z.string(),
@@ -25,6 +27,7 @@ const schema = z.object({
   symbol: z.string().optional(),
   metadataUri: z.string().optional(),
   standard: z.enum(["spl", "token2022"]).optional(),
+  count: z.number().int().positive().max(20).optional(),
 });
 
 // Minimum SOL that must arrive at the fee wallet for each paid action.
@@ -48,7 +51,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const { signature, action, mint, wallet, name, symbol, metadataUri, standard } = body.data;
+    const { signature, action, mint, wallet, name, symbol, metadataUri, standard, count } = body.data;
 
     const walletLimited = await rateLimitByKey(wallet, RATE_LIMITS.walletConfirm);
     if (walletLimited) return walletLimited;
@@ -64,8 +67,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify the fee wallet received the correct minimum amount for paid actions.
-    // The expected amount comes from server constants only — never from the request body.
-    const minLamports = MIN_FEE_LAMPORTS[action];
+    // The expected amount comes from server constants only — count is the only client input used (× per-wallet fee).
+    const minLamports =
+      action === "freezeAccounts" || action === "unfreezeAccounts"
+        ? Math.floor((count ?? 1) * FEES.freezeAccount * LAMPORTS_PER_SOL)
+        : MIN_FEE_LAMPORTS[action];
     if (minLamports !== undefined && minLamports > 0 && process.env.FEE_WALLET_ADDRESS) {
       const feeWallet = new PublicKey(process.env.FEE_WALLET_ADDRESS);
       const keys = txInfo.transaction.message.staticAccountKeys;

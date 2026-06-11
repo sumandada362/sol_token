@@ -7,6 +7,7 @@ import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-tok
 import { PublicKey } from "@solana/web3.js";
 import Footer from "@/components/Footer";
 import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
+import { parseError } from "@/lib/wallet/parseError";
 
 export default function BurnPage() {
   const { publicKey } = useWallet();
@@ -65,7 +66,7 @@ export default function BurnPage() {
       );
       setSig(signature);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Transaction failed");
+      setError(parseError(e, "burn"));
       setTxState("failed");
     }
   }

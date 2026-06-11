@@ -59,7 +59,7 @@ export function useTransaction() {
       onState("submitting");
       const blockhash = tx.recentBlockhash!;
       const sig = await connection.sendRawTransaction(signed.serialize(), {
-        skipPreflight: false,
+        skipPreflight: true,
         maxRetries: 3,
       });
 
