@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Keypair } from "@solana/web3.js";
 import Footer from "@/components/Footer";
 import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
+import { PREFILL_KEY } from "@/components/CustomizeTokenPanel";
 
 const STEPS = ["Connect", "Basics", "Branding", "Advanced", "Review", "Sign"];
 
@@ -33,6 +34,49 @@ export default function CreatePage() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState("");
   const [uploadError, setUploadError] = useState("");
+  const [prefilled, setPrefilled] = useState(false);
+
+  // Read pre-fill data written by the homepage CustomizeTokenPanel
+  useEffect(() => {
+    const raw = sessionStorage.getItem(PREFILL_KEY);
+    if (!raw) return;
+    sessionStorage.removeItem(PREFILL_KEY);
+    try {
+      const d = JSON.parse(raw) as {
+        name?: string; symbol?: string; supply?: string; decimals?: string;
+        description?: string; logoBase64?: string; logoMime?: string;
+        logoFilename?: string; logoUrl?: string;
+      };
+      setForm((f) => ({
+        ...f,
+        name: d.name || f.name,
+        symbol: d.symbol || f.symbol,
+        supply: d.supply || f.supply,
+        decimals: d.decimals || f.decimals,
+        description: d.description || f.description,
+      }));
+      if (d.logoBase64 && d.logoMime && d.logoFilename) {
+        // Reconstruct File from base64 so the upload step works normally
+        const byteStr = atob(d.logoBase64.split(",")[1]);
+        const arr = new Uint8Array(byteStr.length);
+        for (let i = 0; i < byteStr.length; i++) arr[i] = byteStr.charCodeAt(i);
+        const file = new File([arr], d.logoFilename, { type: d.logoMime });
+        setLogoFile(file);
+        setLogoPreview(d.logoBase64);
+      } else if (d.logoUrl) {
+        setLogoPreview(d.logoUrl);
+        // Create a tiny sentinel so the upload step sends the URL as the metadataUri
+        // The IPFS upload can accept an external URL in place of a file in future;
+        // for now we leave logoFile null and let the user upload on step 3 if desired.
+      }
+      setPrefilled(true);
+      // Skip past Connect step if wallet already connected — or jump to Basics
+      setStep(2);
+    } catch {
+      // ignore malformed prefill
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [txState, setTxState] = useState<TxState>("idle");
   const [txError, setTxError] = useState("");
   const [mintAddress, setMintAddress] = useState("");
@@ -192,7 +236,10 @@ export default function CreatePage() {
 
           {/* ── Step 2: Basics ── */}
           {step === 2 && (
-            <WizardCard title="Token basics" subtitle="Name and supply define your token on-chain.">
+            <WizardCard
+              title="Token basics"
+              subtitle={prefilled ? "Pre-filled from homepage — review and adjust." : "Name and supply define your token on-chain."}
+            >
               <div className="wizard-form-grid">
                 <FormField label="Token name" required>
                   <input

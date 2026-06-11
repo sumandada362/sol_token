@@ -420,6 +420,26 @@ body {
     justify-content: flex-end;
 }
 
+/* Replaces the old anchor — now a full-width gradient button */
+#hero-panel .panel-create-btn {
+    width: 100%;
+    padding: 0.65rem 1.2rem;
+    background: linear-gradient(135deg, #845ef7 0%, #29b6f6 100%);
+    color: #fff;
+    font-family: 'Segoe UI', Inter, Arial, sans-serif;
+    font-size: clamp(0.8rem, 0.95vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.18s var(--ease-out), transform 0.15s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+    #hero-panel .panel-create-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+}
+#hero-panel .panel-create-btn:active { transform: translateY(0); opacity: 1; }
+
 #hero-panel .panel-footer a {
     font-family: 'Segoe UI', Inter, Arial, sans-serif;
     font-size: clamp(0.75rem, 0.9vw, 0.9rem);
