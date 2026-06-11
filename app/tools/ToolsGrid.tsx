@@ -23,7 +23,7 @@ export default function ToolsGrid({ tools, categories }: { tools: Tool[]; catego
 
   return (
     <>
-      <div className="tools-category-row">
+      <div className="tools-category-row" data-reveal="fade">
         {categories.map((c) => (
           <button
             key={c.id}
@@ -36,7 +36,7 @@ export default function ToolsGrid({ tools, categories }: { tools: Tool[]; catego
         ))}
       </div>
 
-      <div className="tools-grid">
+      <div className="tools-grid" data-stagger>
         {visible.map((t) => (
           <Link key={t.href} href={t.href} className="tool-card">
             <div className="tool-card-icon">{t.icon}</div>

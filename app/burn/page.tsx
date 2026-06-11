@@ -74,7 +74,7 @@ export default function BurnPage() {
   return (
     <div className="app-page">
       <div className="page-wrap page-wrap--narrow">
-        <div className="tool-header">
+        <div className="tool-header" data-reveal>
           <div className="tool-header-meta">
             <h1 className="page-title">Burn tokens</h1>
             <div className="tool-fee-badge tool-fee-badge--free">Free</div>
@@ -101,7 +101,7 @@ export default function BurnPage() {
             </div>
           </div>
         ) : (
-          <div className="lp-card burn-card">
+          <div className="lp-card burn-card" data-reveal style={{ "--delay": "80ms" } as React.CSSProperties}>
             <div className="burn-field">
               <label className="wizard-field-label">Mint address</label>
               <input

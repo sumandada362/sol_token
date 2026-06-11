@@ -137,14 +137,14 @@ export default function ToolsPage() {
   return (
     <div className="app-page">
       <div className="page-wrap">
-        <div className="page-header page-header--center">
+        <div className="page-header page-header--center" data-reveal>
           <h1 className="page-title">Token Tools</h1>
           <p className="page-sub">Everything you need to manage, distribute, and configure your Solana tokens.</p>
         </div>
 
         <ToolsGrid tools={tools} categories={categories} />
 
-        <div className="tools-cta lp-card">
+        <div className="tools-cta lp-card" data-reveal>
           <h2 className="tools-cta-title">Just getting started?</h2>
           <p className="lp-body">Create your token first, then use these tools to manage it.</p>
           <div className="lp-actions">
@@ -154,7 +154,7 @@ export default function ToolsPage() {
         </div>
 
         {/* ── Full fee structure ── */}
-        <div className="tools-fees-section">
+        <div className="tools-fees-section" data-reveal>
           <div className="tools-section-head">
             <h2 className="tools-section-title">Complete fee structure</h2>
             <p className="tools-section-sub">
@@ -211,7 +211,7 @@ export default function ToolsPage() {
         </div>
 
         {/* ── FAQ ── */}
-        <div className="tools-faq-section">
+        <div className="tools-faq-section" data-reveal>
           <div className="tools-section-head">
             <h2 className="tools-section-title">Frequently asked</h2>
           </div>

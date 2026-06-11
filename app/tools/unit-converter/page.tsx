@@ -1,5 +1,6 @@
 "use client";
 import type { Metadata } from "next";
+import type React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import Footer from "@/components/Footer";
@@ -47,7 +48,7 @@ export default function UnitConverterPage() {
   return (
     <div className="app-page">
       <div className="page-wrap page-wrap--narrow">
-        <div className="tool-header">
+        <div className="tool-header" data-reveal>
           <div className="tool-header-meta">
             <h1 className="page-title">Unit Converter</h1>
             <div className="tool-fee-badge tool-fee-badge--free">Free</div>
@@ -61,7 +62,7 @@ export default function UnitConverterPage() {
         </div>
 
         {/* SOL / Lamports */}
-        <div className="lp-card converter-card">
+        <div className="lp-card converter-card" data-reveal style={{ "--delay": "80ms" } as React.CSSProperties}>
           <div className="converter-card-title">SOL ↔ Lamports</div>
           <p className="converter-card-desc">1 SOL = 1,000,000,000 lamports (10⁹)</p>
           <div className="converter-row">
@@ -99,7 +100,7 @@ export default function UnitConverterPage() {
         </div>
 
         {/* Token amount / raw units */}
-        <div className="lp-card converter-card">
+        <div className="lp-card converter-card" data-reveal style={{ "--delay": "160ms" } as React.CSSProperties}>
           <div className="converter-card-title">Token Amount ↔ Raw Units</div>
           <p className="converter-card-desc">Raw units = token amount × 10^decimals</p>
           <div className="converter-row" style={{ alignItems: "flex-end" }}>
@@ -148,7 +149,7 @@ export default function UnitConverterPage() {
           </div>
         </div>
 
-        <div className="converter-info lp-card">
+        <div className="converter-info lp-card" data-reveal="fade" style={{ "--delay": "240ms" } as React.CSSProperties}>
           <div className="converter-card-title">Reference</div>
           <div className="converter-ref-grid">
             <div className="converter-ref-row"><span>SOL decimals</span><span className="lp-mono">9</span></div>

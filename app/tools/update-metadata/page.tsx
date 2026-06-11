@@ -176,7 +176,7 @@ export default function UpdateMetadataPage() {
   return (
     <div className="app-page">
       <div className="page-wrap page-wrap--narrow">
-        <div className="tool-header">
+        <div className="tool-header" data-reveal>
           <div className="tool-header-meta">
             <h1 className="page-title">Update Metadata</h1>
             <div className="tool-fee-badge">0.05 SOL</div>

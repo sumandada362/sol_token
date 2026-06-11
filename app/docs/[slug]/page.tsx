@@ -75,7 +75,7 @@ export default async function DocArticlePage({
       {fm.faq && fm.faq.length > 0 && <JsonLdFaqPage faq={fm.faq} />}
 
       <div className="docs-article-layout">
-        <nav className="docs-sidebar">
+        <nav className="docs-sidebar" data-reveal="fade">
           <div className="docs-sidebar-title">Documentation</div>
           <Link href="/docs" className="docs-sidebar-link">
             ← All docs
@@ -100,7 +100,7 @@ export default async function DocArticlePage({
           )}
         </nav>
 
-        <article className="docs-article-content">
+        <article className="docs-article-content" data-reveal>
           <h1 className="docs-article-h1">{fm.title}</h1>
           <p className="blog-article-lead">{fm.description}</p>
 

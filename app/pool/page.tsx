@@ -32,7 +32,7 @@ export default function PoolPage() {
   return (
     <div className="app-page">
       <div className="page-wrap page-wrap--narrow">
-        <div className="page-header">
+        <div className="page-header" data-reveal>
           <h1 className="page-title">Add liquidity</h1>
           <p className="page-sub">Create liquidity on one or more DEXs with a single signing flow.</p>
         </div>
@@ -47,7 +47,7 @@ export default function PoolPage() {
             </div>
           </div>
         ) : (
-          <>
+          <div data-stagger>
             {/* Token selector */}
             <div className="pool-section lp-card">
               <div className="pool-section-title">1. Select token</div>
@@ -146,7 +146,7 @@ export default function PoolPage() {
                 </button>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
       <Footer />

@@ -64,7 +64,7 @@ export default function RiskPage() {
   return (
     <div className="app-page">
       <div className="legal-layout">
-        <nav className="legal-sidebar">
+        <nav className="legal-sidebar" data-reveal="fade">
           <div className="legal-sidebar-title">Risk Disclaimer</div>
           {sections.map((s) => (
             <a key={s.id} href={`#${s.id}`} className="docs-sidebar-link">{s.title.split(". ")[1]}</a>
@@ -74,7 +74,7 @@ export default function RiskPage() {
           <Link href="/legal/privacy" className="docs-sidebar-link">Privacy Policy</Link>
         </nav>
 
-        <article className="legal-content">
+        <article className="legal-content" data-reveal>
           <div className="legal-risk-notice">
             ⚠ This disclaimer contains important risk information. Please read it carefully before using FORGE.
           </div>

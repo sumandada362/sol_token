@@ -79,7 +79,7 @@ export default function PrivacyPage() {
   return (
     <div className="app-page">
       <div className="legal-layout">
-        <nav className="legal-sidebar">
+        <nav className="legal-sidebar" data-reveal="fade">
           <div className="legal-sidebar-title">Privacy Policy</div>
           {sections.map((s) => (
             <a key={s.id} href={`#${s.id}`} className="docs-sidebar-link">{s.title.split(". ")[1]}</a>
@@ -89,7 +89,7 @@ export default function PrivacyPage() {
           <Link href="/legal/risk" className="docs-sidebar-link">Risk Disclaimer</Link>
         </nav>
 
-        <article className="legal-content">
+        <article className="legal-content" data-reveal>
           <div className="legal-attorney-notice">
             ⚖️ Template only — not legal advice. Requires attorney review before publishing.
           </div>

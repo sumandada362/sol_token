@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type React from "react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import type { TokenPageData } from "@/lib/data/cache";
@@ -54,7 +55,7 @@ export default async function TokenPage({ params }: { params: Promise<{ mint: st
       <div className="page-wrap">
 
         {/* Token header */}
-        <div className="token-header">
+        <div className="token-header" data-reveal>
           <div className="token-avatar-lg">
             {token?.image
               ? <img src={token.image} alt={symbol} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
@@ -81,7 +82,7 @@ export default async function TokenPage({ params }: { params: Promise<{ mint: st
         </div>
 
         {/* Stat row */}
-        <div className="token-stats-row">
+        <div className="token-stats-row" data-stagger>
           {[
             { label: "Price", value: token ? fmt(token.price, { prefix: "$", decimals: 6 }) : "—" },
             { label: "Market cap", value: token ? fmt(token.marketCap, { prefix: "$" }) : "—" },
@@ -97,7 +98,7 @@ export default async function TokenPage({ params }: { params: Promise<{ mint: st
         </div>
 
         {/* Security & Holders panel */}
-        <div className="token-security-grid">
+        <div className="token-security-grid" data-stagger>
           <div className="lp-card">
             <div className="lp-card-title">Security</div>
             <div className="lp-card-row">
@@ -177,7 +178,7 @@ export default async function TokenPage({ params }: { params: Promise<{ mint: st
         </div>
 
         {/* Actions */}
-        <div className="token-actions">
+        <div className="token-actions" data-reveal="fade" style={{ "--delay": "120ms" } as React.CSSProperties}>
           <Link href={`/pool?token=${mint}`} className="lp-btn lp-btn--primary">Add liquidity</Link>
           <Link href={`/tools/multisender?mint=${mint}`} className="lp-btn lp-btn--secondary">Multisend</Link>
           <Link href={`/burn?token=${mint}`} className="lp-btn lp-btn--secondary">Burn</Link>

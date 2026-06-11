@@ -21,7 +21,7 @@ export default function ToolPage({
   return (
     <div className="app-page">
       <div className="page-wrap page-wrap--narrow">
-        <div className="tool-header">
+        <div className="tool-header" data-reveal>
           <div className="tool-header-meta">
             <h1 className="page-title">{title}</h1>
             {fee && (
@@ -41,7 +41,9 @@ export default function ToolPage({
             )}
           </div>
         </div>
-        {children}
+        <div data-reveal style={{ "--delay": "80ms" } as React.CSSProperties}>
+          {children}
+        </div>
       </div>
       <Footer />
     </div>

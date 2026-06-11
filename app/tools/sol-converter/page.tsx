@@ -1,4 +1,5 @@
 "use client";
+import type React from "react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Footer from "@/components/Footer";
@@ -39,7 +40,7 @@ export default function SolConverterPage() {
   return (
     <div className="app-page">
       <div className="page-wrap page-wrap--narrow">
-        <div className="tool-header">
+        <div className="tool-header" data-reveal>
           <div className="tool-header-meta">
             <h1 className="page-title">SOL Price Converter</h1>
             <div className="tool-fee-badge tool-fee-badge--free">Free</div>
@@ -49,7 +50,7 @@ export default function SolConverterPage() {
           </p>
         </div>
 
-        <div className="lp-card converter-card">
+        <div className="lp-card converter-card" data-reveal style={{ "--delay": "80ms" } as React.CSSProperties}>
           <div className="converter-card-title">
             <span>SOL / {currency}</span>
             <span className="converter-price-badge">
@@ -98,7 +99,7 @@ export default function SolConverterPage() {
         </div>
 
         {/* Quick reference grid */}
-        <div className="lp-card converter-card">
+        <div className="lp-card converter-card" data-reveal style={{ "--delay": "160ms" } as React.CSSProperties}>
           <div className="converter-card-title">Quick reference (SOL → {currency})</div>
           <div className="converter-ref-grid">
             {[0.001, 0.01, 0.1, 1, 5, 10, 100, 1000].map((sol) => (
@@ -117,7 +118,7 @@ export default function SolConverterPage() {
           </div>
         </div>
 
-        <div className="converter-disclaimer lp-card">
+        <div className="converter-disclaimer lp-card" data-reveal="fade" style={{ "--delay": "240ms" } as React.CSSProperties}>
           <span className="burn-warning-icon">ⓘ</span>
           Prices are simulated for UI purposes. In production, live prices would be fetched from an oracle.
           Not financial advice.

@@ -94,7 +94,7 @@ export default function MakeImmutablePage() {
   return (
     <div className="app-page">
       <div className="page-wrap page-wrap--narrow">
-        <div className="tool-header">
+        <div className="tool-header" data-reveal>
           <div className="tool-header-meta">
             <h1 className="page-title">Make Immutable</h1>
             <div className="tool-fee-badge tool-fee-badge--free">Free</div>

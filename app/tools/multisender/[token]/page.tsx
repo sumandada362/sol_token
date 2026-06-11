@@ -16,7 +16,7 @@ export default function MultisenderTokenPage({ params }: { params: Promise<{ tok
   return (
     <div className="app-page">
       <div className="page-wrap page-wrap--narrow">
-        <div className="tool-header">
+        <div className="tool-header" data-reveal>
           <div className="tool-header-meta">
             <h1 className="page-title">Multisender</h1>
           </div>

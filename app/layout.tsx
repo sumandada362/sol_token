@@ -4,6 +4,7 @@ import BgCanvas from "@/components/BgCanvas";
 import DevnetBanner from "@/components/DevnetBanner";
 import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
+import InteractiveEffects from "@/components/InteractiveEffects";
 import { WalletProvider } from "@/lib/wallet/WalletProvider";
 
 export const metadata: Metadata = {
@@ -28,6 +29,8 @@ export default function RootLayout({
         <WalletProvider>
           {/* z-index: -1 — fixed rotating-disc background (never scrolls) */}
           <BgCanvas />
+          {/* z-index: 0 — cursor-reactive ambient glow */}
+          <InteractiveEffects />
           {/* Visible only on non-mainnet builds — prevents wrong-cluster confusion */}
           <DevnetBanner />
           {/* z-index: 2 — glassmorphism navbar */}

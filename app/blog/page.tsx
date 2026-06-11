@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type React from "react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import { getAllArticles } from "@/lib/content";
@@ -34,12 +35,12 @@ export default function BlogPage() {
     <div className="app-page">
       <JsonLdBreadcrumb items={breadcrumbs} />
       <div className="page-wrap">
-        <div className="page-header page-header--center">
+        <div className="page-header page-header--center" data-reveal>
           <h1 className="page-title">Blog</h1>
           <p className="page-sub">Guides, tutorials, and reference for Solana token creators.</p>
         </div>
 
-        <div className="tools-category-row">
+        <div className="tools-category-row" data-reveal="fade" style={{ "--delay": "80ms" } as React.CSSProperties}>
           {CATEGORIES.map((c) => (
             <span
               key={c}
@@ -51,7 +52,7 @@ export default function BlogPage() {
         </div>
 
         {featured.length > 0 && (
-          <div className="blog-featured-row">
+          <div className="blog-featured-row" data-stagger>
             {featured.map((a) => (
               <Link
                 key={a.frontmatter.slug}
@@ -75,7 +76,7 @@ export default function BlogPage() {
           </div>
         )}
 
-        <div className="blog-grid">
+        <div className="blog-grid" data-stagger>
           {rest.map((a) => (
             <Link
               key={a.frontmatter.slug}

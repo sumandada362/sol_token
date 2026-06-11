@@ -78,7 +78,7 @@ export default async function BlogArticlePage({
       {fm.faq && fm.faq.length > 0 && <JsonLdFaqPage faq={fm.faq} />}
 
       <div className="blog-article-layout">
-        <nav className="blog-sidebar">
+        <nav className="blog-sidebar" data-reveal="fade">
           <Link href="/blog" className="blog-sidebar-back">
             ← All articles
           </Link>
@@ -108,7 +108,7 @@ export default async function BlogArticlePage({
           )}
         </nav>
 
-        <article className="blog-article-content" id="article-top">
+        <article className="blog-article-content" id="article-top" data-reveal>
           <div className="blog-article-meta">
             <span className="blog-card-cat">{fm.category === "guide" ? "Guide" : "Docs"}</span>
             <span>{fm.date}</span>

@@ -46,12 +46,12 @@ export default function DocsPage() {
       <JsonLdBreadcrumb items={breadcrumbs} />
       <JsonLdSoftwareApplication />
       <div className="page-wrap">
-        <div className="page-header page-header--center">
+        <div className="page-header page-header--center" data-reveal>
           <h1 className="page-title">Documentation</h1>
           <p className="page-sub">Everything you need to know about FORGE.</p>
         </div>
 
-        <div className="docs-grid">
+        <div className="docs-grid" data-stagger>
           {articles.map((a) => (
             <Link key={a.frontmatter.slug} href={`/docs/${a.frontmatter.slug}`} className="docs-article-card">
               <div className="docs-article-title">{a.frontmatter.title}</div>

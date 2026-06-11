@@ -30,12 +30,12 @@ export default function PoolAddPage() {
   return (
     <div className="app-page">
       <div className="page-wrap page-wrap--narrow">
-        <div className="page-header">
+        <div className="page-header" data-reveal>
           <h1 className="page-title">Add to Pool</h1>
           <p className="page-sub">Deposit tokens into an existing liquidity pool to earn fees.</p>
         </div>
 
-        <div className="pool-tabs">
+        <div className="pool-tabs" data-reveal style={{ "--delay": "60ms" } as React.CSSProperties}>
           <Link href="/pool" className="pool-tab">Create pool</Link>
           <span className="pool-tab pool-tab--active">Add liquidity</span>
           <Link href="/pool/remove" className="pool-tab">Remove liquidity</Link>
@@ -51,7 +51,7 @@ export default function PoolAddPage() {
             </div>
           </div>
         ) : (
-          <>
+          <div data-stagger>
             <div className="lp-card pool-section">
               <div className="pool-section-title">1. Select pool</div>
               <select className="wizard-select" value={pool} onChange={(e) => setPool(e.target.value)}>
@@ -112,7 +112,7 @@ export default function PoolAddPage() {
                 </button>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
       <Footer />

@@ -1,4 +1,5 @@
 "use client";
+import type React from "react";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -197,7 +198,7 @@ export default function CreatePage() {
     <div className="app-page">
       <div className="wizard-wrap">
         {/* Progress bar */}
-        <div className="wizard-progress">
+        <div className="wizard-progress" data-reveal>
           {STEPS.map((label, i) => (
             <div
               key={label}
@@ -214,7 +215,7 @@ export default function CreatePage() {
           </div>
         </div>
 
-        <div className="wizard-body">
+        <div className="wizard-body" data-reveal="fade" style={{ "--delay": "100ms" } as React.CSSProperties}>
           {/* ── Step 1: Connect ── */}
           {step === 1 && (
             <WizardCard title="Connect your wallet" subtitle="Connect a Solana wallet to continue.">
