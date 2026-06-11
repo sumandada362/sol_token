@@ -28,6 +28,9 @@ const RPC_SOURCES = [
 const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  // BgCanvas runs its render loop in a Worker created from a blob: URL —
+  // worker-src falls back to script-src (no blob:) without this.
+  "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: ${IPFS_SOURCES}`,
   "font-src 'self' data:",
