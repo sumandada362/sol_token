@@ -1,0 +1,81 @@
+---
+title: "Update Token Metadata"
+description: "Change your token's name, symbol, logo, and social links on-chain using the Metaplex metadata program. Requires update authority."
+slug: "update-metadata"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+tool: updateMetadata
+faq:
+  - q: "What if I already made my token immutable?"
+    a: "Metadata cannot be changed after revoking update authority (making immutable). This action is permanent."
+  - q: "How long does it take for the new logo to appear on explorers?"
+    a: "On-chain metadata updates immediately after the transaction confirms. Explorer caches (Solscan, Birdeye, DEXScreener) typically refresh within a few minutes to an hour."
+  - q: "Can I change the symbol?"
+    a: "Technically yes, but some DEXs and explorers cache the symbol and may show the old one for a while. Changing a token's symbol after it's been publicly traded is confusing and can look suspicious to investors."
+  - q: "What is the cost?"
+    a: "0.05 SOL FORGE platform fee plus Solana network gas (~0.001 SOL)."
+  - q: "Why is my token logo not showing on Solscan?"
+    a: "This usually means the metadata URI is missing, the URI returns a 404, or the JSON at the URI doesn't include an 'image' field. Use Update Metadata to fix the URI. See the blog article for a full troubleshooting guide."
+---
+
+## What this tool does
+
+FORGE Update Metadata lets you change your token's on-chain metadata: name, symbol, logo, description, and social links. It uses the Metaplex Token Metadata program.
+
+## What it costs
+
+| Item | Cost |
+|------|------|
+| Platform fee | 0.05 SOL |
+| Solana gas | ~0.001 SOL |
+
+Fees can change — check the cost summary in the app.
+
+## Before you start
+
+- Update authority must NOT have been revoked (token must not be immutable)
+- Your wallet must hold the current update authority
+- New logo or metadata ready to upload
+
+<Warning>
+**If you made your token immutable (revoked update authority), metadata cannot be changed.** This restriction is permanent by design.
+</Warning>
+
+## What you can update
+
+| Field | Notes |
+|-------|-------|
+| Name | Full token name displayed on explorers |
+| Symbol | Ticker — changing post-launch can confuse traders |
+| Logo | Square image (PNG/SVG). FORGE re-pins to IPFS. |
+| Description | Short description shown on explorers |
+| Website | Your project's website URL |
+| X / Twitter | @handle or full URL |
+| Telegram | Group link |
+
+## Step-by-step
+
+### Step 1 — Go to FORGE → Tools → Update Metadata
+
+Navigate to the Update Metadata tool.
+
+### Step 2 — Select your token
+
+Paste your mint address or choose from the dropdown. FORGE verifies that your wallet holds update authority.
+
+### Step 3 — Make your changes
+
+Edit any fields you want to update. If uploading a new logo, select the image file — FORGE handles the IPFS upload.
+
+### Step 4 — Review and sign
+
+Review the changes summary. Click **Update metadata** and approve in your wallet.
+
+## What happens on-chain
+
+The transaction calls the Metaplex `updateV1` instruction, which writes the new data to the on-chain metadata account. If you uploaded a new logo, FORGE first pins the new image and a new metadata JSON to IPFS, then updates the on-chain URI to point to the new JSON.
+
+On-chain explorers will reflect the update after their caches refresh (usually within minutes).
+
+<CTA tool="updateMetadata" />

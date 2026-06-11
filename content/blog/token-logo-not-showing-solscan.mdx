@@ -1,0 +1,128 @@
+---
+title: "Why Is My Token's Logo Not Showing on Solscan (and How to Fix It)"
+description: "The specific reasons a Solana token logo fails to appear on Solscan, DEXScreener, and wallets — and the exact steps to fix each one."
+slug: "token-logo-not-showing-solscan"
+date: "2026-06-11"
+updated: "2026-06-01"
+category: guide
+tool: updateMetadata
+readTime: "6 min read"
+faq:
+  - q: "How long after fixing the metadata until the logo shows?"
+    a: "The on-chain change confirms within seconds. Solscan's cache typically refreshes within 5–30 minutes. DEXScreener can take 30–60 minutes. Wallets vary — Phantom usually refreshes quickly, Solflare may take longer."
+  - q: "My logo shows in FORGE but not on Solscan. Why?"
+    a: "FORGE reads the IPFS URI directly. Solscan may still have the old version cached, or the metadata JSON it's reading doesn't include the 'image' field correctly. Wait for cache refresh or check the metadata JSON manually."
+  - q: "Can I fix the logo if I already made my token immutable?"
+    a: "No. Making a token immutable revokes update authority, which means the on-chain metadata URI cannot be changed. The logo displayed is permanently locked to whatever the current URI points to."
+  - q: "What image format works best?"
+    a: "PNG is the most reliably displayed format. Square aspect ratio, minimum 200×200px. Avoid animated GIFs — most explorers don't render them."
+---
+
+Token logo not showing on Solscan is one of the most common issues after a token launch. It's almost always a metadata problem — not a wallet problem, not a Solscan problem. Here's how to diagnose it and fix it.
+
+## The five reasons a logo doesn't show
+
+### 1. No metadata at all
+
+The most basic case: the token was created without metadata. If you deployed the token without FORGE or without attaching a Metaplex metadata account, there's nothing to display.
+
+**Check:** Go to solscan.io, search your mint address, and look for a Metadata tab. If there's no metadata tab, you have no on-chain metadata.
+
+**Fix:** Use FORGE → Update Metadata to create or attach metadata for the first time.
+
+---
+
+### 2. The metadata URI is empty or missing
+
+The on-chain metadata includes a `uri` field that points to a JSON file containing the logo URL. If this field is blank, empty, or contains garbage data, explorers have nothing to follow.
+
+**Check:** On Solscan → your token → Metadata tab → look at the URI field. It should be an IPFS URL (starting with `https://ipfs.io/ipfs/` or similar) or an Arweave link.
+
+**Fix:** Update the metadata URI via FORGE Update Metadata.
+
+---
+
+### 3. The URI points to a dead link
+
+The metadata JSON file was uploaded but the URL no longer works. This happens when:
+- The file was uploaded to a centralized server that went down
+- An HTTP URL was used instead of IPFS
+- An IPFS gateway returned a 404 (but the content-addressed hash itself is fine)
+
+**Check:** Copy the URI from Solscan and paste it directly into your browser. You should see a JSON response. If you get a 404 or timeout, the link is broken.
+
+**Fix:** Re-upload your metadata using FORGE Update Metadata. FORGE pins to IPFS using a content-addressed hash — it will work as long as the IPFS network has it.
+
+---
+
+### 4. The metadata JSON is missing the `image` field
+
+The URI loads but the JSON doesn't include an `image` field with the logo URL. Explorers look specifically for the `image` key.
+
+**Check:** Load the URI in your browser and look at the JSON. It should look like:
+
+```json
+{
+  "name": "My Token",
+  "symbol": "MTK",
+  "description": "...",
+  "image": "https://ipfs.io/ipfs/QmXxx...",
+  "external_url": "https://myproject.com"
+}
+```
+
+If the `image` key is missing, misspelled, or has an empty value, the logo won't show.
+
+**Fix:** Re-upload with FORGE Update Metadata with a valid logo attached. FORGE generates the JSON correctly.
+
+---
+
+### 5. Correct metadata but Solscan hasn't refreshed its cache yet
+
+Solscan (and DEXScreener, Birdeye, and most explorers) cache token metadata. If you recently updated your metadata, the new logo may not appear immediately.
+
+**Check:** Is your metadata correct (URI resolves, JSON has `image` field) but the logo still isn't showing? It's likely a cache issue.
+
+**Wait:** Most caches refresh within 5–60 minutes. For Solscan specifically, you can try clicking the refresh button on the token page if available.
+
+---
+
+## How to fix logo issues with FORGE
+
+### Step 1 — Open Update Metadata
+
+Go to [forge.solana.tools/tools/update-metadata](/tools/update-metadata).
+
+### Step 2 — Select your token
+
+Paste your mint address. FORGE shows the current metadata state.
+
+### Step 3 — Upload your logo
+
+Click the logo upload field. Select a PNG (square, 1:1 ratio, at least 200×200px). FORGE pins the image to IPFS.
+
+### Step 4 — Fill in other metadata fields
+
+Make sure the name, symbol, and description are correct while you're here. Add social links if missing.
+
+### Step 5 — Sign the transaction
+
+Cost: **0.05 SOL** FORGE fee + gas (~0.001 SOL).
+
+After the transaction confirms, wait 15–30 minutes and check Solscan again. The logo should appear.
+
+<Warning>
+**This fix doesn't work if your token is immutable.** If you previously revoked update authority (made it immutable), on-chain metadata cannot be changed. The logo is permanently locked to whatever the current URI points to.
+</Warning>
+
+## Why logos break on DEXScreener but work on Solscan (or vice versa)
+
+Different explorers cache at different rates and sometimes read the metadata differently. DEXScreener prioritizes the Raydium pool's token metadata. Birdeye uses its own indexer. Phantom reads from a combination of on-chain and off-chain sources.
+
+If one works and another doesn't, the on-chain data is probably correct — just wait for the slower explorer to refresh.
+
+---
+
+<Disclaimer />
+
+<CTA tool="updateMetadata" label="Fix your token's metadata" />

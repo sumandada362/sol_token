@@ -1,0 +1,143 @@
+---
+title: "SPL vs Token-2022: Which Should You Choose?"
+description: "A direct comparison of Solana's two token standards — when standard SPL is the right choice, when Token-2022 makes sense, and the compatibility tradeoffs."
+slug: "spl-vs-token-2022"
+date: "2026-06-10"
+updated: "2026-06-01"
+category: guide
+readTime: "7 min read"
+faq:
+  - q: "Can I migrate a token from SPL to Token-2022?"
+    a: "No. The standard is set at creation and is part of the token's on-chain identity. You would need to create a new token with Token-2022."
+  - q: "Is Token-2022 compatible with Raydium?"
+    a: "Raydium CPMM supports Token-2022. Some older Raydium pool types and some DEXs may have partial or no support. Verify with your target DEX."
+  - q: "Are transfer fees in Token-2022 visible to traders?"
+    a: "They should be. Any tool that reads token metadata can detect a transfer fee. DEX screeners and wallet UIs should show it. Always disclose transfer fees clearly to your community."
+  - q: "Does Token-2022 cost more to create?"
+    a: "The FORGE platform fee is the same. Token-2022 mint accounts are slightly larger on-chain and cost marginally more in Solana rent (~0.001 SOL difference), which is negligible."
+---
+
+Solana has two token programs: the original **SPL Token program** and its newer successor, **Token-2022** (also called Token Extensions). Both create legitimate Solana tokens — but they have different capabilities and different compatibility profiles.
+
+This guide covers what each supports, the real-world tradeoffs, and how to choose.
+
+## The quick answer
+
+**Use standard SPL if:**
+- You're creating a meme token, community token, or governance token
+- Maximum DEX and wallet compatibility matters
+- You don't need any specific extensions
+- You're not sure which to choose
+
+**Use Token-2022 if:**
+- You specifically need transfer fees
+- You need confidential transfers
+- You're building a yield product and want interest-bearing semantics
+- Your target protocol explicitly requires Token-2022
+
+---
+
+## Standard SPL: what it is
+
+The original Solana token program, deployed in 2020. Every token you've used on Solana — USDC, SOL-wrapped tokens, most meme coins — runs on this program.
+
+**Capabilities:**
+- Mint tokens
+- Transfer tokens
+- Freeze accounts (if freeze authority is set)
+- Burn tokens
+- Standard metadata via Metaplex
+
+**Doesn't support:**
+- Transfer fees
+- Confidential transfers
+- Interest-bearing semantics
+- Non-transferable tokens at the program level
+
+**Compatibility:** Universal. Every wallet, DEX, explorer, and indexer supports it.
+
+---
+
+## Token-2022: what it adds
+
+Token-2022 is a separate on-chain program (different program ID from SPL) that supports **extensions** — optional features you configure at token creation.
+
+### Transfer fee extension
+
+Automatically deducts a fee on every transfer. The fee is defined as a percentage of the transfer amount (basis points) and goes to a configurable destination account.
+
+Example: 100 basis points (1%) transfer fee means every transfer of 1000 tokens takes 10 tokens as a fee.
+
+**Use case:** Protocol-owned revenue, automatic burn mechanism, redistribution to holders.
+**Disclosure requirement:** This should always be communicated clearly. Buyers expect to receive what they send — hidden fees destroy trust.
+
+### Confidential transfers extension
+
+Encrypts transfer amounts using zero-knowledge proofs. The fact that a transfer happened is public, but the amount is hidden.
+
+**Use case:** Institutional use cases, privacy tokens. Rare in practice.
+
+### Interest-bearing extension
+
+The token's displayed balance grows over time at a configured interest rate. The on-chain balance is stored separately from the displayed balance, which includes accrued interest.
+
+**Use case:** Tokenized bonds, yield-bearing positions, rebasing tokens.
+
+### Non-transferable extension
+
+Tokens minted to a wallet cannot be transferred. They are "soulbound" to the receiving account.
+
+**Use case:** Certificates, achievement tokens, KYC attestations.
+
+### Permanent delegate
+
+A configured wallet can transfer or burn tokens from any holder's account without their signature.
+
+**Warning:** This is a significant power. It is appropriate only in highly specific circumstances (e.g., a regulated stablecoin with compliance requirements). Using it in a public token without clear disclosure is a major red flag.
+
+---
+
+## Compatibility comparison
+
+| Integration | Standard SPL | Token-2022 (basic) | Token-2022 (with extensions) |
+|-------------|-------------|---------------------|-------------------------------|
+| Phantom wallet | ✅ Full | ✅ Full | Partial (depends on extension) |
+| Solflare wallet | ✅ Full | ✅ Full | Partial |
+| Raydium CPMM | ✅ Full | ✅ Full | ✅ (with transfer fee) |
+| Orca Whirlpools | ✅ Full | ✅ Full | Check docs |
+| Solscan explorer | ✅ Full | ✅ Full | ✅ shows extension info |
+| DEXScreener | ✅ Full | ✅ Full | ✅ |
+| Metaplex metadata | ✅ Full | ✅ Full | ✅ |
+
+The compatibility gap narrows every quarter as major integrations add Token-2022 support. For extensions like transfer fees, the main compatibility issue is whether the DEX correctly handles the fee during swaps.
+
+---
+
+## Creating a Token-2022 token on FORGE
+
+In the Create Token flow, step 2 lets you select **Token-2022** as the standard. If you enable Token-2022, you'll see extension options. Each extension you add is configured at creation — most cannot be changed after the fact.
+
+If you enable the transfer fee extension, you'll set:
+- Fee in basis points (100 = 1%)
+- Maximum fee per transfer (in raw token units)
+- Fee destination wallet
+
+<Warning>
+**Always disclose Token-2022 extensions to your community.** Transfer fees, in particular, affect every transaction your token is involved in. Buyers deserve to know before they purchase.
+</Warning>
+
+---
+
+## The verdict
+
+For most tokens, **use standard SPL**. It's simpler, universally compatible, and fully capable of everything a standard community token needs.
+
+Token-2022 is genuinely useful for specific use cases — transfer fees, confidential transfers, yield-bearing semantics. But using it without a specific reason just adds complexity without benefit, and reduces compatibility with older integrations.
+
+When in doubt: SPL.
+
+---
+
+<Disclaimer />
+
+<CTA tool="create" label="Create your token" />

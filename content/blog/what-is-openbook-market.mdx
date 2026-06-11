@@ -1,0 +1,114 @@
+---
+title: "What Is an OpenBook Market — and When You Actually Need One"
+description: "What OpenBook markets are, how they differ from AMM pools, the real cost breakdown, and the honest answer on whether most new token creators need one."
+slug: "what-is-openbook-market"
+date: "2026-06-07"
+updated: "2026-06-01"
+category: guide
+tool: openbook
+readTime: "7 min read"
+faq:
+  - q: "Do I need an OpenBook market to trade my token?"
+    a: "No. You can create a Raydium CPMM pool without an OpenBook market. CPMM is the standard choice for new tokens and does not require an order book."
+  - q: "What does OpenBook actually cost?"
+    a: "About 2.9 SOL total: ~2.85 SOL is a rent deposit paid to the OpenBook program (not a fee, theoretically reclaimable), plus 0.05 SOL FORGE fee and gas."
+  - q: "Is the 2.85 SOL a fee or a deposit?"
+    a: "A rent deposit. It's paid to the OpenBook on-chain program to fund the storage of your market's accounts. In theory it can be reclaimed if you close the market — but market closure is complex and rarely done in practice."
+  - q: "Can I use an OpenBook market with Raydium CPMM?"
+    a: "No. An OpenBook market is specifically for Raydium Legacy AMM or standalone OpenBook trading. Raydium CPMM is a separate pool type that does not use OpenBook."
+  - q: "What are min order size and tick size, and can I change them?"
+    a: "Min order size is the smallest tradeable amount of your token. Tick size is the smallest price increment. Both are set at market creation and cannot be changed afterward."
+---
+
+OpenBook markets show up in a lot of tutorials about launching Solana tokens. Most of those tutorials were written for an older workflow. Here's the honest picture of what OpenBook is, what it costs, and when (if ever) you actually need one.
+
+## What OpenBook is
+
+OpenBook is a decentralized on-chain order book exchange built on Solana. Unlike an AMM (automated market maker) pool — where price is determined by a formula based on reserve ratios — an OpenBook market supports **limit orders** and **market orders** similar to a centralized exchange.
+
+When you create an OpenBook market for your token, you're creating the on-chain infrastructure for:
+- A bid/ask order book for your trading pair
+- A market ID that DEXs can reference to connect to your token
+
+## The Raydium Legacy AMM dependency
+
+The main reason many token creators end up on the OpenBook market creation path is **Raydium Legacy AMM**. When Raydium Legacy AMM was the primary pool type, it required an existing OpenBook market before you could create a pool. That meant every new token needed to create an OpenBook market first — at a cost of ~2.85 SOL in rent.
+
+**This is no longer true for most use cases.**
+
+## Raydium CPMM changed the picture
+
+Raydium CPMM (Constant Product Market Maker) is the modern Raydium pool type. It:
+- Does **not** require an OpenBook market
+- Has lower setup costs
+- Is the default for new token pools on Raydium
+
+For the vast majority of new tokens in 2026, the workflow is:
+1. Create token
+2. Create Raydium CPMM pool
+3. Done — no OpenBook market needed
+
+## So when do you actually need an OpenBook market?
+
+You need an OpenBook market if you specifically want one or more of:
+
+**1. Raydium Legacy AMM pool**
+If you need to migrate existing liquidity from a Legacy AMM or have a specific reason to use it over CPMM, you need an OpenBook market ID first.
+
+**2. Standalone limit order trading**
+If you want users to be able to place limit orders on OpenBook directly (separate from Raydium), you need the market infrastructure.
+
+**3. Specific DEX compatibility**
+Some older DEX integrations or aggregators may only recognize tokens with OpenBook market IDs. This is increasingly rare.
+
+**For most new tokens: you don't need one.** Use Raydium CPMM and skip the ~2.85 SOL cost entirely.
+
+## What it costs if you do need one
+
+| Item | Cost |
+|------|------|
+| FORGE fee | 0.05 SOL |
+| OpenBook rent deposit (pass-through) | ~2.85 SOL |
+| Solana gas | ~0.001 SOL |
+| **Total** | **~2.9 SOL** |
+
+The ~2.85 SOL goes directly to the OpenBook on-chain program as a rent deposit to keep the market's accounts alive. This is not a fee — it's storage collateral. In theory, you can reclaim it by closing the market. In practice, market closure requires careful coordination and most projects never do it.
+
+## How to create an OpenBook market (if you need one)
+
+### Step 1 — Go to FORGE → Tools → Create Market
+
+Navigate to [forge.solana.tools/tools/market/create](/tools/market/create).
+
+### Step 2 — Enter your token mint address
+
+Paste your token's mint address. FORGE fills in the name and symbol.
+
+### Step 3 — Set market parameters
+
+| Parameter | Notes |
+|-----------|-------|
+| Base currency | Your token |
+| Quote currency | SOL (most common) or USDC |
+| Min order size | Minimum tradeable amount. Typical: 1 |
+| Tick size | Minimum price increment. Typical: 0.0001 SOL |
+
+These cannot be changed after creation.
+
+### Step 4 — Review and sign
+
+Total cost: ~2.9 SOL. Review in wallet and approve. **Save your market ID** — you'll need it for any Raydium Legacy AMM pool creation.
+
+## The bottom line
+
+OpenBook markets were essential for Raydium pools until CPMM became the standard. Today, most token creators should:
+- Create a Raydium CPMM pool (no OpenBook market needed, ~0.6 SOL total)
+- Skip OpenBook unless they have a specific reason for the Legacy AMM or order book functionality
+
+If someone tells you that you need to create an OpenBook market to launch your token, ask why. In most cases in 2026, you don't.
+
+---
+
+<Disclaimer />
+
+<CTA tool="openbook" label="Create OpenBook market" />

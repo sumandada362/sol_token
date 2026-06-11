@@ -1,0 +1,79 @@
+---
+title: "Create an OpenBook Market"
+description: "Set up an on-chain order-book trading market for your token. Required for Raydium Legacy AMM pools but not for CPMM. Costs ~2.85 SOL in rent."
+slug: "openbook-market"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+tool: openbook
+faq:
+  - q: "Do I need an OpenBook market for a Raydium pool?"
+    a: "Only for Raydium Legacy AMM. Raydium CPMM does NOT require an OpenBook market. If you are unsure, use CPMM — it is the modern default."
+  - q: "What are min order size and tick size?"
+    a: "Min order size is the smallest tradeable amount of your token. Tick size is the smallest price increment. Typical values: min order 1 token, tick 0.0001 SOL. These cannot be changed after market creation."
+  - q: "Is the 2.85 SOL a fee or a deposit?"
+    a: "It is a rent deposit paid to the OpenBook program to store the market's on-chain account data. It is not a FORGE fee. Theoretically it can be reclaimed if the market is ever closed, though market closure is complex and rarely done in practice."
+  - q: "Can I reuse a market for multiple pool types?"
+    a: "Yes. Once created, an OpenBook market ID can be referenced by any Raydium Legacy AMM pool. You only need to create it once per trading pair."
+---
+
+## What this tool does
+
+FORGE Market Create sets up an OpenBook v2 order-book market for your token on Solana. This creates a trading pair (your token vs SOL or USDC) and enables limit order trading — and satisfies the prerequisite for Raydium Legacy AMM pools.
+
+## What it costs
+
+| Item | Cost |
+|------|------|
+| FORGE platform fee | 0.05 SOL |
+| OpenBook rent deposit (pass-through) | ~2.85 SOL |
+| Solana gas | ~0.001 SOL |
+
+The ~2.85 SOL is a rent deposit paid directly to the OpenBook program — it is not a FORGE fee. Total: approximately **2.9 SOL**. Costs can change — verify in the app.
+
+## Before you start
+
+- Your token already created (mint address ready)
+- Approximately 3 SOL in your wallet
+- Decision on min order size and tick size
+
+<Warning>
+**Think before creating a market.** If you are using Raydium CPMM (the modern default), you do not need an OpenBook market. Creating one costs ~2.85 SOL in rent. Only proceed if you specifically need Raydium Legacy AMM or want limit order support.
+</Warning>
+
+## Step-by-step
+
+### Step 1 — Go to FORGE → Tools → Create Market
+
+Navigate to the Market Create tool.
+
+### Step 2 — Enter your token mint address
+
+Paste your token's mint address. FORGE will auto-fill the token name and symbol.
+
+### Step 3 — Choose base and quote currency
+
+**Base currency:** Your token. **Quote currency:** SOL (default) or USDC. This defines the trading pair (e.g., MYTOKEN/SOL).
+
+### Step 4 — Set market parameters
+
+| Parameter | Description | Typical value |
+|-----------|-------------|---------------|
+| Min order size | Minimum amount tradeable | 1 (your token) |
+| Tick size | Smallest price increment | 0.0001 SOL |
+
+These parameters are permanent — they cannot be changed after market creation.
+
+### Step 5 — Review cost and sign
+
+The cost summary shows the FORGE fee plus the OpenBook rent deposit. Click **Create market** and approve in your wallet.
+
+### Step 6 — Save your market ID
+
+After confirmation, copy your **Market ID** (a Solana public key). You will need this when creating a Raydium Legacy AMM pool.
+
+## What happens on-chain
+
+The transaction initializes several on-chain accounts in the OpenBook program: a market account, bids/asks order book, event queue, and request queue. The rent covers the storage cost for all of these accounts over the life of the market.
+
+<CTA tool="openbook" />

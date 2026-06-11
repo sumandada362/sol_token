@@ -48,7 +48,7 @@ export default function PoolRemovePage() {
             <p className="burn-remaining">Received {returnToken} {pos.token} + {returnSol} SOL</p>
             <div className="tx-success-actions">
               <Link href="/pool/add" className="lp-btn lp-btn--secondary">Add back</Link>
-              <Link href="/dashboard" className="lp-btn lp-btn--primary">Dashboard</Link>
+              <Link href="/create-token" className="lp-btn lp-btn--primary">Create Token</Link>
             </div>
           </div>
         ) : (

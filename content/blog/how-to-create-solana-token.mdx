@@ -1,0 +1,153 @@
+---
+title: "How to Create a Solana Token in 4 Steps Without Coding"
+description: "A complete guide to deploying your own SPL token on Solana mainnet using FORGE — no coding, no CLI, no Anchor. Just a wallet and a few clicks."
+slug: "how-to-create-solana-token"
+date: "2026-05-20"
+updated: "2026-06-01"
+category: guide
+tool: create
+readTime: "8 min read"
+featured: true
+faq:
+  - q: "How much does it cost to create a Solana token?"
+    a: "With FORGE, the base cost is 0.1 SOL for the platform fee plus approximately 0.002 SOL in Solana network rent. If you revoke mint and freeze authority (recommended), add 0.10 SOL. Total for a fully trust-optimized token: around 0.21 SOL."
+  - q: "Do I need to know how to code?"
+    a: "No. FORGE handles all on-chain interactions. You fill in a form, upload a logo, and sign a transaction — no Rust, TypeScript, or CLI required."
+  - q: "Can I create a Token-2022 token instead of standard SPL?"
+    a: "Yes. Choose Token-2022 in the token standard selector if you need extensions like transfer fees. For most meme tokens or community tokens, standard SPL is the right choice."
+  - q: "Is my token symbol permanent?"
+    a: "Yes. The symbol is stored in on-chain metadata and cannot be changed after creation. Verify it carefully before signing."
+  - q: "How long does it take?"
+    a: "Under 2 minutes from form to confirmed transaction, assuming Solana network is not congested."
+---
+
+Creating a Solana token used to require writing Rust or using a command-line tool. Today you can deploy a fully configured SPL token — with logo, metadata, and revoked authorities — in under two minutes from your browser. This guide shows you exactly how.
+
+## What you need before you start
+
+Before opening FORGE, get three things ready:
+
+**1. A Solana wallet with SOL**
+Phantom, Solflare, or Backpack work. Make sure you're on mainnet (not testnet). Budget:
+- 0.1 SOL base fee
+- 0.05 SOL to revoke mint authority (recommended)
+- 0.05 SOL to revoke freeze authority (recommended)
+- ~0.002 SOL network rent
+- **Total: ~0.21 SOL minimum**
+
+**2. Your token details decided**
+- Name (e.g., "My Project Token")
+- Symbol/ticker (e.g., "MPT") — **permanent, cannot change**
+- Total supply (common: 1,000,000,000 for meme tokens)
+- Decimals (use 9 for most tokens; 6 for stablecoins)
+
+**3. A logo file**
+Square image, PNG or SVG. At least 200×200px. FORGE pins it to IPFS automatically.
+
+---
+
+## Step 1 — Connect your wallet and open FORGE Create
+
+Go to [FORGE → Create Token](/create-token). Click **Connect Wallet** in the top right. Select your wallet (Phantom, Solflare, or Backpack) and approve the connection.
+
+Confirm you see your wallet address and that the network indicator says **Mainnet**. If it says Devnet, switch in your wallet settings. (Devnet works fine for testing — devnet tokens are free but not real.)
+
+---
+
+## Step 2 — Fill in your token details
+
+The form has two sections: **Basics** and **Branding**.
+
+### Basics
+
+| Field | What to enter |
+|-------|--------------|
+| Token standard | SPL (default) or Token-2022 |
+| Name | Full name of your token |
+| Symbol | Ticker — 2–10 characters, uppercase. **Check twice.** |
+| Total supply | How many tokens to mint (e.g., 1000000000) |
+| Decimals | 9 for most tokens |
+
+The symbol is permanent. Once deployed, it cannot be changed on-chain. If you're not sure, spell it out clearly and review it one more time before moving on.
+
+### Branding
+
+Upload your logo. FORGE accepts PNG and SVG (square, 1:1 ratio). It uploads to IPFS automatically and generates the metadata JSON URI for you.
+
+Add an optional description (1–2 sentences). Add social links if you have them: website, X/Twitter, Telegram. These appear on Solscan and explorers.
+
+---
+
+## Step 3 — Set authority options
+
+This is the most important part. Three on-chain authorities control your token:
+
+| Authority | What it does | Cost to revoke |
+|-----------|-------------|----------------|
+| **Mint authority** | Can create more tokens | 0.05 SOL |
+| **Freeze authority** | Can freeze holder wallets | 0.05 SOL |
+| **Update authority** | Can change metadata | Free |
+
+### Why you should revoke mint and freeze authority now
+
+Every serious DEX scanner (DEXScreener, Rugcheck, Birdeye) flags active mint authority as a risk signal. Buyers who see "mint authority active" know the creator can inflate the supply at any time. Revoking it shows the supply is permanently capped.
+
+Same for freeze authority — active freeze authority means the creator could lock a buyer's wallet. Revoking it removes that concern.
+
+**Make Immutable** (revoking update authority) is free. If you don't plan to update your metadata, enable it.
+
+The cost summary updates live as you toggle each option. You can also revoke authorities later from FORGE Tools — but doing it at creation saves one extra transaction and SOL.
+
+<Warning>
+**You cannot un-revoke an authority.** Once revoked, it is permanent. Make sure your supply is final and your metadata is correct before revoking.
+</Warning>
+
+---
+
+## Step 4 — Review cost summary and sign
+
+Before you sign, review:
+- Token name and symbol (one last check)
+- Total supply
+- Which authorities are being revoked
+- Total cost
+
+Click **Create token**. Your wallet will prompt you to approve the transaction. Review the transaction details in the wallet popup and approve.
+
+The transaction typically confirms in 1–5 seconds. On success, FORGE redirects you to your token's page showing the mint address.
+
+---
+
+## What happens next
+
+After creation, your token exists on-chain. Here's what to do:
+
+### Copy your mint address
+Your mint address is the unique identifier for your token. Save it — you'll need it for everything else (adding liquidity, multisender, security checks).
+
+### Add liquidity
+Without a trading pool, your token cannot be bought or sold on a DEX. Head to [FORGE → Pool](/pool) to create a Raydium pool. You'll need SOL plus the tokens you want to pair.
+
+### Share the token page
+Your FORGE token page at `/token/[mint-address]` shows live authority status, holder concentration, and risk flags. Share it with your community.
+
+### Verify on Solscan
+Search your mint address on solscan.io to verify everything looks correct: supply, decimals, metadata, and revoked authorities.
+
+---
+
+## Common mistakes to avoid
+
+**Typo in the symbol.** The most common mistake. The symbol is permanent. Review it character by character.
+
+**Insufficient SOL.** Budget at least 0.25 SOL before starting. Running out mid-transaction can leave things in an inconsistent state.
+
+**Wrong decimal places.** Most tokens use 9 decimals. If you enter 1,000,000,000 supply with 9 decimals, you have 1 billion tokens. If you enter that same supply with 0 decimals, you have 1 billion non-divisible units. Know what you want.
+
+**Forgetting to upload a logo.** Tokens without logos look unprofessional and are harder for buyers to identify on Solscan.
+
+---
+
+<Disclaimer />
+
+<CTA tool="create" />

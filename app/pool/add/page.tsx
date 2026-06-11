@@ -47,7 +47,7 @@ export default function PoolAddPage() {
             <p className="tx-success-label">Liquidity added to {selected.dex}</p>
             <div className="tx-success-actions">
               <Link href="/pool/remove" className="lp-btn lp-btn--secondary">Manage position</Link>
-              <Link href="/dashboard" className="lp-btn lp-btn--primary">Dashboard</Link>
+              <Link href="/create-token" className="lp-btn lp-btn--primary">Create Token</Link>
             </div>
           </div>
         ) : (

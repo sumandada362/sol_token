@@ -1,0 +1,156 @@
+---
+title: "How to Create a Liquidity Pool for a Solana Token (Raydium)"
+description: "Step-by-step guide to creating a Raydium CPMM pool for your SPL token, setting initial price, and making your token tradeable on-chain."
+slug: "how-to-create-liquidity-pool-raydium"
+date: "2026-05-22"
+updated: "2026-06-01"
+category: guide
+tool: pool
+readTime: "9 min read"
+featured: true
+faq:
+  - q: "How much does it cost to create a Raydium pool?"
+    a: "Approximately 0.6 SOL total: 0.1 SOL FORGE fee plus ~0.5 SOL paid directly to Raydium for pool creation. This does not include the liquidity you deposit (your tokens and SOL)."
+  - q: "Do I need an OpenBook market for a Raydium pool?"
+    a: "No, not for Raydium CPMM — the modern pool type. OpenBook is only required for Raydium Legacy AMM. FORGE defaults to CPMM."
+  - q: "What is the initial price and how do I set it?"
+    a: "The initial price is determined by the ratio of tokens to SOL you deposit. For example, 1,000,000 tokens + 1 SOL = 0.000001 SOL per token. Choose a ratio that reflects the price you want to launch at."
+  - q: "Can I remove my liquidity later?"
+    a: "Yes. Your liquidity position is represented by LP tokens. You can remove all or part of your liquidity at any time using FORGE Pool → Remove, unless you burned your LP tokens."
+  - q: "What is impermanent loss?"
+    a: "When you add liquidity to an AMM pool, the ratio of tokens in the pool changes as traders buy and sell. If the price moves significantly, the value of your position may be less than if you had just held the tokens. This is impermanent loss — a standard DeFi mechanic."
+---
+
+A token without liquidity is untradeable. Creating a liquidity pool is the step that transforms your deployed token into something buyers can actually purchase. This guide covers how to do it on Raydium, the most used DEX for new Solana token launches.
+
+## Understanding pool types before you start
+
+Raydium offers two pool types:
+
+| Pool type | OpenBook required | Setup cost | Best for |
+|-----------|------------------|------------|----------|
+| **CPMM** (Constant Product) | No | ~0.5 SOL | Most new tokens |
+| **Legacy AMM** | Yes (+~2.85 SOL) | ~0.5 SOL + market | Tokens needing limit orders |
+
+**Use CPMM.** It's the modern default, cheaper to set up, and doesn't require creating an OpenBook market first. FORGE defaults to CPMM.
+
+## What you need
+
+- Your token mint address (from the FORGE Create flow)
+- Tokens in your wallet to deposit as liquidity
+- SOL for the liquidity deposit + pool creation costs
+- Your wallet connected to FORGE on mainnet
+
+**Budget estimate:**
+- FORGE fee: 0.1 SOL
+- Raydium CPMM setup (pass-through): ~0.5 SOL
+- SOL you want to deposit as liquidity (your choice)
+- Tokens you want to deposit as liquidity (from your wallet)
+- Gas: ~0.001 SOL
+
+---
+
+## Step 1 — Decide your initial price and liquidity amount
+
+Before clicking anything, decide:
+
+**What price do you want to launch at?**
+The ratio of tokens to SOL you deposit sets the initial price. Examples:
+- 1,000,000 tokens + 1 SOL = 0.000001 SOL per token ($0.000145 at $145 SOL)
+- 1,000,000,000 tokens + 10 SOL = 0.00000001 SOL per token
+
+**How much liquidity do you want to provide?**
+More liquidity means lower slippage for buyers, but you're committing more capital. A reasonable starting point for a small project: 1–5 SOL with a proportional token amount.
+
+<Warning>
+**The initial price you set matters.** If your pool price is significantly different from other markets, arbitrage bots will immediately trade against it until prices equalize. You may lose value to arbitrage if the price differs from the fair market price on other DEXs. Set a price you actually believe in.
+</Warning>
+
+---
+
+## Step 2 — Go to FORGE → Pool
+
+Click **Pool** in the main navigation or visit [forge.solana.tools/pool](/pool).
+
+---
+
+## Step 3 — Enter your token
+
+Paste your token mint address in the token field. FORGE will look up your token name, symbol, and your current balance.
+
+---
+
+## Step 4 — Select Raydium
+
+In the DEX selector, click **Raydium**. FORGE defaults to CPMM.
+
+You can also select multiple DEXs in the same flow (e.g., Raydium + Orca) to create pools on multiple platforms in a single session. Each DEX incurs a separate FORGE fee and setup cost.
+
+---
+
+## Step 5 — Set deposit amounts
+
+Enter:
+- **Token amount** — how many of your tokens to deposit
+- **SOL amount** — how much SOL to pair with them
+
+The interface shows the implied price as you type: `SOL amount / token amount = price per token`.
+
+Example: 500,000,000 tokens + 5 SOL = 0.00000001 SOL per token.
+
+---
+
+## Step 6 — Review cost summary
+
+Before signing, the cost summary shows:
+- FORGE fee: 0.1 SOL
+- Raydium CPMM setup fee (paid to Raydium): ~0.5 SOL
+- Your liquidity deposit: X tokens + Y SOL
+- Total SOL needed from your wallet
+
+Verify all numbers are correct. The FORGE fee and Raydium setup fee are non-refundable once the transaction confirms.
+
+---
+
+## Step 7 — Sign and confirm
+
+Click **Create pool**. Approve the transaction in your wallet. The transaction creates the pool, deposits your liquidity, and sends LP tokens to your wallet.
+
+Pool creation typically confirms in a few seconds on Solana. After confirmation, FORGE shows your pool address and LP token balance.
+
+---
+
+## What happens after pool creation
+
+### Your LP tokens
+
+LP (liquidity provider) tokens represent your share of the pool. Keep them if you want to be able to remove liquidity later. If you burn them, your liquidity is locked permanently (a trust signal).
+
+### Your token is now tradeable
+
+Within minutes, your token will appear on DEXScreener, Birdeye, and other Solana DEX aggregators. Anyone with a Solana wallet can now buy or sell.
+
+### Price impact and slippage
+
+In an AMM pool, every trade shifts the price. The price impact of a given trade depends on the pool's liquidity depth — more liquidity means less price impact per trade.
+
+### Adding more liquidity later
+
+To add more liquidity to an existing pool, go to FORGE → Pool → Add and select your pool. You can add any ratio — the UI will show you the current pool price to guide your deposit.
+
+---
+
+## Verify your pool is working
+
+After creation, search your token on dexscreener.com. You should see:
+- Your token listed with price and volume
+- The correct Raydium CPMM pool
+- Your initial liquidity visible
+
+If the pool isn't showing yet, wait 5–10 minutes for indexers to pick it up.
+
+---
+
+<Disclaimer />
+
+<CTA tool="pool" />

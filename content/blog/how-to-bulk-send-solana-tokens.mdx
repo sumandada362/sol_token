@@ -1,0 +1,125 @@
+---
+title: "How to Send SPL Tokens to Multiple Wallets at Once (Airdrop Guide)"
+description: "How to use FORGE Multisender to distribute SPL tokens or SOL to hundreds of wallets in one session. Covers CSV format, cost calculation, and common airdrop mistakes."
+slug: "how-to-bulk-send-solana-tokens"
+date: "2026-05-25"
+updated: "2026-06-01"
+category: guide
+tool: multisender
+readTime: "6 min read"
+faq:
+  - q: "What is the CSV format for the recipient list?"
+    a: "One recipient per line: wallet_address,amount. Example: 7xKqAbcDef123,1000. No header row needed. Amounts are in human-readable units."
+  - q: "What does it cost to use Multisender?"
+    a: "0.01 SOL flat FORGE fee per transaction batch, plus ~0.002 SOL Solana rent for each new token account created. Recipients who already have a token account for your token do not incur rent."
+  - q: "Is there a limit on how many wallets I can send to?"
+    a: "No hard limit. FORGE batches large lists into multiple transactions automatically. Very large airdrops (thousands of wallets) are sent across multiple transaction batches, each requiring a separate wallet signature."
+  - q: "Can I send SOL with Multisender, not just SPL tokens?"
+    a: "Yes. Use the /tools/multisender/sol shortcut to send native SOL to multiple wallets."
+  - q: "What happens if a wallet address is invalid?"
+    a: "FORGE validates addresses before processing. Invalid addresses are highlighted in the preview so you can correct them before signing."
+---
+
+Sending tokens to a list of wallets one by one is impractical at any scale. Whether you're running an airdrop, distributing team allocations, or rewarding a community, you need a way to send to hundreds of wallets in a single session. This guide covers how to do it with FORGE Multisender.
+
+## What Multisender does
+
+FORGE Multisender sends SPL tokens (or SOL) to a list of wallets you provide. You upload a CSV, review the cost breakdown, and sign — FORGE handles batching the transactions and creating token accounts for new recipients.
+
+**Supported tokens:** SOL, USDC, USDT, BONK, and any SPL token by mint address.
+
+## When to use Multisender
+
+- **Airdrops:** Rewarding early community members, NFT holders, or snapshot participants
+- **Team vesting distributions:** Sending monthly unlocks to team wallets
+- **Marketing distributions:** Sending tokens to wallets you've collected through a campaign
+- **Community rewards:** Distributing prizes or incentives to winners
+
+## Cost breakdown
+
+| Cost | Amount |
+|------|--------|
+| FORGE fee | 0.01 SOL per transaction batch |
+| Token account rent (per new recipient) | ~0.002 SOL |
+| Solana gas | ~0.0001 SOL per transaction |
+
+**Key variable:** The rent cost depends on how many recipients don't already have a token account for your specific token. For a brand-new token being airdropped to fresh wallets, budget ~0.002 SOL per recipient. For a token that's been trading for a while, many recipients may already have accounts.
+
+**Example:** Airdropping to 500 new wallets ≈ 500 × 0.002 SOL rent + ~1 SOL FORGE fees (for ~100 transaction batches of 5 recipients each) = approximately **2 SOL total overhead**, not including tokens.
+
+(Actual batch sizes vary — FORGE optimizes for max recipients per transaction within Solana's limits.)
+
+## How to prepare your recipient list
+
+### CSV format
+
+Create a plain text file (or .csv) with one recipient per line:
+
+```
+wallet_address,amount
+7xKqAbcDef...wallet1,1000
+8yLrBcdEfg...wallet2,500
+9zMsCdeFgh...wallet3,2500
+```
+
+**No header row needed** — if you include "wallet_address,amount" as a header, FORGE will detect and skip it.
+
+**Amount format:** Use human-readable units. If your token has 9 decimals, "1000" means 1000 tokens (not 1000 base units). FORGE handles the decimal conversion.
+
+**Common mistakes:**
+- Wrong decimal placement (sending 1 token instead of 1,000,000)
+- Duplicate wallet addresses (FORGE will flag these)
+- Invalid base58 addresses (typos, truncation)
+- Extra spaces or hidden characters in the CSV
+
+### Tip: verify addresses from an external source
+
+If you're using a wallet snapshot from an NFT marketplace or a form submission, verify the source. Wallet addresses are case-sensitive in some contexts and errors are irreversible.
+
+## Step-by-step
+
+### Step 1 — Go to FORGE → Tools → Multisender
+
+Navigate to [forge.solana.tools/tools/multisender](/tools/multisender). For SOL specifically, use the [/sol shortcut](/tools/multisender/sol).
+
+### Step 2 — Choose your token
+
+For a custom SPL token, select "Custom token" and paste your mint address. For preset tokens (SOL, USDC, USDT, BONK), choose from the tabs.
+
+### Step 3 — Upload or paste your recipient list
+
+Click **Upload CSV** or paste your list directly into the text box. FORGE parses the list and shows a preview table:
+- Address validation (invalid addresses shown in red)
+- Amount per wallet
+- Total tokens to send
+- Number of new token accounts to create
+- Estimated total cost
+
+### Step 4 — Review the cost summary
+
+Verify:
+- Total recipients
+- Total token amount
+- Total SOL needed (FORGE fees + rent + gas)
+- Any addresses flagged as invalid or duplicate
+
+### Step 5 — Sign (one per batch)
+
+For large lists, FORGE splits into multiple transaction batches. Each batch shows a progress indicator and requires a separate wallet signature. The process runs sequentially — sign each batch when prompted.
+
+<Warning>
+**Verify addresses before signing.** Token transfers on Solana are irreversible. Sending to an incorrect address loses those tokens permanently. Once a batch transaction is signed and confirmed, it cannot be undone.
+</Warning>
+
+## After the airdrop
+
+Check a few recipients' wallets on Solscan to verify receipt. Common reasons an airdrop might appear to fail:
+- Transaction confirmation is pending (usually resolves within 60 seconds)
+- The recipient wallet was on devnet, not mainnet
+- An individual batch failed (FORGE shows errors per batch)
+
+---
+
+<Disclaimer />
+
+<CTA tool="multisender" />

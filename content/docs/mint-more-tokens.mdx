@@ -1,0 +1,73 @@
+---
+title: "Mint More Tokens"
+description: "Increase your token's supply after launch using FORGE Mint Tokens — only possible if you retained mint authority at creation."
+slug: "mint-more-tokens"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+tool: mintMore
+faq:
+  - q: "What if I already revoked mint authority?"
+    a: "You cannot mint more tokens. Revoking mint authority permanently caps the supply. There is no workaround."
+  - q: "Where do the newly minted tokens go?"
+    a: "By default, to your connected wallet. You can specify a different destination wallet in the Mint Tokens form."
+  - q: "Does minting more tokens affect the price?"
+    a: "Minting increases supply without adding corresponding demand, which typically creates sell pressure. Always communicate supply increases transparently to your community."
+  - q: "What is the fee for minting more tokens?"
+    a: "0.05 SOL FORGE platform fee plus Solana network gas (~0.001 SOL)."
+---
+
+## What this tool does
+
+FORGE Mint Tokens lets you create additional tokens beyond the initial supply. This is only possible if you retained mint authority when creating the token.
+
+## What it costs
+
+| Item | Cost |
+|------|------|
+| Platform fee | 0.05 SOL |
+| Solana gas | ~0.001 SOL |
+
+Fees can change — always check the cost summary in the app before signing.
+
+## Before you start
+
+- Mint authority must NOT have been revoked
+- Your wallet must hold the current mint authority
+- Know exactly how many tokens you want to mint and where they should go
+
+<Warning>
+**Minting more tokens dilutes existing holders.** Each new token minted reduces all existing holders' percentage share of total supply. Communicate transparently with your community before increasing supply.
+</Warning>
+
+## Step-by-step
+
+### Step 1 — Go to FORGE → Tools → Mint Tokens
+
+Navigate to the Mint Tokens tool from the Tools menu.
+
+### Step 2 — Select your token
+
+Choose your token from the dropdown or paste the mint address. FORGE will verify that your connected wallet holds the mint authority.
+
+### Step 3 — Enter the amount
+
+Type the number of tokens to mint. This is in human-readable units (e.g., "1,000,000" mints one million tokens with the decimal places your token was configured with).
+
+### Step 4 — Set destination
+
+By default, newly minted tokens go to your connected wallet. Enter a different wallet address if you want to send them elsewhere (e.g., a vesting contract or community treasury).
+
+### Step 5 — Review and sign
+
+Check the cost summary. Click **Mint tokens** and approve the transaction in your wallet.
+
+## What happens on-chain
+
+The transaction calls the SPL Token program's `mintTo` instruction, which:
+1. Adds the specified amount to the destination token account
+2. Increases the mint's total supply counter by the same amount
+
+The new supply is immediately reflected on Solscan and all block explorers.
+
+<CTA tool="mintMore" />

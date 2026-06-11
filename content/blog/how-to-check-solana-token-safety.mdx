@@ -1,0 +1,141 @@
+---
+title: "How to Check if a Solana Token Is Safe: Holder Concentration & Authorities"
+description: "What to look for when evaluating a Solana token's safety: authority status, holder concentration, LP lock status, and how to read scanner results."
+slug: "how-to-check-solana-token-safety"
+date: "2026-06-09"
+updated: "2026-06-01"
+category: guide
+tool: security
+readTime: "8 min read"
+faq:
+  - q: "Is a green safety score a guarantee the token is safe?"
+    a: "No. Safety indicators check on-chain mechanics (authorities, distribution, liquidity). They do not evaluate project legitimacy, team honesty, or investment merit. A perfectly clean on-chain profile can still be a failed or fraudulent project."
+  - q: "What is the most important single indicator?"
+    a: "Mint authority status. If mint authority is active, the supply can be inflated at any time. This is the most direct on-chain risk signal."
+  - q: "What does 'LP burned' mean?"
+    a: "LP (liquidity provider) tokens represent the creator's share of the DEX pool. Burning them permanently removes the ability to withdraw liquidity — a rug pull becomes impossible for that pool. This is generally a strong positive signal."
+  - q: "Can I check any token, not just ones I created?"
+    a: "Yes. FORGE Analytics works for any valid Solana mint address."
+  - q: "What other tools should I use besides FORGE?"
+    a: "Rugcheck.xyz, DEXScreener's token info panel, and Birdeye's security tab are commonly used. Cross-reference multiple tools for a complete picture."
+---
+
+Before buying any Solana token, or to understand how your own token will be evaluated by buyers, you should know how to read the key on-chain safety signals. This guide walks through what to check and what each indicator actually means.
+
+## The four things that actually matter
+
+Most Solana token safety checks come down to four factors:
+
+1. **Mint authority status** — Can new tokens be printed?
+2. **Freeze authority status** — Can holder wallets be frozen?
+3. **Holder concentration** — How many wallets control how much supply?
+4. **Liquidity status** — Is the liquidity accessible to the creator or locked?
+
+Everything else (social links, website, team claims) is off-chain and unverifiable through code.
+
+---
+
+## 1. Mint authority
+
+**What it is:** The on-chain permission to create (mint) more tokens.
+
+**Active (orange flag):** The creator or whoever holds mint authority can call `mintTo` and increase the total supply at any time. If you hold tokens in a project with active mint authority, your percentage of supply is not guaranteed.
+
+**Revoked (green):** The total supply is permanently capped. No one, including the creator, can ever mint more.
+
+**Where to check:** Solscan → Token info → Mint Authority field. Or use FORGE Analytics — mint authority shows as a badge.
+
+**How to interpret:**
+- Active mint authority = the supply claim is marketing, not code
+- Revoked mint authority = the supply is actually fixed
+
+---
+
+## 2. Freeze authority
+
+**What it is:** The on-chain permission to freeze individual token accounts, preventing the holder from transferring or selling.
+
+**Active (orange flag):** The authority holder can freeze any wallet's token balance. This is a potential mechanism to block selling.
+
+**Revoked (green):** No wallet can ever be frozen. Token transfers are always permissioned by the holder, not a third party.
+
+**Note:** Many legitimate projects have freeze authority active. It's not automatically a red flag — but it's a power that's rarely necessary for a public community token.
+
+---
+
+## 3. Holder concentration
+
+**What it is:** The percentage of total supply held by the top N wallets.
+
+**Why it matters:** High concentration means a small number of wallets could dump a significant portion of supply simultaneously, causing a sharp price decline.
+
+| Top 10 wallets hold | Interpretation |
+|--------------------|----------------|
+| Under 20% | Well-distributed |
+| 20–50% | Moderate concentration |
+| 50–80% | High — significant sell pressure risk |
+| Over 80% | Very high — single-wallet movements dominate price |
+
+**Important context:** The creator wallet and any locked vesting contracts count toward concentration. A token where 50% is held by a vesting contract with a 3-year lock is very different from 50% held by a single wallet with no restrictions.
+
+**Where to check:** FORGE Analytics → Holder distribution panel. Also Solscan → Token Holders.
+
+---
+
+## 4. Liquidity status
+
+**What it is:** Whether trading liquidity exists, and whether it can be removed.
+
+**No liquidity:** The token cannot be traded on a DEX. You can transfer it peer-to-peer, but there's no market price.
+
+**Liquidity present, LP held by wallet:** The pool exists and trades are possible. But the wallet holding LP tokens can remove all liquidity at any time — this is the classic mechanism for a "rug pull." Price goes to near zero when liquidity is removed.
+
+**LP burned:** The most positive signal. LP tokens have been sent to the burn address. The liquidity is permanently locked in the pool. A rug pull via liquidity removal is not possible (though a token can still fail for other reasons).
+
+---
+
+## How to check with FORGE Analytics
+
+Navigate to your token's analytics page at `forge.solana.tools/analytics/[mint-address]` or through your token page.
+
+You'll see:
+- **Authority badges** — color-coded mint, freeze, and update authority status
+- **Holder chart** — top holders and distribution graph
+- **Concentration gauge** — top 10 holder percentage
+- **Pool info** — linked DEX pools with LP status
+
+---
+
+## How to cross-reference with external scanners
+
+For a thorough check, also run:
+
+**Rugcheck.xyz**
+Paste the mint address. Shows a composite risk score plus individual flags. Good for a quick snapshot.
+
+**DEXScreener**
+Search your token. Click the token name to see the info panel. Shows LP lock status, top holder distribution, and links to the Solscan token page.
+
+**Birdeye**
+Detailed analytics including holder history over time, which can reveal if a wallet has been slowly accumulating before a potential dump.
+
+---
+
+## What these checks cannot tell you
+
+- Whether the project will succeed
+- Whether the team will follow through on their roadmap
+- Whether the social media presence is authentic
+- Whether the website will still exist next month
+
+On-chain safety checks are necessary but not sufficient. A clean on-chain profile removes specific technical risks but does not make a token a good investment.
+
+<Warning>
+**This guide is educational.** Nothing here is financial advice. Evaluating a token's safety is one input in a decision that involves many factors. Always do your own research and understand the risks before investing in any cryptocurrency.
+</Warning>
+
+---
+
+<Disclaimer />
+
+<CTA tool="security" label="Check a token's safety" />

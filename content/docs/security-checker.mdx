@@ -1,0 +1,75 @@
+---
+title: "Security Checker"
+description: "How to read FORGE's authority badges and concentration risk indicators — and what they mean for a token's safety profile."
+slug: "security-checker"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+tool: security
+faq:
+  - q: "Does a green safety score mean a token is safe to invest in?"
+    a: "No. Safety indicators show on-chain authority status and holder distribution. They do not assess project legitimacy, team credibility, or investment merit. Always do your own research."
+  - q: "What is the most important thing to check?"
+    a: "Mint authority status. If mint authority is active, supply can be increased at any time. Combined with high holder concentration, this is the classic setup for a rug pull."
+  - q: "Can a token pass all safety checks and still be a scam?"
+    a: "Yes. Authority revocations and broad holder distribution are positive signals, but they do not guarantee a legitimate project. A project can revoke all authorities, distribute tokens widely, and still fail to deliver."
+  - q: "What is a 'developer wallet'?"
+    a: "FORGE attempts to identify the wallet that created or deployed the token. Wallets holding large percentages of supply from the creator or early participants are shown separately in the holder breakdown."
+---
+
+## What this tool does
+
+FORGE's security checker displays the on-chain risk signals for any token: authority status, holder concentration, and liquidity lock status. It is designed to give you the same picture that professional DEX scanners show — without leaving FORGE.
+
+## Understanding the indicators
+
+### Authority badges
+
+| Badge | Color | Meaning |
+|-------|-------|---------|
+| Mint Revoked | Green ✅ | Supply is permanently capped |
+| Mint Active | Orange ⚠️ | Supply can increase at any time |
+| Freeze Revoked | Green ✅ | No wallet can be frozen |
+| Freeze Active | Orange ⚠️ | Wallets can be frozen by authority holder |
+| Immutable | Green ✅ | Metadata cannot change |
+| Mutable | Orange ⚠️ | Metadata can change |
+
+**A token with all three authorities revoked (or showing all green) has the cleanest possible authority profile.** This does not make it a good investment — it only means these specific risks are absent.
+
+### Holder concentration
+
+The concentration gauge shows the percentage of supply held by the top 10 wallets.
+
+| Range | Indicator |
+|-------|-----------|
+| Under 20% | Low concentration |
+| 20–50% | Moderate |
+| Over 50% | High — consider implications |
+| Over 80% | Very high — significant price impact risk |
+
+Concentration is a structural metric. High concentration is not inherently bad (many legitimate projects have early large holders), but it does mean a few wallets can significantly move the price.
+
+### Liquidity status
+
+Shows whether the token has active liquidity pools and, if so, whether LP tokens are burned or held by a wallet:
+
+| Status | Meaning |
+|--------|---------|
+| LP Burned | Liquidity is locked permanently — cannot be removed |
+| LP Held | Liquidity can be removed by the holder at any time |
+| No Liquidity | No DEX pool detected |
+
+### What FORGE does not check
+
+- Project legitimacy or team background
+- Smart contract audits (for Token-2022 extensions)
+- External promises or roadmap credibility
+- Social media or website authenticity
+
+For deeper analysis, see external tools like Rugcheck.xyz, RugDoc, or Birdeye's security tab.
+
+<Warning>
+**Security indicators are informational only.** They reflect on-chain state at a point in time. FORGE does not endorse or rate projects. Never invest based solely on on-chain metrics.
+</Warning>
+
+<CTA tool="security" label="Check a token" />

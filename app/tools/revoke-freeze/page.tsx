@@ -81,7 +81,7 @@ export default function RevokeFreezePage() {
               View on Solscan ↗
             </a>
             <div className="tx-success-actions">
-              <Link href="/dashboard" className="lp-btn lp-btn--secondary">Dashboard</Link>
+              <Link href="/tools" className="lp-btn lp-btn--secondary">All Tools</Link>
             </div>
           </div>
         ) : (

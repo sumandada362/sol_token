@@ -22,7 +22,6 @@ export default function Footer() {
                 <li><Link href="/pool/add">Manage Pool</Link></li>
                 <li><Link href="/burn">Burn</Link></li>
                 <li><Link href="/tools/multisender">Multisender</Link></li>
-                <li><Link href="/dashboard">Analytics</Link></li>
               </ul>
             </div>
 

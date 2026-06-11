@@ -85,7 +85,7 @@ export async function POST(req: Request) {
         Object.values(tokenRow)
       );
 
-      // Prime the Redis cache immediately — avoid a cold read on the dashboard
+      // Prime the Redis cache immediately — avoid a cold read on first token page visit
       await cacheSet(CACHE_KEYS.token(mint), tokenRow);
       // Invalidate the wallet token list so it refreshes on next read
       await cacheDel(CACHE_KEYS.walletTokens(wallet));

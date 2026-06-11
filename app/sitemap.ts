@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getAllSlugs } from "@/lib/content";
 
 const BASE = "https://forge.solana.tools";
 
@@ -8,13 +9,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
     "/",
     "/create-token",
-
     "/pool",
     "/pool/add",
     "/pool/remove",
     "/burn",
-    "/dashboard",
-    "/account",
     "/docs",
     "/blog",
     "/tools",
@@ -36,37 +34,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/legal/risk",
   ];
 
-  const blogSlugs = [
-    "how-to-create-solana-token",
-    "how-to-add-liquidity-raydium",
-    "how-to-bulk-send-solana-tokens",
-    "how-to-update-token-metadata",
-    "how-to-revoke-mint-authority",
-    "how-to-create-openbook-market",
-    "sol-to-lamports-converter-guide",
-    "how-to-mint-more-solana-tokens",
-  ];
-
-  const docSlugs = [
-    "faq",
-    "create",
-    "pool",
-    "burn",
-    "multisender",
-    "mint-tokens",
-    "update-metadata",
-    "revoke-mint",
-    "revoke-freeze",
-    "openbook-market",
-    "analytics",
-  ];
+  const blogSlugs = getAllSlugs("blog");
+  const docSlugs = getAllSlugs("docs");
 
   return [
     ...staticRoutes.map((route) => ({
       url: `${BASE}${route}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
-      priority: route === "/" ? 1.0 : route.startsWith("/tools") || route.startsWith("/blog") ? 0.9 : 0.8,
+      priority:
+        route === "/"
+          ? 1.0
+          : route.startsWith("/tools") || route.startsWith("/blog")
+          ? 0.9
+          : 0.8,
     })),
     ...blogSlugs.map((slug) => ({
       url: `${BASE}/blog/${slug}`,

@@ -1,0 +1,76 @@
+---
+title: "Token-2022 Standard"
+description: "What Token-2022 is, how it differs from standard SPL, which extensions are available, and when you should (and shouldn't) use it."
+slug: "token-2022"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+faq:
+  - q: "Is Token-2022 compatible with Raydium and other DEXs?"
+    a: "Compatibility varies by DEX and by the extensions used. Raydium CPMM supports Token-2022. Some older DEXs or integrations may not. Check your target DEX's documentation before using Token-2022."
+  - q: "Can I migrate an SPL token to Token-2022?"
+    a: "No. The standard is set at token creation and cannot be changed. You would need to create a new token."
+  - q: "Do I need Token-2022 for a standard meme token?"
+    a: "No. Standard SPL is simpler, more universally compatible, and sufficient for the vast majority of tokens. Use Token-2022 only if you specifically need one of its extensions."
+  - q: "What is a transfer fee?"
+    a: "A transfer fee is a percentage automatically deducted from every transfer. It is configured in the token's on-chain data and enforced by the Token-2022 program. The fee goes to a configurable destination account."
+---
+
+## What Token-2022 is
+
+Token-2022 (also called Token Extensions) is an upgraded Solana token standard that supports features not possible with the original SPL token program. It was developed by Solana Labs and deployed to mainnet in 2024.
+
+The key difference: Token-2022 tokens live in a different on-chain program than standard SPL tokens. They are a different type — not an upgrade of existing tokens.
+
+## Token-2022 vs SPL: the core tradeoff
+
+| | Standard SPL | Token-2022 |
+|-|-------------|------------|
+| DEX compatibility | Universal | Varies by DEX |
+| Wallet support | Universal | Most modern wallets |
+| Transfer fees | Not supported | Supported |
+| Confidential transfers | Not supported | Supported |
+| Interest-bearing | Not supported | Supported |
+| Complexity | Low | Higher |
+| Best for | Most tokens | Specific use cases |
+
+**The default choice is SPL.** Choose Token-2022 only if you need a specific extension.
+
+## Available extensions
+
+### Transfer fee
+Automatically deduct a percentage from every transfer. Use cases: protocol-level revenue, automatic burns, redistribution to holders. The fee percentage is set at creation and can be modified by the fee config authority.
+
+### Confidential transfers
+Hide transfer amounts while keeping transfers verifiable on-chain. Use cases: privacy-focused tokens, institutional use cases where amount visibility is a concern.
+
+### Interest-bearing
+The token's displayed balance increases over time based on an interest rate. Useful for yield-bearing tokens or bonds.
+
+### Non-transferable
+Tokens that cannot be transferred after minting. Suitable for soulbound tokens, certificates, or reputation tokens.
+
+### Permanent delegate
+A designated wallet that can transfer or burn any holder's tokens. Rarely appropriate for public tokens — use only with full understanding and disclosure.
+
+### Metadata extension
+Store metadata directly in the token's mint account (no separate Metaplex account). Simpler metadata management, though less battle-tested.
+
+## When to use Token-2022
+
+Use Token-2022 if:
+- You need on-chain transfer fees
+- You need confidential transfers
+- You are building a yield product and want interest-bearing semantics
+- Your specific DEX or protocol explicitly supports and recommends it
+
+Use standard SPL if:
+- You are creating a standard meme token or community token
+- You need broad DEX and wallet compatibility
+- You are unsure which to choose
+
+<Warning>
+**Token-2022 compatibility is not universal.** Some DEXs, wallets, and explorers may not fully support all Token-2022 extensions. Verify compatibility with your target ecosystem before choosing this standard.
+</Warning>
+
+<CTA tool="create" label="Create a Token-2022 token" />

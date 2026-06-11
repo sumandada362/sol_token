@@ -43,7 +43,7 @@ export default function PoolPage() {
             <p className="tx-success-label">Liquidity added successfully</p>
             <div className="tx-success-actions">
               <Link href="/token/example" className="lp-btn lp-btn--primary">View token page</Link>
-              <Link href="/dashboard" className="lp-btn lp-btn--secondary">Go to dashboard</Link>
+              <Link href="/create-token" className="lp-btn lp-btn--secondary">Create Token</Link>
             </div>
           </div>
         ) : (

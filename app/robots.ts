@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/dashboard/", "/account/", "/api/"],
+        disallow: ["/api/"],
       },
     ],
     sitemap: "https://forge.solana.tools/sitemap.xml",

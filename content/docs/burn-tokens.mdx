@@ -1,0 +1,70 @@
+---
+title: "Burn Tokens"
+description: "Permanently remove tokens from circulation by sending them to the burn address. Reduces total supply and signals commitment to token economics."
+slug: "burn-tokens"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+tool: burn
+faq:
+  - q: "Can I recover burned tokens?"
+    a: "No. Burning is permanent and irreversible. The tokens are destroyed on-chain and cannot be recovered under any circumstances."
+  - q: "Does burning tokens increase the price?"
+    a: "Burning reduces supply, which can support price if demand stays constant — but it does not guarantee a price increase. Many factors affect token price. Do not burn solely for price manipulation expectations."
+  - q: "What is the cost to burn tokens?"
+    a: "Burning tokens on FORGE is free (no platform fee). You pay only Solana network gas (~0.0001–0.001 SOL)."
+  - q: "Do I need to hold mint authority to burn tokens?"
+    a: "No. Any wallet can burn tokens it holds. Burn authority is separate from mint authority."
+  - q: "Can I burn LP tokens?"
+    a: "Yes, from the dedicated LP Burn tool. Burning LP tokens permanently removes liquidity from the pool and is often used to signal that liquidity cannot be rug-pulled."
+---
+
+## What this tool does
+
+FORGE Burn lets you send tokens to the Solana burn address, permanently removing them from circulating supply. This is an on-chain operation — the tokens cease to exist.
+
+## What it costs
+
+Burning tokens is **free** on FORGE. You pay only Solana network gas, which is typically less than 0.001 SOL.
+
+## Before you start
+
+- Tokens you want to burn in your wallet
+- Your wallet connected to FORGE
+- Certainty — burning is irreversible
+
+<Warning>
+**Burning is permanent and irreversible.** There is no undo. Once tokens are burned, they cannot be recovered. Confirm the amount before signing.
+</Warning>
+
+## Step-by-step
+
+### Step 1 — Go to FORGE → Burn
+
+Navigate to the Burn tool from the main navigation.
+
+### Step 2 — Select token
+
+Choose the token you want to burn from the dropdown. FORGE shows your current balance for that token.
+
+### Step 3 — Enter amount
+
+Type the amount to burn, or click **Max** to burn your entire balance. The preview shows the remaining supply after the burn.
+
+### Step 4 — Confirm and sign
+
+Check the confirmation box acknowledging the action is irreversible. Click **Burn tokens** and approve the transaction in your wallet.
+
+## What happens on-chain
+
+The transaction calls the SPL Token program's `burn` instruction, which reduces the mint's total supply counter and destroys the tokens from your account. The reduction is immediately visible on Solscan and all explorers.
+
+<Warning>
+**You will burn the exact amount shown.** Double-check the number before confirming — common mistakes include wrong decimal placement (burning 1,000,000 tokens instead of 1 due to a decimal error).
+</Warning>
+
+## Burning LP tokens
+
+Burning LP (liquidity pool) tokens is a separate action that signals locked liquidity — it means the liquidity cannot be removed, which reduces rug pull risk. Use **FORGE Tools → Burn LP** for this. It works the same way but operates on LP mint addresses instead of your token.
+
+<CTA tool="burn" />

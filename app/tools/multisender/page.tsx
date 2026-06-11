@@ -191,7 +191,7 @@ export default function MultisenderPage() {
               <button className="lp-btn lp-btn--secondary" onClick={() => { setPhase("input"); setCsvText(""); setResponse(null); setJournal([]); setMintInput(""); }}>
                 Send again
               </button>
-              <Link href="/dashboard" className="lp-btn lp-btn--primary">Dashboard</Link>
+              <Link href="/create-token" className="lp-btn lp-btn--primary">Create Token</Link>
             </div>
           </div>
         ) : (

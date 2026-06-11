@@ -106,7 +106,7 @@ export default function MintTokensPage() {
               <button className="lp-btn lp-btn--secondary" onClick={() => { setTxState("idle"); setAmount(""); setSig(""); }}>
                 Mint again
               </button>
-              <Link href="/dashboard" className="lp-btn lp-btn--primary">Dashboard</Link>
+              <Link href="/create-token" className="lp-btn lp-btn--primary">Create Token</Link>
             </div>
           </div>
         ) : (

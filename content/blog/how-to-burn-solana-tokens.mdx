@@ -1,0 +1,123 @@
+---
+title: "How to Burn Solana Tokens to Reduce Supply"
+description: "How token burning works on Solana, when it makes sense, how to burn tokens and LP positions using FORGE, and what it does and doesn't do for your project."
+slug: "how-to-burn-solana-tokens"
+date: "2026-06-03"
+updated: "2026-06-01"
+category: guide
+tool: burn
+readTime: "6 min read"
+faq:
+  - q: "Are burned tokens gone forever?"
+    a: "Yes. Burning is permanent and irreversible. The tokens are destroyed on-chain and the total supply counter is reduced. There is no recovery."
+  - q: "Does burning tokens guarantee a price increase?"
+    a: "No. Burning reduces supply, which can support price if demand is constant — but it does not guarantee a price increase. Many factors influence token price. Do not burn primarily for price manipulation expectations."
+  - q: "What does it cost to burn tokens?"
+    a: "Burning tokens on FORGE is free (no platform fee). You pay only Solana network gas, typically less than 0.001 SOL."
+  - q: "What is LP burning?"
+    a: "LP (liquidity provider) tokens represent your share of a DEX pool. Burning LP tokens permanently removes your ability to withdraw liquidity, which is a strong signal that the liquidity cannot be rug-pulled."
+  - q: "Do I need to hold any special authority to burn tokens?"
+    a: "No. Any wallet can burn tokens it holds. Burning your own tokens does not require mint authority or any other special permission."
+---
+
+Token burns are one of the most discussed mechanics in Solana projects. This guide explains what burning actually does on-chain, the difference between burning tokens and burning LP tokens, and how to do each with FORGE.
+
+## What burning does on-chain
+
+When you burn SPL tokens, the transaction calls the Token program's `burn` instruction, which:
+
+1. Deducts the burned amount from your token account balance
+2. Reduces the mint's total supply counter by the same amount
+
+The tokens are not sent to a dead wallet — they are destroyed. The total supply shown on Solscan and all explorers decreases immediately after the transaction confirms.
+
+## What burning does and doesn't do
+
+**Does:**
+- Reduce total supply permanently
+- Reduce circulating supply (if burned tokens were in circulation)
+- Show a decreased supply on all explorers
+- Signal commitment to token economics if done publicly
+
+**Does not:**
+- Guarantee price appreciation
+- Increase your market cap (market cap = price × supply, burning reduces supply but buyers/sellers determine price)
+- Remove tokens from other holders' wallets
+- Affect uncirculated tokens you haven't minted yet
+
+## When burning makes sense
+
+**After a vesting unlock:** If you minted tokens for marketing or team allocations that were never distributed, burning the unused portion signals that those tokens won't hit the market.
+
+**Supply reduction commitment:** Some projects commit to burning a percentage of transaction fees or treasury tokens on a schedule. This is a legitimate tokenomics mechanic if disclosed upfront.
+
+**Correction of a minting error:** If you accidentally minted too many tokens, burning the excess corrects it.
+
+**When it doesn't make sense:** Burning small amounts of tokens for a temporary price boost is transparent and rarely effective. Burning creates lasting value only when it's meaningful (a large percentage of supply) and part of a consistent, publicly communicated policy.
+
+## How to burn tokens with FORGE
+
+### Step 1 — Go to FORGE → Burn
+
+Navigate to [forge.solana.tools/burn](/burn).
+
+### Step 2 — Select your token
+
+Choose the token you want to burn from the dropdown. Your current balance is shown. You can burn any SPL token you hold, not just tokens you created.
+
+### Step 3 — Enter the amount
+
+Type the number of tokens to burn. Click **Max** to burn your entire balance. The interface shows:
+- Amount to burn
+- Remaining supply after burn
+
+### Step 4 — Confirm and sign
+
+<Warning>
+**This action is permanent.** Check the confirmation box that acknowledges burning is irreversible. Verify the amount one final time. Click **Burn tokens** and approve in your wallet.
+</Warning>
+
+Cost: Free (no FORGE fee). Gas: ~0.0001 SOL.
+
+---
+
+## How to burn LP tokens
+
+Burning LP tokens is a separate but related action. LP tokens represent your share of a DEX liquidity pool. Burning them permanently removes your ability to withdraw that liquidity.
+
+**Why burn LP tokens?**
+It signals to buyers that the liquidity is permanently locked — the creator cannot do a "rug pull" (removing all liquidity and crashing the price). Many DEX scanners specifically check for burned LP tokens.
+
+### Step 1 — Go to FORGE → Tools → Burn LP
+
+Navigate to the Burn LP tool in the Tools menu.
+
+### Step 2 — Select your token and pool
+
+Choose your token and the specific pool whose LP tokens you want to burn.
+
+### Step 3 — Enter amount or burn all
+
+You can burn a percentage or all of your LP tokens. Most projects burn 100% as a trust signal.
+
+### Step 4 — Confirm and sign
+
+<Warning>
+**Burning LP tokens is permanent.** Once burned, you cannot withdraw the underlying liquidity. This is a one-way trust commitment. Only do this if you intend for the liquidity to remain in the pool permanently.
+</Warning>
+
+---
+
+## What DEX scanners show after burning
+
+After burning LP tokens, DEX scanners like Rugcheck and DEXScreener will typically update their liquidity safety indicator:
+
+> ✅ Liquidity locked — LP tokens burned (permanent lock)
+
+This is considered one of the strongest safety signals because it removes the ability to rug-pull.
+
+---
+
+<Disclaimer />
+
+<CTA tool="burn" />

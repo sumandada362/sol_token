@@ -50,7 +50,7 @@ export default function MarketCreatePage() {
             <p className="burn-remaining">{baseToken.toUpperCase()}/{quoteToken.toUpperCase()} market is live</p>
             <div className="tx-success-actions">
               <Link href="/pool" className="lp-btn lp-btn--primary">Add liquidity</Link>
-              <Link href="/dashboard" className="lp-btn lp-btn--secondary">Dashboard</Link>
+              <Link href="/tools" className="lp-btn lp-btn--secondary">All Tools</Link>
             </div>
           </div>
         ) : (

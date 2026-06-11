@@ -1,0 +1,84 @@
+---
+title: "Multisender — Bulk Token Distribution"
+description: "Send SPL tokens or SOL to hundreds of wallets in a single session. Used for airdrops, team vesting, community rewards, and marketing distributions."
+slug: "multisender"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+tool: multisender
+faq:
+  - q: "What tokens can I send with Multisender?"
+    a: "SOL, USDC, USDT, BONK, and any SPL token by mint address. There are dedicated shortcuts for common tokens at /tools/multisender/sol, /usdc, /usdt, /bonk."
+  - q: "What is the cost per send?"
+    a: "0.01 SOL flat FORGE fee per transaction, plus ~0.002 SOL Solana rent per new token account created. If the recipient already has a token account, no rent is needed. Large airdrops are batched into multiple transactions automatically."
+  - q: "What is the CSV format?"
+    a: "One recipient per line: wallet_address,amount. Example: 7xKqAb...123,1000. No header row needed. Amounts are in human-readable units (not raw lamports)."
+  - q: "Is there a limit on recipients per transaction?"
+    a: "Solana transactions have a size limit. FORGE batches large recipient lists automatically. There is no hard cap on total recipients — very large lists are split into multiple transactions."
+  - q: "What if some wallets do not have a token account yet?"
+    a: "FORGE creates the token account automatically and charges the ~0.002 SOL rent for each new account. This cost is paid by the sender."
+---
+
+## What this tool does
+
+FORGE Multisender distributes SPL tokens or SOL to multiple wallets in bulk. Upload a CSV with wallet addresses and amounts, review the cost, and sign. Hundreds of recipients, one flow.
+
+## What it costs
+
+| Item | Cost |
+|------|------|
+| FORGE fee | 0.01 SOL per transaction |
+| Token account creation (per new recipient) | ~0.002 SOL |
+| Solana gas | ~0.0001 SOL per transaction |
+
+Token account rent is a Solana network cost, not a FORGE fee. Recipients who already have a token account for your token do not incur this cost. For large airdrops, budget approximately 0.002 SOL per new recipient.
+
+## Before you start
+
+- Your tokens in your connected wallet
+- Recipient list as a CSV (wallet address, amount per line)
+- SOL for FORGE fees + rent for new token accounts
+
+## Step-by-step
+
+### Step 1 — Go to FORGE → Tools → Multisender
+
+Select the token type (custom SPL token, SOL, USDC, USDT, or BONK).
+
+### Step 2 — Enter your token mint address
+
+For custom SPL tokens, paste your token's mint address. For preset tokens (SOL, USDC, etc.), skip this step.
+
+### Step 3 — Upload or paste recipients
+
+Upload a CSV file or paste directly into the text box. Format: one recipient per line.
+
+```
+7xKqAbcDef...wallet1,1000
+8yLrBcdEfg...wallet2,500
+9zMsCdeFgh...wallet3,2500
+```
+
+Amounts are in human-readable units. The tool shows a parsed preview so you can verify before continuing.
+
+### Step 4 — Review cost summary
+
+FORGE calculates:
+- Total tokens to send
+- Number of new token accounts to create (with rent cost)
+- Total FORGE fees
+- Total Solana gas estimate
+
+### Step 5 — Sign transaction(s)
+
+For large lists, FORGE batches recipients across multiple transactions. Each batch requires a separate wallet signature. You will be prompted once per batch.
+
+## What happens on-chain
+
+Each batch calls the SPL Token program's `transfer` instruction for each recipient. If a recipient does not have a token account for your token, FORGE creates one with `createAssociatedTokenAccountIdempotent` first.
+
+<Warning>
+**Verify addresses carefully before sending.** Transactions on Solana are irreversible. Sending to an incorrect address results in permanent loss of those tokens.
+</Warning>
+
+<CTA tool="multisender" />

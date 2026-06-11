@@ -1,0 +1,97 @@
+---
+title: "How to Make a Solana Token Immutable"
+description: "What immutability means on Solana, what gets locked and what doesn't, and how to revoke update authority so your token's metadata can never be changed."
+slug: "how-to-make-solana-token-immutable"
+date: "2026-06-05"
+updated: "2026-06-01"
+category: guide
+tool: makeImmutable
+readTime: "5 min read"
+faq:
+  - q: "What does immutable mean for a Solana token?"
+    a: "Immutable means update authority has been revoked. The on-chain metadata — name, symbol, and the URI pointing to the logo and description — can never be changed by anyone."
+  - q: "Does immutability affect trading?"
+    a: "No. Making a token immutable only locks the metadata. It has no effect on transferability, trading, minting (that's a separate authority), or any other token function."
+  - q: "How much does it cost to make a token immutable?"
+    a: "Nothing. Revoking update authority (making immutable) is free on FORGE. You only pay Solana network gas, which is less than 0.001 SOL."
+  - q: "Can I make my token immutable at creation?"
+    a: "Yes. Enable 'Make Immutable' in Step 5 of the Create Token flow. It's free and saves a separate transaction later."
+  - q: "If I make my token immutable, can I still change the off-chain metadata?"
+    a: "The on-chain metadata account is locked. However, if your metadata URI points to a mutable IPFS gateway or a server you control, the content at that URL could still change. Use a content-addressed IPFS hash for true immutability."
+---
+
+Making a token immutable on Solana means revoking its **update authority** — the on-chain permission that controls whether metadata can be changed. After revocation, the token's name, symbol, and metadata URI are permanently locked. No one, including you, can ever change them.
+
+## What update authority controls
+
+Every Solana token created with the Metaplex metadata standard has an update authority — an account (usually your wallet) that can call `updateMetadataAccountV2` to change:
+- Token name
+- Token symbol
+- Metadata URI (the URL pointing to your logo, description, and social links)
+
+If this authority is active, the holder can change any of these at any time.
+
+## Why immutability matters
+
+**For buyers and holders:**
+An immutable token cannot be renamed, rebranded, or have its logo swapped out. What you see is what it is. This matters because a bad actor with active update authority could, theoretically, change a token's metadata to impersonate another project.
+
+**For DEX scanners:**
+Most scanner tools show whether a token is mutable or immutable. An immutable token gets a green checkmark. A mutable token gets a flag (though it's considered a lower-severity risk compared to active mint authority).
+
+**For your own credibility:**
+Locking your metadata publicly signals that you are committed to your brand and are not planning to change course.
+
+## What immutability does NOT lock
+
+- **Mint authority** — separate, controls supply
+- **Freeze authority** — separate, controls freezing
+- **LP tokens** — immutability doesn't affect pool liquidity
+- **Off-chain metadata content** — if your URI points to a mutable endpoint, that content can still change (see FAQ)
+
+## When to make your token immutable
+
+If your metadata (name, symbol, logo, description) is finalized, make it immutable as soon as possible. Most projects do this at creation. The only reason to wait is if you know you still need to update your logo or social links after launch.
+
+If you already made metadata changes and you're now happy with it, revoke update authority to lock it in.
+
+## How to make a token immutable with FORGE
+
+### Option 1: At creation
+
+In Step 5 of the FORGE Create Token flow, enable **Make Immutable**. This is free and included in the single creation transaction.
+
+### Option 2: After creation
+
+### Step 1 — Go to FORGE → Tools → Make Immutable
+
+Navigate to the Make Immutable tool.
+
+### Step 2 — Connect your wallet
+
+Connect the wallet that currently holds update authority. FORGE verifies this automatically.
+
+### Step 3 — Select your token
+
+Paste your mint address or select from the dropdown.
+
+### Step 4 — Confirm and sign
+
+<Warning>
+**This is permanent.** After revoking update authority, the metadata can never be changed — by anyone. Verify your token name, symbol, and logo are correct before proceeding.
+</Warning>
+
+Check the confirmation box and click **Make immutable**. Approve in your wallet. Cost: Free (Solana gas only, ~0.0001 SOL).
+
+## Verify on Solscan
+
+After the transaction confirms:
+1. Go to solscan.io and search your mint address
+2. Open the Metadata tab
+3. The "Update Authority" field should show `null` or "Revoked"
+
+---
+
+<Disclaimer />
+
+<CTA tool="makeImmutable" label="Make your token immutable" />

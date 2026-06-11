@@ -176,30 +176,6 @@ export default async function TokenPage({ params }: { params: Promise<{ mint: st
           </div>
         </div>
 
-        {/* Analytics upsell / paywall */}
-        <div className="lp-card token-chart">
-          <div className="token-chart-header">
-            <div className="token-chart-title">Analytics</div>
-            <Link
-              href={`/analytics/${mint}`}
-              className="lp-btn lp-btn--primary"
-              style={{ fontSize: "0.85rem", padding: "0.45rem 1rem" }}
-            >
-              Unlock full analytics — 0.5 SOL/yr
-            </Link>
-          </div>
-          <div className="token-chart-placeholder">
-            <div style={{ textAlign: "center", padding: "2rem 0" }}>
-              <p style={{ marginBottom: "0.75rem", color: "var(--lp-muted)" }}>
-                Price chart · Volume · Holder growth · CSV export
-              </p>
-              <p style={{ fontSize: "0.82rem", color: "var(--lp-muted)" }}>
-                Live data powered by Helius webhooks + Birdeye
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Actions */}
         <div className="token-actions">
           <Link href={`/pool?token=${mint}`} className="lp-btn lp-btn--primary">Add liquidity</Link>

@@ -1,0 +1,99 @@
+---
+title: "How to Add and Remove Liquidity on Raydium"
+description: "A practical guide to managing your Raydium liquidity position — adding to an existing pool, removing liquidity, and understanding LP tokens."
+slug: "how-to-add-remove-liquidity-raydium"
+date: "2026-06-08"
+updated: "2026-06-01"
+category: guide
+tool: pool
+readTime: "6 min read"
+faq:
+  - q: "What are LP tokens?"
+    a: "LP (liquidity provider) tokens represent your share of a Raydium pool. They are standard SPL tokens. When you add liquidity, you receive LP tokens proportional to your contribution. When you remove liquidity, you burn your LP tokens and receive back your underlying assets."
+  - q: "What is impermanent loss?"
+    a: "When the price ratio of assets in the pool changes, your LP position's value can be less than if you had just held the assets separately. This difference is called impermanent loss. It's standard in AMM pools and is not unique to Raydium or FORGE."
+  - q: "Can I partially remove liquidity?"
+    a: "Yes. Remove 25%, 50%, or any custom percentage of your LP position."
+  - q: "If I burned my LP tokens, can I remove liquidity?"
+    a: "No. Burning LP tokens permanently surrenders your right to withdraw liquidity. This is intentional — it signals that the liquidity is locked forever."
+  - q: "Does adding or removing liquidity cost FORGE fees?"
+    a: "No. Adding liquidity to an existing pool and removing liquidity are free (no FORGE fee). You pay only Solana network gas (~0.001 SOL)."
+---
+
+Once you've created a Raydium pool, you'll often need to add more liquidity as your project grows, or eventually remove it. This guide covers how to do both using FORGE, plus what to understand about LP tokens before you act.
+
+## Understanding LP tokens first
+
+Every time you add liquidity to a Raydium CPMM pool, you receive **LP tokens** in return. These tokens:
+- Represent your proportional share of the pool
+- Earn a share of trading fees generated in the pool
+- Must be held (not burned) if you want to be able to remove liquidity later
+
+**Critical:** If LP tokens are burned, the liquidity is permanently locked. LP burning is a trust signal (the creator can't rug), but it means you can never get that liquidity back. Treat burning LP tokens as a one-way door.
+
+## How to add liquidity to an existing pool
+
+This is useful when:
+- You want to increase depth after your token gains traction
+- You have accumulated more tokens and want to put them to work
+- You want to reduce price impact for larger trades
+
+### Step 1 — Go to FORGE → Pool → Add
+
+Navigate to the Pool section and select **Add liquidity**.
+
+### Step 2 — Find your pool
+
+Enter your token mint address. FORGE will detect your existing pool(s) and show the current price and pool depth.
+
+### Step 3 — Enter your deposit amount
+
+You can enter either the SOL amount or the token amount — the other side auto-fills based on the current pool price. You cannot set your own ratio when adding to an existing pool; you must match the current price.
+
+### Step 4 — Sign
+
+No FORGE fee. You pay Solana gas only (~0.001 SOL). Approve the transaction and receive additional LP tokens.
+
+## How to remove liquidity
+
+Removing liquidity closes or reduces your position, returning the underlying tokens and SOL.
+
+### Step 1 — Go to FORGE → Pool → Remove
+
+Navigate to Pool → Remove.
+
+### Step 2 — Select your token and pool
+
+Choose your token and the pool you want to remove from. FORGE shows your current LP position and the current value of your share.
+
+### Step 3 — Choose percentage to remove
+
+Select 25%, 50%, 100%, or enter a custom percentage.
+
+### Step 4 — Review and sign
+
+The preview shows how much SOL and tokens you will receive. This includes any trading fees your position has earned. Sign the transaction and receive your assets.
+
+## What you receive when removing liquidity
+
+You receive your share of the pool at the current pool ratio, not the ratio when you deposited. If the price has changed since you added liquidity:
+- If your token price went up relative to SOL, you'll receive fewer tokens and more SOL
+- If your token price went down relative to SOL, you'll receive more tokens and less SOL
+
+This is how all AMM pools work. The trading fees you earned partially offset any impermanent loss.
+
+## Timing considerations
+
+- **Don't remove liquidity immediately** if you just added it — there's no time lock for CPMM, but removing right after adding accomplishes nothing
+- **During high volatility**, the pool ratio shifts faster. If you need to remove, the amount you receive changes with every trade
+- **Fee earnings** accumulate over time — the longer your position is active, the more fees you earn
+
+<Warning>
+**Removing all liquidity makes your token untradeable** on that DEX. If this is the only pool for your token, buyers will have no way to purchase it after removal. Make sure you understand the market impact before removing.
+</Warning>
+
+---
+
+<Disclaimer />
+
+<CTA tool="pool" label="Manage your liquidity" />

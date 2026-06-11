@@ -1,0 +1,113 @@
+---
+title: "How to Create a Custom (Vanity) Solana Token Address"
+description: "What a vanity token mint address is, how grind-based address generation works on Solana, the time and cost tradeoffs, and how to enable it in FORGE."
+slug: "how-to-create-vanity-solana-address"
+date: "2026-06-12"
+updated: "2026-06-01"
+category: guide
+tool: create
+readTime: "6 min read"
+faq:
+  - q: "What is a vanity address?"
+    a: "A vanity address is a Solana public key that starts (or ends) with a specific string you choose. For example, a mint address starting with 'FORGE' instead of a random sequence of characters."
+  - q: "How long does it take to generate a vanity address?"
+    a: "It depends on the prefix length and characters. A 4-character prefix typically takes seconds to minutes. A 6-character prefix can take hours. Each additional character makes it roughly 58x harder."
+  - q: "Does a vanity address cost more?"
+    a: "FORGE charges no additional fee for vanity address generation. The token creation cost is the same (0.1 SOL base fee). The only cost is time — the generation happens locally in your browser."
+  - q: "Is a vanity address more secure or trusted?"
+    a: "Not inherently. A vanity address is purely cosmetic — it doesn't affect the token's security, authorities, or any on-chain properties. It's a branding choice."
+  - q: "Can I choose any prefix?"
+    a: "Any string using the base58 character set (1-9, A-Z, a-z, excluding 0, O, I, l). Some characters are not valid in base58 and cannot appear in a Solana address."
+---
+
+Most Solana token mint addresses look like: `7xKqAbcDefGhiJkLmnOpQrStUvWxYz1234567890ab`. A vanity address lets you choose a prefix so it looks like: `FORGEAbcDefGhiJkLmnOpQrStUvWxYz1234567890ab`.
+
+This is a cosmetic feature — it doesn't affect security or token mechanics — but it can make your token's address instantly recognizable to your community.
+
+## How vanity address generation works
+
+Every Solana address is derived from a keypair (a public/private key pair). To generate a vanity address, a tool generates thousands of keypairs per second until it finds one whose public key starts with your desired prefix.
+
+This is called "grinding" and it runs locally in your browser — no keys leave your device. The private key of the generated keypair becomes the mint's keypair (not your wallet keypair — your wallet stays unchanged).
+
+The time required grows exponentially with prefix length:
+
+| Prefix length | Approximate time |
+|---------------|-----------------|
+| 3 characters | < 1 second |
+| 4 characters | Seconds to 1 minute |
+| 5 characters | 1–60 minutes |
+| 6 characters | Hours |
+| 7+ characters | Days or more |
+
+These are rough estimates. The actual time is random — you might find a match immediately or it might take longer than the estimate.
+
+## What characters are valid
+
+Solana addresses use **base58 encoding**, which excludes characters that look visually similar:
+- No `0` (zero)
+- No `O` (capital o)
+- No `I` (capital i)
+- No `l` (lowercase L)
+
+Valid characters: `1-9 A-H J-N P-Z a-k m-z`
+
+So you can't have an address starting with "FULL" or "LION" because of the `l` and `I`. You can have "FORGE", "MOON", "BULL", etc.
+
+## Case sensitivity
+
+Solana addresses are case-sensitive. "forge" and "FORGE" are different — and some character combinations in mixed case may be harder to grind than others.
+
+## How to create a vanity token address with FORGE
+
+### Step 1 — Open FORGE Create Token
+
+Go to [forge.solana.tools/create-token](/create-token).
+
+### Step 2 — Fill in your token details
+
+Complete all the standard fields: name, symbol, supply, decimals, logo, and authority preferences.
+
+### Step 3 — Enable vanity address in Advanced options
+
+In the Advanced section, check **Vanity address**. A text input appears for your desired prefix.
+
+### Step 4 — Enter your prefix
+
+Type the prefix you want (e.g., "FORGE"). Keep it to 4–5 characters unless you're prepared to wait a long time.
+
+The UI shows an estimated generation time for your chosen prefix.
+
+### Step 5 — Wait for grinding
+
+Click **Generate**. The browser begins grinding keypairs locally. Progress is shown in real-time (keypairs per second, estimated time remaining). Do not close the browser tab during this process.
+
+For longer prefixes, you can start the grind and let it run in the background.
+
+### Step 6 — Review and sign
+
+Once a matching address is found, the mint address is locked in. Review your token details and sign as normal.
+
+## Security note
+
+The grind happens locally in your browser. The keypair generated is used only for the token's mint account — not as a wallet keypair. Your wallet's private key is never involved in the grind process.
+
+## Is a vanity address worth it?
+
+**Worth it if:**
+- You want your token's address to be immediately recognizable
+- Your community will share the mint address often and recognition matters
+- You're okay waiting for a 4–5 character prefix
+
+**Not worth it if:**
+- You want a very long prefix (7+ characters could take days)
+- Time-to-launch is critical
+- Your community identifies the token by name, not address
+
+Most projects skip vanity addresses. They're a nice touch but not a significant factor in success.
+
+---
+
+<Disclaimer />
+
+<CTA tool="create" label="Create your token" />

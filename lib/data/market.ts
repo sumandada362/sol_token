@@ -16,15 +16,6 @@ export interface TokenOverview {
   supply: number | null;
 }
 
-export interface OHLCVPoint {
-  unixTime: number;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
-
 /**
  * Token price, volume, liquidity, market cap overview.
  * Cached at call site — this is the expensive Birdeye call.
@@ -51,41 +42,6 @@ export async function getTokenOverview(mint: string): Promise<TokenOverview> {
   } catch {
     return empty;
   }
-}
-
-/**
- * OHLCV candles for the analytics chart.
- * type: "1H" | "1D" | "1W" — maps to Birdeye resolution.
- */
-export async function getOHLCV(
-  mint: string,
-  resolution: "15m" | "1H" | "4H" | "1D",
-  limit = 168
-): Promise<OHLCVPoint[]> {
-  try {
-    const timeFrom = Math.floor(Date.now() / 1000) - limit * resolutionSeconds(resolution);
-    const url = `${BIRDEYE_BASE}/defi/ohlcv?address=${mint}&type=${resolution}&time_from=${timeFrom}&time_to=${Math.floor(Date.now() / 1000)}`;
-    const res = await fetch(url, { headers: birdeyeHeaders() });
-    if (!res.ok) return [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const json = await res.json() as any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (json?.data?.items ?? []).map((item: any) => ({
-      unixTime: item.unixTime,
-      open: item.o,
-      high: item.h,
-      low: item.l,
-      close: item.c,
-      volume: item.v,
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function resolutionSeconds(r: string): number {
-  const map: Record<string, number> = { "15m": 900, "1H": 3600, "4H": 14400, "1D": 86400 };
-  return map[r] ?? 3600;
 }
 
 /**

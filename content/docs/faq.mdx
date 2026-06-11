@@ -1,0 +1,101 @@
+---
+title: "Frequently Asked Questions"
+description: "Answers to the most common questions about FORGE, Solana tokens, fees, wallets, and on-chain operations."
+slug: "faq"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+faq:
+  - q: "Is FORGE non-custodial?"
+    a: "Yes. FORGE never holds your private keys or SOL. Every transaction is signed by your own wallet. We cannot access your funds."
+  - q: "Can I get a refund?"
+    a: "Platform fees are non-refundable once confirmed on-chain. On-chain actions are permanent by nature."
+  - q: "What wallets are supported?"
+    a: "Phantom, Solflare, and Backpack. More wallets may be added over time."
+  - q: "Is the token symbol really permanent?"
+    a: "Yes. The token symbol is stored in on-chain metadata. Once created, the symbol cannot be changed."
+  - q: "How much SOL do I need to create a token?"
+    a: "Minimum 0.1 SOL (base fee) plus ~0.002 SOL network rent. Budget more if revoking authorities (+0.05 SOL each for mint/freeze) or adding custom creator info (+0.1 SOL)."
+---
+
+## General questions
+
+### Is FORGE non-custodial?
+
+Yes. FORGE is a non-custodial tool. Your wallet signs every transaction. FORGE never holds your private keys, seed phrase, or funds. We cannot access your wallet or reverse any transaction.
+
+### What wallets does FORGE support?
+
+Phantom, Solflare, and Backpack. These are the most widely used Solana wallets. Additional wallet support may be added based on demand.
+
+### Does FORGE work on devnet?
+
+Yes. Switch your wallet to devnet, fund it with free devnet SOL from a faucet (e.g., faucet.solana.com), and FORGE will operate on devnet.
+
+### Can I get a refund?
+
+No. Platform fees paid on-chain are non-refundable. Solana transactions are irreversible by design. Always review the cost summary before signing.
+
+## Token creation
+
+### How much SOL do I need to create a token?
+
+At minimum: **0.1 SOL** (FORGE fee) + **~0.002 SOL** (Solana rent). If you also revoke mint authority (+0.05 SOL) and freeze authority (+0.05 SOL), budget **~0.20 SOL** plus gas.
+
+### Is the token symbol permanent?
+
+Yes. The symbol is stored in on-chain metadata and cannot be changed after creation. Triple-check it before signing.
+
+### Can I create a Token-2022 token?
+
+Yes. Choose Token-2022 in the token standard selector. Use this only if you specifically need an extension like transfer fees or confidential transfers. See the [Token-2022 docs](/docs/token-2022) for details.
+
+### Can I test on devnet?
+
+Yes. Switch your wallet to devnet and use a Solana devnet faucet. FORGE automatically operates on the network your wallet is connected to.
+
+## Authorities
+
+### What is mint authority?
+
+The right to create new tokens. If someone holds mint authority, they can increase your token's supply at any time. Revoking mint authority permanently caps the supply.
+
+### What is freeze authority?
+
+The right to freeze a token holder's account, preventing them from transferring tokens. Revoking freeze authority means no wallet can ever be frozen.
+
+### What does "immutable" mean?
+
+Immutable means update authority has been revoked. On-chain metadata (name, symbol, logo) can never be changed by anyone.
+
+### Can I revoke authorities later?
+
+Yes. You can revoke any authority at any time using FORGE Tools, as long as you still hold that authority. Each revocation costs 0.05 SOL (except make immutable, which is free).
+
+## Liquidity and DEXs
+
+### Which DEX should I use?
+
+Raydium CPMM is the most common choice for new token launches. It has lower setup costs, no OpenBook market required, and deep liquidity infrastructure. Orca and Meteora are solid alternatives.
+
+### Do I need an OpenBook market?
+
+Only if you are using Raydium Legacy AMM. Raydium CPMM does not require one. Most new tokens use CPMM.
+
+### Can I add liquidity to multiple DEXs?
+
+Yes. FORGE lets you create pools on multiple DEXs in a single session.
+
+## Safety and security
+
+### Is FORGE audited?
+
+FORGE uses established on-chain programs (Metaplex, SPL Token, Raydium, OpenBook). The FORGE fee transfer logic is minimal. We recommend reviewing transactions in your wallet before signing.
+
+### Can FORGE rug pull my project?
+
+No. FORGE does not hold custody of your tokens, liquidity, or wallet. Once a pool is created, FORGE has no access to it. Liquidity removal is controlled by whoever holds the LP tokens.
+
+### How do I check if my token passes DEX scanner safety checks?
+
+Use FORGE Analytics or the Security Checker page. See also: [Token Authorities Explained](/docs/token-authorities).

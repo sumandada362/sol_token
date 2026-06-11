@@ -85,7 +85,7 @@ export default function Home() {
               { n: "1", title: "Connect", body: "Connect your Solana wallet — Phantom, Solflare, or Backpack." },
               { n: "2", title: "Configure", body: "Name your token, set supply, upload branding, and set authorities." },
               { n: "3", title: "Add liquidity", body: "Choose one or more DEXs and set your initial liquidity amounts." },
-              { n: "4", title: "Track", body: "Monitor price, volume, holders, and concentration from your dashboard." },
+              { n: "4", title: "Track", body: "Check authority status, holder concentration, and risk flags on every token page." },
             ].map(({ n, title, body }) => (
               <div key={n} className="lp-step">
                 <div className="lp-step-num">{n}</div>

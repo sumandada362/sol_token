@@ -1,0 +1,92 @@
+---
+title: "Token Authorities Explained"
+description: "What mint, freeze, and update authorities are, what they can do, how to revoke them, and why DEX scanners care about them."
+slug: "token-authorities"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+tool: revokeMint
+faq:
+  - q: "Can I revoke only one authority and keep the others?"
+    a: "Yes. Each authority is independent. You can revoke mint authority while keeping freeze and update authority, or any combination."
+  - q: "What is the cost to revoke authorities?"
+    a: "0.05 SOL per authority (mint or freeze). Revoking update authority (making immutable) is free. You can revoke all three at token creation or separately later."
+  - q: "Can I restore an authority after revoking it?"
+    a: "No. Revoking an authority is permanent. There is no way to restore it. Make sure your supply is finalized before revoking mint authority."
+  - q: "Do I need to revoke authorities?"
+    a: "No, but it builds trust. Many DEX scanners (Rugcheck, RugDoc, DEXScreener) flag tokens with active mint authority as higher risk. Revoking signals that no one can inflate supply or freeze wallets."
+  - q: "What does 'immutable' mean?"
+    a: "Immutable means update authority has been revoked, so on-chain metadata (name, symbol, logo URI) can never be changed by anyone."
+---
+
+## What are token authorities?
+
+When you create a Solana token, three special permissions are assigned to your wallet by default:
+
+| Authority | What it can do |
+|-----------|----------------|
+| **Mint authority** | Create new tokens (increase total supply) |
+| **Freeze authority** | Freeze individual token accounts (prevent transfers) |
+| **Update authority** | Change on-chain metadata (name, symbol, logo URI) |
+
+These exist for legitimate reasons: you might need to mint tokens in phases, or update your logo after launch. But they also represent risks to holders — someone with mint authority could dilute supply indefinitely.
+
+## Why DEX scanners care
+
+Tools like DEXScreener, Rugcheck, Birdeye, and RugDoc scan token authorities as part of their safety ratings. A token with active mint authority gets flagged because the creator could theoretically print unlimited tokens. Revoking authorities removes these flags and signals to potential buyers that the supply is final.
+
+## Mint authority
+
+**Active:** The owner can call `mintTo` at any time, increasing total supply and diluting all existing holders.
+
+**Revoked:** The total supply is permanently capped at its current value. No one — not even you — can ever mint more tokens.
+
+**When to revoke:** After your initial supply distribution is complete. If you have a vesting or staking contract that mints rewards, keep mint authority until that contract is deployed and funded.
+
+<Warning>
+**Revoking mint authority is permanent.** After revocation, the supply is locked forever. Ensure your total distribution (team, investors, community, liquidity) is complete before revoking.
+</Warning>
+
+## Freeze authority
+
+**Active:** The owner can freeze any token holder's account, preventing them from transferring or selling their tokens.
+
+**Revoked:** No account can ever be frozen by anyone.
+
+**When to revoke:** For most community tokens, revoke at creation. Keeping freeze authority can be perceived as a control mechanism that lets you block specific wallets from selling.
+
+## Update authority (make immutable)
+
+**Active:** The owner can change on-chain metadata: name, symbol, and the metadata URI (which points to the logo and description).
+
+**Revoked (immutable):** Metadata is permanently locked. The name, symbol, and logo will never change.
+
+**Cost:** Free — making a token immutable costs nothing beyond Solana gas.
+
+## How to revoke authorities
+
+### At creation
+Enable the options in Step 5 of the Create Token flow. Cost: +0.05 SOL each for mint and freeze. Make immutable is free.
+
+### After creation
+
+Go to **FORGE Tools** and select:
+- **Revoke Mint** to revoke mint authority
+- **Revoke Freeze** to revoke freeze authority
+- **Make Immutable** to revoke update authority
+
+Each action requires your wallet to sign a transaction confirming you hold the current authority.
+
+## What shows on DEX scanners
+
+After revoking:
+
+| Scan result | Meaning |
+|-------------|---------|
+| ✅ Mint disabled | Mint authority revoked |
+| ✅ Freeze disabled | Freeze authority revoked |
+| ✅ Immutable | Update authority revoked |
+
+Tokens with all three revoked receive the highest trust ratings on most scanners.
+
+<CTA tool="revokeMint" label="Revoke authorities" />

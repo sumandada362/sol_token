@@ -1,0 +1,101 @@
+---
+title: "Add, Create & Remove Liquidity"
+description: "Create trading pools for your token on Raydium, Orca, Meteora, and more. Covers pool creation, adding liquidity, and removing liquidity."
+slug: "add-liquidity"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+tool: pool
+faq:
+  - q: "Which DEX should I use?"
+    a: "Raydium CPMM is the most common choice for new token launches — lower setup cost, no OpenBook market required, and high liquidity. Orca Whirlpools is a good alternative. Meteora DLMM is useful if you want concentrated liquidity around a price range."
+  - q: "What is an OpenBook market and do I need one?"
+    a: "OpenBook is a separate order-book DEX. You only need it if you're creating a Raydium Legacy AMM pool. Raydium CPMM does not require it. Most new tokens use CPMM."
+  - q: "Can I add liquidity to multiple DEXs at once?"
+    a: "Yes. FORGE lets you select multiple DEXs in the pool flow and fund each with custom amounts in a single session."
+  - q: "Can I remove liquidity later?"
+    a: "Yes, from FORGE Pool → Remove. You get back your LP tokens' value minus trading fees earned. Some DEXs lock liquidity for a period at creation — check the DEX's terms."
+  - q: "What happens if I add liquidity at the wrong price ratio?"
+    a: "The ratio of tokens to SOL you deposit sets the initial price. If it differs significantly from market prices on other DEXs, arbitrageurs will trade against the pool until prices equalize — you may lose some value to arbitrage. Set a price ratio you intend to honor."
+---
+
+## What this tool does
+
+FORGE Pool lets you create trading pools for your token on Solana DEXs, add liquidity, and remove it — all from your wallet without navigating each DEX's interface separately.
+
+## What it costs
+
+| Action | FORGE fee | DEX setup cost |
+|--------|-----------|----------------|
+| Create pool (per DEX) | 0.1 SOL | 0.4–0.6 SOL (paid to DEX) |
+| Add liquidity to existing pool | 0 SOL | Solana gas (~0.001 SOL) |
+| Remove liquidity | 0 SOL | Solana gas (~0.001 SOL) |
+
+DEX setup costs are pass-throughs paid directly to the DEX protocol. They vary and are shown in the cost summary before you sign. Fees can change.
+
+## Before you start
+
+- Token already created (you need the mint address)
+- SOL for liquidity deposit + FORGE fee + DEX setup fee
+- Tokens to deposit (in your wallet)
+- Decision on which DEX(s) to use
+
+## Step-by-step: Create a pool
+
+### Step 1 — Select your token
+
+Go to FORGE → Pool. Paste your token mint address or select it from the dropdown if you recently created it.
+
+### Step 2 — Choose a DEX
+
+Click the DEX you want to create a pool on. Supported DEXs: Raydium, Orca, Meteora, PumpSwap, Invariant, FluxBeam. You can select multiple.
+
+### Step 3 — Set deposit amounts
+
+For each DEX, enter:
+- **Token amount** — how many of your tokens to deposit
+- **SOL amount** — how much SOL to pair with them
+
+The ratio determines the initial price. Example: 1,000,000 tokens + 10 SOL = 0.00001 SOL per token.
+
+### Step 4 — Review cost and sign
+
+The cost summary shows the FORGE fee (0.1 SOL per pool) plus the DEX setup cost. Review and approve in your wallet.
+
+## Step-by-step: Add to existing pool
+
+### Step 1 — Go to Pool → Add
+
+Select your token. FORGE will detect existing pools for your token.
+
+### Step 2 — Enter amount
+
+Enter how much SOL (or token) to add. The interface shows the current pool price so you can match the ratio.
+
+### Step 3 — Sign
+
+Approve in your wallet. LP tokens will appear in your wallet.
+
+## Step-by-step: Remove liquidity
+
+### Step 1 — Go to Pool → Remove
+
+Select your token and the pool you want to remove from.
+
+### Step 2 — Set percentage
+
+Choose what percentage of your LP position to remove (25%, 50%, 100%, or custom).
+
+### Step 3 — Sign
+
+Approve and receive your underlying tokens and SOL back.
+
+## What happens on-chain
+
+Pool creation calls the DEX's on-chain program (e.g., Raydium's AMM or CPMM program) to initialize a new pool account, set the initial price, and deposit your liquidity. You receive LP tokens representing your share. These are standard Solana transactions — verifiable on Solscan.
+
+<Warning>
+**Liquidity is at risk.** Adding liquidity exposes you to impermanent loss — the value of your position may change relative to holding the tokens separately. This is a DeFi mechanic, not a FORGE behavior. Understand it before committing large amounts.
+</Warning>
+
+<CTA tool="pool" />

@@ -1,0 +1,108 @@
+---
+title: "Create a Token"
+description: "Deploy an SPL or Token-2022 token on Solana in under 2 minutes. No code required — just a browser wallet and a little SOL."
+slug: "create-token"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: docs
+tool: create
+faq:
+  - q: "Is the token symbol permanent?"
+    a: "Yes. The symbol is stored in on-chain metadata and cannot be changed after creation. Double-check it before signing."
+  - q: "Can I create a token without revoking authorities?"
+    a: "Yes. You can skip any or all authority revocations at creation. You can also revoke them later from FORGE Tools, though each revocation costs 0.05 SOL separately."
+  - q: "What is the difference between SPL and Token-2022?"
+    a: "SPL is the original Solana token standard, widely compatible with all wallets and DEXs. Token-2022 is a newer standard that supports extensions like transfer fees, confidential transfers, and interest-bearing tokens. Use SPL unless you specifically need an extension."
+  - q: "How much SOL do I need?"
+    a: "Minimum 0.1 SOL (base fee) plus ~0.002 SOL network rent. Add 0.05 SOL for each authority you revoke (mint, freeze) and 0.1 SOL for custom creator info. Budget at least 0.15 SOL to be safe."
+  - q: "Can I test on devnet first?"
+    a: "Yes. Switch your wallet to devnet, get free devnet SOL from a faucet, and FORGE will operate in devnet mode."
+---
+
+## What this tool does
+
+FORGE Create lets you deploy a new token — SPL or Token-2022 — on Solana without writing a single line of code. Fill in a form, upload a logo, set your authority preferences, and sign one transaction. Your token is live in under two minutes.
+
+## What it costs
+
+| Item | Cost |
+|------|------|
+| Platform fee | 0.1 SOL |
+| Revoke mint authority (optional) | +0.05 SOL |
+| Revoke freeze authority (optional) | +0.05 SOL |
+| Custom creator info (optional) | +0.1 SOL |
+| Solana network rent | ~0.002 SOL |
+
+All costs are shown in the live cost summary before you sign. Fees can change — always check the summary in the app.
+
+## Before you start
+
+- A Solana wallet (Phantom, Backpack, or Solflare) connected to mainnet
+- At least 0.15 SOL available (0.1 SOL base fee + rent buffer)
+- Your token name, symbol, supply, and logo ready
+- A decision on authority settings (see step 4)
+
+<Warning>
+**Your token symbol is permanent.** Once deployed, it cannot be changed on-chain. Check the spelling carefully before signing.
+</Warning>
+
+## Step-by-step
+
+### Step 1 — Connect your wallet
+
+Click **Connect Wallet** in the top-right corner and select Phantom, Solflare, or Backpack. Make sure you are on **mainnet**. FORGE will show a network indicator next to your wallet address.
+
+### Step 2 — Choose your token standard
+
+Select **SPL** (standard, widely compatible) or **Token-2022** (supports extensions). When in doubt, choose SPL. You cannot change the standard after creation.
+
+### Step 3 — Fill in token details
+
+| Field | Notes |
+|-------|-------|
+| Name | Full token name, e.g. "My Project Token" |
+| Symbol | Ticker, e.g. "MPT". Permanent — check twice. |
+| Total supply | How many tokens to mint. Common: 1,000,000,000 |
+| Decimals | 9 for most tokens. 6 for stablecoins. |
+
+### Step 4 — Upload your logo and metadata
+
+Upload a square image (PNG or SVG, 1:1 ratio). FORGE pins it to IPFS and generates the on-chain metadata URI automatically. Optionally add a description, website, X/Twitter, and Telegram link.
+
+### Step 5 — Set authority options
+
+| Option | Cost | What it means |
+|--------|------|---------------|
+| Revoke mint authority | +0.05 SOL | No one can ever mint more tokens. Supply is permanently capped. |
+| Revoke freeze authority | +0.05 SOL | No wallet can ever be frozen. |
+| Make immutable | Free | Metadata can never be changed. |
+| Custom creator info | +0.1 SOL | Embeds your wallet as the verified creator in on-chain metadata. |
+
+These options can be set now or later — but doing them at creation is slightly more efficient (one transaction). Revoking later is always an option from FORGE Tools.
+
+### Step 6 — Review and sign
+
+Check the live cost summary. It reflects every option you have selected. Click **Create token** and approve the transaction in your wallet. Do not close the tab until confirmation.
+
+### Step 7 — After creation
+
+You will be redirected to your token's page showing the mint address. From here you can:
+- Copy and share the mint address
+- Add liquidity on a DEX
+- View the token on Solscan
+
+## What happens on-chain
+
+FORGE sends a single transaction that:
+1. Creates a new mint account with your chosen decimals and supply
+2. Pins metadata via the Metaplex Token Metadata program
+3. Optionally revokes one or more authorities in the same transaction
+4. Sends the platform fee to the FORGE fee wallet
+
+Everything is on-chain and verifiable via Solscan or any Solana explorer.
+
+<Warning>
+**Token creation is irreversible.** Once the transaction confirms, the mint address and symbol are permanent. You cannot delete a deployed token.
+</Warning>
+
+<CTA tool="create" />

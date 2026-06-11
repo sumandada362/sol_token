@@ -52,7 +52,7 @@ export default function BurnLpPage() {
             <p className="burn-remaining">Remaining LP position: {remaining.toFixed(2)}</p>
             <div className="tx-success-actions">
               <button className="lp-btn lp-btn--secondary" onClick={() => { setTxState("idle"); setAmount(""); setConfirmed(false); }}>Done</button>
-              <Link href="/dashboard" className="lp-btn lp-btn--primary">Dashboard</Link>
+              <Link href="/create-token" className="lp-btn lp-btn--primary">Create Token</Link>
             </div>
           </div>
         ) : (

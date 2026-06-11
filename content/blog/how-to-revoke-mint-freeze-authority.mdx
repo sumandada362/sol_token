@@ -1,0 +1,136 @@
+---
+title: "How to Revoke Mint & Freeze Authority on a Solana Token (and Why DEX Scanners Care)"
+description: "What mint and freeze authority are, why revoking them matters for investor trust, how DEX scanners evaluate them, and how to revoke both in under a minute."
+slug: "how-to-revoke-mint-freeze-authority"
+date: "2026-06-01"
+updated: "2026-06-01"
+category: guide
+tool: revokeMint
+readTime: "7 min read"
+faq:
+  - q: "Can I restore mint authority after revoking it?"
+    a: "No. Revoking mint authority is permanent. There is no way to restore it. Make sure your total supply distribution is complete before revoking."
+  - q: "How much does it cost to revoke mint authority?"
+    a: "0.05 SOL FORGE fee per authority. Revoking both mint and freeze costs 0.10 SOL total, plus gas."
+  - q: "Do I have to revoke both at the same time?"
+    a: "No. Each authority is independent. You can revoke one and keep the other, or revoke them at different times."
+  - q: "Will revoking authority affect my token's tradability?"
+    a: "No. Revoking mint and freeze authority has no effect on trading. Tokens can still be freely transferred, bought, and sold."
+  - q: "What happens to DEX scanner ratings after I revoke?"
+    a: "Scanner ratings typically update within a few minutes of the transaction confirming. After revoking both authorities, most scanners will show green indicators for supply safety and freeze risk."
+---
+
+When you create a Solana token, two permissions are assigned to your wallet: **mint authority** (the right to create more tokens) and **freeze authority** (the right to freeze holder wallets). For most public tokens, these should be revoked.
+
+This guide explains what these authorities mean, why they appear on DEX scanners, and exactly how to revoke them.
+
+## What mint authority does
+
+Mint authority allows the holder to call `mintTo` — the on-chain instruction that creates new tokens. If someone holds mint authority, they can print more tokens at any time with no upper limit other than what's in the program logic.
+
+For a public token, active mint authority means:
+- The supply is not capped
+- The creator can dilute all existing holders at any time
+- There is no guarantee that "total supply" means anything
+
+This is why it gets flagged.
+
+## What freeze authority does
+
+Freeze authority allows the holder to call `freezeAccount` — which prevents a specific wallet from transferring, selling, or otherwise moving their token balance. 
+
+For a public token, active freeze authority means:
+- The creator can freeze any holder's wallet
+- A buyer could be locked out of their own tokens
+- The authority holder has a form of control over the secondary market
+
+This gets flagged as a potential control mechanism.
+
+## What DEX scanners actually check
+
+Tools like DEXScreener, Rugcheck, Birdeye, and RugDoc query the Solana token program directly to read the mint account's authority fields. If either is set to a non-null public key, that authority is active.
+
+Typical scanner output for an unrevoked token:
+
+> ⚠️ Mint authority active — creator can mint unlimited tokens  
+> ⚠️ Freeze authority active — creator can freeze holder wallets  
+
+After revoking:
+
+> ✅ Mint disabled — supply is permanently capped  
+> ✅ Freeze disabled — no wallet can be frozen  
+
+Most scanners treat both revocations as positive trust signals. Some aggregate them into a safety score.
+
+## When to revoke
+
+### Mint authority
+
+Revoke after your initial supply distribution is fully done. If you have:
+- Vesting contracts that mint on a schedule → wait until those are funded or deployed
+- Staking rewards that mint new tokens → wait until the staking contract is set up
+- Any planned future minting → wait until it's complete
+
+If your supply is already what it should be, revoke now. Every day it's not revoked, someone could question your intentions.
+
+### Freeze authority
+
+Revoke as soon as possible for most community or meme tokens. Unless you have a specific regulatory or compliance reason to retain freeze authority (e.g., a regulated stablecoin), there is no good reason to keep it active.
+
+<Warning>
+**Revoking is permanent.** You cannot restore either authority after revoking. Make sure all supply distribution and any authority-dependent operations are complete.
+</Warning>
+
+## How to revoke mint authority on FORGE
+
+### Step 1 — Go to FORGE → Tools → Revoke Mint
+
+Navigate to [forge.solana.tools/tools/revoke-mint](/tools/revoke-mint).
+
+### Step 2 — Connect your wallet
+
+Connect the wallet that holds the current mint authority. FORGE will verify this automatically.
+
+### Step 3 — Select your token
+
+Paste your mint address or choose from the dropdown. FORGE displays the current authority status.
+
+### Step 4 — Confirm and sign
+
+Check the irreversibility confirmation box. Click **Revoke mint authority**. Approve in your wallet.
+
+Cost: **0.05 SOL** FORGE fee + gas.
+
+## How to revoke freeze authority on FORGE
+
+The process is identical:
+
+1. Go to [forge.solana.tools/tools/revoke-freeze](/tools/revoke-freeze)
+2. Connect your authority wallet
+3. Select your token
+4. Confirm and sign
+
+Cost: **0.05 SOL** FORGE fee + gas.
+
+You can also do both during token creation (in Step 4 of the Create Token flow) — which saves you two separate transactions later.
+
+## What about update authority (make immutable)?
+
+Update authority controls whether you can change on-chain metadata. Revoking it makes your token **immutable** — the name, symbol, and logo URI will never change.
+
+This is free (no FORGE fee, just gas). Use [forge.solana.tools/tools/make-immutable](/tools/make-immutable).
+
+## After revoking: verify on-chain
+
+After the transaction confirms, check your token on Solscan:
+1. Go to solscan.io and search your mint address
+2. Click the token name → see the "Token Info" tab
+3. Look for "Mint Authority" and "Freeze Authority" fields — they should show `null` or "Revoked"
+
+You can also use the FORGE Analytics page for your token — the authority badges will update green within a few minutes.
+
+---
+
+<Disclaimer />
+
+<CTA tool="revokeMint" label="Revoke mint authority" />
