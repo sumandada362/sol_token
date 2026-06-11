@@ -2,10 +2,12 @@ import type React from "react";
 import Link from "next/link";
 import CustomizeTokenPanel from "@/components/CustomizeTokenPanel";
 import Footer from "@/components/Footer";
+import { JsonLdSoftwareApplication } from "@/components/JsonLd";
 
 export default function Home() {
   return (
     <>
+      <JsonLdSoftwareApplication />
       {/* ── Hero ── */}
       <section className="hero">
         {/* 1) hero text + description */}

@@ -1,31 +1,58 @@
 import { NextResponse } from "next/server";
-import { Connection, PublicKey } from "@solana/web3.js";
+import type { NextRequest } from "next/server";
+import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { z } from "zod";
 import { query } from "@/lib/db/postgres";
 import { cacheSet, cacheDel, CACHE_KEYS } from "@/lib/db/redis";
+import { FEES } from "@/lib/solana/fees";
+import { rateLimit, rateLimitByKey, RATE_LIMITS } from "@/lib/rateLimit";
+import { apiError } from "@/lib/api/errors";
 
 const schema = z.object({
-  signature: z.string().min(1),
-  action: z.enum(["createToken", "mintMore", "updateMetadata", "revokeMint", "revokeFreeze", "makeImmutable", "burn"]),
+  signature: z.string().min(43).max(88),
+  action: z.enum([
+    "createToken",
+    "mintMore",
+    "updateMetadata",
+    "revokeMint",
+    "revokeFreeze",
+    "makeImmutable",
+    "burn",
+  ]),
   mint: z.string().optional(),
   wallet: z.string(),
   name: z.string().optional(),
   symbol: z.string().optional(),
   metadataUri: z.string().optional(),
   standard: z.enum(["spl", "token2022"]).optional(),
-  feePaidLamports: z.number().int().nonnegative().optional(),
 });
 
-export async function POST(req: Request) {
+// Minimum SOL that must arrive at the fee wallet for each paid action.
+// Derived purely from server constants — never trusted from client input.
+const MIN_FEE_LAMPORTS: Partial<Record<string, number>> = {
+  createToken: Math.floor(FEES.createToken * LAMPORTS_PER_SOL),
+  mintMore: Math.floor(FEES.mintMore * LAMPORTS_PER_SOL),
+  updateMetadata: Math.floor(FEES.updateMetadata * LAMPORTS_PER_SOL),
+  revokeMint: Math.floor(FEES.revokeMint * LAMPORTS_PER_SOL),
+  revokeFreeze: Math.floor(FEES.revokeFreeze * LAMPORTS_PER_SOL),
+  // makeImmutable and burn are free — no fee check needed
+};
+
+export async function POST(req: NextRequest) {
+  const limited = await rateLimit(req, RATE_LIMITS.confirm);
+  if (limited) return limited;
+
   try {
     const body = schema.safeParse(await req.json());
     if (!body.success) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const { signature, action, mint, wallet, name, symbol, metadataUri, standard, feePaidLamports } = body.data;
+    const { signature, action, mint, wallet, name, symbol, metadataUri, standard } = body.data;
 
-    // Verify the transaction actually landed on-chain before trusting any client claim
+    const walletLimited = await rateLimitByKey(wallet, RATE_LIMITS.walletConfirm);
+    if (walletLimited) return walletLimited;
+
     const connection = new Connection(process.env.SOLANA_RPC_URL!, "confirmed");
     const txInfo = await connection.getTransaction(signature, {
       commitment: "confirmed",
@@ -36,35 +63,50 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Transaction not confirmed or failed" }, { status: 400 });
     }
 
-    // Verify the fee wallet received its payment (for paid actions)
-    const PAID_ACTIONS = ["createToken", "mintMore", "updateMetadata", "revokeMint", "revokeFreeze"];
-    if (PAID_ACTIONS.includes(action) && process.env.FEE_WALLET_ADDRESS) {
+    // Verify the fee wallet received the correct minimum amount for paid actions.
+    // The expected amount comes from server constants only — never from the request body.
+    const minLamports = MIN_FEE_LAMPORTS[action];
+    if (minLamports !== undefined && minLamports > 0 && process.env.FEE_WALLET_ADDRESS) {
       const feeWallet = new PublicKey(process.env.FEE_WALLET_ADDRESS);
-      const feeWalletIndex = txInfo.transaction.message.staticAccountKeys?.findIndex(
-        (k) => k.toBase58() === feeWallet.toBase58()
-      );
+      const keys = txInfo.transaction.message.staticAccountKeys;
+      const feeWalletIndex = keys?.findIndex((k) => k.toBase58() === feeWallet.toBase58()) ?? -1;
       const postBalances = txInfo.meta?.postBalances ?? [];
       const preBalances = txInfo.meta?.preBalances ?? [];
-      if (
-        feeWalletIndex === undefined ||
-        feeWalletIndex === -1 ||
-        postBalances[feeWalletIndex] <= preBalances[feeWalletIndex]
-      ) {
-        return NextResponse.json({ error: "Fee payment not detected" }, { status: 400 });
+      const received =
+        feeWalletIndex >= 0
+          ? (postBalances[feeWalletIndex] ?? 0) - (preBalances[feeWalletIndex] ?? 0)
+          : 0;
+
+      if (received < minLamports) {
+        console.error(
+          `[confirm] Fee shortfall for ${action}: expected ≥${minLamports} lamports, got ${received}. sig=${signature}`
+        );
+        return NextResponse.json({ error: "Fee payment insufficient" }, { status: 400 });
       }
     }
 
+    // The actual lamports received (used only for record-keeping, never for verification)
+    const feeWalletIdx = process.env.FEE_WALLET_ADDRESS
+      ? (txInfo.transaction.message.staticAccountKeys?.findIndex(
+          (k) => k.toBase58() === new PublicKey(process.env.FEE_WALLET_ADDRESS!).toBase58()
+        ) ?? -1)
+      : -1;
+    const actualLamports =
+      feeWalletIdx >= 0
+        ? ((txInfo.meta?.postBalances?.[feeWalletIdx] ?? 0) -
+            (txInfo.meta?.preBalances?.[feeWalletIdx] ?? 0))
+        : 0;
+
     // --- Postgres writes ---
 
-    // fee_events — unique on signature so duplicate confirms are idempotent
+    // fee_events — unique on signature, duplicate confirms are idempotent
     await query(
       `INSERT INTO fee_events (wallet, action, lamports, signature, mint)
        VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (signature) DO NOTHING`,
-      [wallet, action, feePaidLamports ?? 0, signature, mint ?? null]
+      [wallet, action, Math.max(actualLamports, 0), signature, mint ?? null]
     );
 
-    // tokens — only on createToken
     if (action === "createToken" && mint) {
       const tokenRow = {
         mint,
@@ -73,7 +115,7 @@ export async function POST(req: Request) {
         symbol: symbol ?? null,
         metadata_uri: metadataUri ?? null,
         standard: standard ?? "spl",
-        fee_paid_lamports: feePaidLamports ?? 0,
+        fee_paid_lamports: Math.max(actualLamports, 0),
         tx_signature: signature,
       };
 
@@ -85,20 +127,16 @@ export async function POST(req: Request) {
         Object.values(tokenRow)
       );
 
-      // Prime the Redis cache immediately — avoid a cold read on first token page visit
       await cacheSet(CACHE_KEYS.token(mint), tokenRow);
-      // Invalidate the wallet token list so it refreshes on next read
       await cacheDel(CACHE_KEYS.walletTokens(wallet));
     }
 
-    // For metadata/authority updates, invalidate the stale cache entry
     if (["updateMetadata", "revokeMint", "revokeFreeze", "makeImmutable"].includes(action) && mint) {
       await cacheDel(CACHE_KEYS.token(mint));
     }
 
     return NextResponse.json({ ok: true, signature });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return apiError(err, "confirm");
   }
 }

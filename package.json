@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "devnet:wallets": "node scripts/devnet-wallets.mjs",
+    "devnet:refresh": "node scripts/devnet-refresh.mjs",
+    "devnet:check": "node scripts/devnet-refresh.mjs --check"
   },
   "dependencies": {
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
@@ -35,8 +38,11 @@
     "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "bip39": "^3.1.0",
+    "ed25519-hd-key": "^2.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
+    "node-fetch": "^2.7.0",
     "typescript": "^5"
   }
 }

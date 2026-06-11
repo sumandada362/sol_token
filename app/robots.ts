@@ -5,8 +5,18 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
-        disallow: ["/api/"],
+        allow: ["/", "/blog/", "/docs/", "/legal/"],
+        disallow: [
+          "/tools/",
+          "/create-token/",
+          "/burn/",
+          "/pool/",
+          "/token/",
+          "/api/",
+          "/og/",
+          "/dashboard/",
+          "/account/",
+        ],
       },
     ],
     sitemap: "https://forge.solana.tools/sitemap.xml",

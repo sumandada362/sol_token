@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BgCanvas from "@/components/BgCanvas";
+import DevnetBanner from "@/components/DevnetBanner";
 import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
 import { WalletProvider } from "@/lib/wallet/WalletProvider";
@@ -27,6 +28,8 @@ export default function RootLayout({
         <WalletProvider>
           {/* z-index: -1 — fixed rotating-disc background (never scrolls) */}
           <BgCanvas />
+          {/* Visible only on non-mainnet builds — prevents wrong-cluster confusion */}
+          <DevnetBanner />
           {/* z-index: 2 — glassmorphism navbar */}
           <Navbar />
           {/* z-index: 1 — scrollable content (hero + every other section) */}

@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { burnSchema } from "@/lib/solana/validate";
 import { buildBurnTx } from "@/lib/solana/buildBurn";
+import { rateLimit, RATE_LIMITS } from "@/lib/rateLimit";
+import { apiError } from "@/lib/api/errors";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const limited = await rateLimit(req, RATE_LIMITS.tx);
+  if (limited) return limited;
+
   try {
     const body = burnSchema.safeParse(await req.json());
     if (!body.success) {
@@ -15,7 +21,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ tx: serialized, lastValidBlockHeight });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return apiError(err, "tx/burn");
   }
 }
