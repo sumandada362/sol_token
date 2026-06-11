@@ -1,24 +1,8 @@
 import Link from "next/link";
 
-const FOOTER_DEX_NAMES = [
-  "Raydium", "Orca", "Meteora", "PumpSwap", "Invariant", "FluxBeam",
-  "Jupiter", "Phantom", "Solflare", "Backpack",
-];
-
 export default function Footer() {
   return (
     <footer className="site-footer">
-      <div className="footer-dex-ticker" aria-hidden="true">
-        <div className="footer-dex-track">
-          {[0, 1].map((dup) => (
-            <div className="footer-dex-group" key={dup}>
-              {FOOTER_DEX_NAMES.map((name) => (
-                <span key={name} className="footer-dex-item">{name}</span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
       <div className="site-footer-inner">
         <div className="site-footer-top">
           <div className="site-footer-brand">

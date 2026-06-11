@@ -54,7 +54,7 @@ body {
     z-index: -1;
     display: block;
     touch-action: none;
-    animation: bgFadeIn 0.5s ease-out both;
+    animation: bgFadeIn 1.2s var(--ease-out) 0.5s both;
 }
 
 /* ── Glassmorphism navbar ── */
@@ -1292,8 +1292,6 @@ body {
     padding: 0.5rem;
     z-index: var(--z-dropdown);
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    transform-origin: top right;
-    animation: scaleIn 0.18s var(--ease-out) both;
 }
 .wallet-chip-menu button,
 .wallet-chip-menu a {
@@ -1948,7 +1946,6 @@ body {
     gap: 1rem;
     padding: 2rem 0;
     text-align: center;
-    animation: scaleIn 0.4s var(--ease-out) both;
 }
 .tx-success-icon {
     width: 60px; height: 60px;
@@ -2195,13 +2192,7 @@ body {
    BURN page
    ════════════════════════════════════════════════════════ */
 
-.burn-card {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-    transition: border-color 0.2s var(--ease-out);
-}
-.burn-card:focus-within { border-color: rgba(132, 94, 247, 0.55); }
+.burn-card { display: flex; flex-direction: column; gap: 1.2rem; }
 .burn-field { display: flex; flex-direction: column; gap: 0.5rem; }
 .burn-balance { font-size: 0.88rem; color: rgba(255,255,255,0.7); }
 .burn-amount-row { display: flex; gap: 0.8rem; align-items: stretch; }
@@ -3163,6 +3154,7 @@ body {
     .blog-featured-row { grid-template-columns: 1fr; }
     .blog-article-layout { grid-template-columns: 1fr; }
     .blog-sidebar { position: static; }
+}
 
 @media (max-width: 600px) {
     .tools-grid { grid-template-columns: 1fr; }
@@ -3267,96 +3259,22 @@ body {
     .hero-dex-ticker:hover .hero-dex-names { animation-play-state: paused; }
 }
 
-/* ─── Ambient icon float — small constant motion across the app ─── */
-.lp-pillar-icon  { animation: floatY 3.6s var(--ease-in-out) 0.0s infinite; }
-.lp-service-icon { animation: floatY 3.9s var(--ease-in-out) 0.4s infinite; }
-.tool-card-icon  { animation: floatY 3.3s var(--ease-in-out) 0.8s infinite; }
-.lp-step-num     { animation: floatY 3.7s var(--ease-in-out) 0.2s infinite; }
-.explore-card-avatar { animation: floatY 4.1s var(--ease-in-out) 0.6s infinite; }
-.token-avatar-lg { animation: floatY 4.4s var(--ease-in-out) 0s infinite; }
-
-/* ─── Unified card lift + glow on hover/press ─── */
-.lp-pillar, .lp-token-card, .dex-card, .docs-article-card, .explore-card,
-.blog-card, .tool-card, .lp-service-card {
-    transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out),
-                background 0.18s var(--ease-out), border-color 0.18s var(--ease-out);
-}
-@media (hover: hover) and (pointer: fine) {
-    .lp-pillar:hover, .lp-token-card:hover, .dex-card:hover, .docs-article-card:hover,
-    .explore-card:hover, .blog-card:hover, .tool-card:hover, .lp-service-card:hover {
-        transform: translateY(-5px) scale(1.015);
-        box-shadow: 0 14px 36px rgba(132, 94, 247, 0.18);
-    }
-}
-.lp-pillar:active, .lp-token-card:active, .tool-card:active, .lp-service-card:active,
-.explore-card:active, .blog-card:active {
-    transform: scale(0.98);
-}
-
-/* ─── Cursor-reactive ambient spotlight ─── */
-#cursor-spotlight {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background: radial-gradient(560px circle at var(--mx, 50%) var(--my, 35%),
-                rgba(132, 94, 247, 0.12), transparent 70%);
-}
-@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
-    #cursor-spotlight { display: none; }
-}
-
-/* ─── Footer DEX/partner ticker ─── */
-.footer-dex-ticker {
-    overflow: hidden;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-    padding: 0.9rem 0;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-}
-.footer-dex-track {
-    display: flex;
-    width: max-content;
-    animation: tickerX 30s linear infinite;
-}
-@media (hover: hover) and (pointer: fine) {
-    .footer-dex-ticker:hover .footer-dex-track { animation-play-state: paused; }
-}
-.footer-dex-group {
-    display: flex;
-    flex: none;
-    gap: 2.5rem;
-    padding-right: 2.5rem;
-}
-.footer-dex-item {
-    font-size: 0.76rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.4);
-    white-space: nowrap;
-    transition: color 0.18s var(--ease-out);
-}
-@media (hover: hover) and (pointer: fine) {
-    .footer-dex-item:hover { color: rgba(132, 94, 247, 0.9); }
-}
-
 /* ─── Scroll reveal — single element ─── */
 [data-reveal] {
     opacity: 0;
-    transform: translateY(42px) scale(0.97);
-    transition: opacity 0.75s var(--ease-out), transform 0.75s var(--ease-out);
+    transform: translateY(24px);
+    transition: opacity 0.65s var(--ease-out), transform 0.65s var(--ease-out);
     transition-delay: var(--delay, 0ms);
 }
-[data-reveal="fade"]  { transform: scale(0.97); }
-[data-reveal="scale"] { transform: scale(0.9) translateY(16px); }
+[data-reveal="fade"]  { transform: none; }
+[data-reveal="scale"] { transform: scale(0.94) translateY(10px); }
 [data-reveal][data-visible] { opacity: 1; transform: none !important; }
 
 /* ─── Scroll reveal — stagger children ─── */
 [data-stagger] > * {
     opacity: 0;
-    transform: translateY(34px) scale(0.96);
-    transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+    transform: translateY(20px);
+    transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out);
 }
 [data-stagger] > *:nth-child(1) { transition-delay:   0ms; }
 [data-stagger] > *:nth-child(2) { transition-delay:  80ms; }
@@ -3449,19 +3367,6 @@ body {
     /* Stop ticker, coins, CTA pulse, border glow */
     .hero-dex-names, .hero-token-coin,
     .hero-cta, .lp-service-card { animation: none !important; }
-
-    /* Stop ambient icon float and footer ticker */
-    .lp-pillar-icon, .lp-service-icon, .tool-card-icon, .lp-step-num,
-    .explore-card-avatar, .token-avatar-lg, .footer-dex-track { animation: none !important; }
-
-    /* No card lift/scale on hover or press */
-    .lp-pillar:hover, .lp-token-card:hover, .dex-card:hover, .docs-article-card:hover,
-    .explore-card:hover, .blog-card:hover, .tool-card:hover, .lp-service-card:hover,
-    .lp-pillar:active, .lp-token-card:active, .tool-card:active, .lp-service-card:active,
-    .explore-card:active, .blog-card:active {
-        transform: none !important;
-        box-shadow: none !important;
-    }
 
     /* Bar fills — show at full width instantly */
     .lp-bar-fill { transition: none !important; width: var(--bar-w, 0%) !important; }
@@ -3666,9 +3571,4 @@ body {
     background: #f59e0b;
     display: inline-block;
     flex-shrink: 0;
-    animation: devnet-pulse 1.8s ease-in-out infinite;
-}
-@keyframes devnet-pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.35; transform: scale(0.7); }
 }
