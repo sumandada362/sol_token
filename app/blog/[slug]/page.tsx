@@ -306,7 +306,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
 
           <div className="blog-article-footer">
             <Link href="/blog" className="lp-btn lp-btn--secondary">← Back to blog</Link>
-            <Link href="/create" className="lp-btn lp-btn--primary">Create a token</Link>
+            <Link href="/create-token" className="lp-btn lp-btn--primary">Create a token</Link>
           </div>
         </article>
       </div>

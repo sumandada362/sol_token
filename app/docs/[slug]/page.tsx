@@ -84,7 +84,7 @@ export default async function DocArticlePage({ params }: { params: Promise<{ slu
               <div className="docs-related">
                 <div className="docs-related-title">Related</div>
                 <Link href="/docs/faq" className="lp-link">FAQ →</Link>
-                <Link href="/create" className="lp-link">Create a token →</Link>
+                <Link href="/create-token" className="lp-link">Create a token →</Link>
               </div>
             </>
           ) : (

@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticRoutes = [
     "/",
-    "/create",
+    "/create-token",
 
     "/pool",
     "/pool/add",

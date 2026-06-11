@@ -17,7 +17,7 @@ export default function Footer() {
             <div className="site-footer-group">
               <div className="site-footer-group-title">Product</div>
               <ul>
-                <li><Link href="/create">Create Token</Link></li>
+                <li><Link href="/create-token">Create Token</Link></li>
                 <li><Link href="/pool">Add Liquidity</Link></li>
                 <li><Link href="/pool/add">Manage Pool</Link></li>
                 <li><Link href="/burn">Burn</Link></li>

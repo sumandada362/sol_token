@@ -169,7 +169,7 @@ export default function ToolsPage() {
           <h2 className="tools-cta-title">Just getting started?</h2>
           <p className="lp-body">Create your token first, then use these tools to manage it.</p>
           <div className="lp-actions">
-            <Link href="/create" className="lp-btn lp-btn--primary">Create a token</Link>
+            <Link href="/create-token" className="lp-btn lp-btn--primary">Create a token</Link>
             <Link href="/docs" className="lp-btn lp-btn--secondary">Read the docs</Link>
           </div>
         </div>
@@ -193,12 +193,12 @@ export default function ToolsPage() {
               <span className="pricing-fee-group-label" style={{ gridColumn: "1/-1" }}>Core actions</span>
             </div>
             <div className="pricing-fee-row">
-              <Link href="/create" className="pricing-fee-link">Create token</Link>
+              <Link href="/create-token" className="pricing-fee-link">Create token</Link>
               <span className="pricing-fee-val">0.1 SOL</span>
               <span className="pricing-fee-note">Metadata, socials, token page. Add-ons: +0.05 SOL revoke mint, +0.05 SOL revoke freeze, +0.1 SOL custom creator info. Make immutable free.</span>
             </div>
             <div className="pricing-fee-row">
-              <Link href="/create" className="pricing-fee-link">Custom creator info (at creation)</Link>
+              <Link href="/create-token" className="pricing-fee-link">Custom creator info (at creation)</Link>
               <span className="pricing-fee-val">0.1 SOL</span>
               <span className="pricing-fee-note">Embed creator identity on-chain — optional add-on at token creation</span>
             </div>

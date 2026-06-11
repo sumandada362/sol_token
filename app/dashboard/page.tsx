@@ -35,7 +35,7 @@ export default function DashboardPage() {
       <div className="page-wrap">
         <div className="page-header">
           <h1 className="page-title">Dashboard</h1>
-          <Link href="/create" className="lp-btn lp-btn--primary">+ Create token</Link>
+          <Link href="/create-token" className="lp-btn lp-btn--primary">+ Create token</Link>
         </div>
 
         {/* Summary tiles */}
@@ -51,7 +51,7 @@ export default function DashboardPage() {
           {myTokens.length === 0 ? (
             <div className="dash-empty lp-card">
               <p>You haven&apos;t created any tokens yet.</p>
-              <Link href="/create" className="lp-btn lp-btn--primary">Create your first token</Link>
+              <Link href="/create-token" className="lp-btn lp-btn--primary">Create your first token</Link>
             </div>
           ) : (
             <div className="dash-token-table">

@@ -29,7 +29,7 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { href: "/create", label: "Create" },
+    { href: "/create-token", label: "Create" },
     { href: "/tools", label: "Tools" },
     { href: "/blog", label: "Blog" },
     { href: "/docs", label: "Docs" },

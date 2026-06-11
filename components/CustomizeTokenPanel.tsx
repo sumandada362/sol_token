@@ -117,7 +117,7 @@ export default function CustomizeTokenPanel() {
       })
     );
 
-    router.push("/create");
+    router.push("/create-token");
   }
 
   const hasAnyInput = name || symbol || supply !== "1000000000" || description || logoFile || logoUrl;

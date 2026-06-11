@@ -26,7 +26,7 @@ export default function Home() {
 
         {/* 3) CTA button left-aligned, then DEX strip + token logos row */}
         <div id="cta-zone">
-          <Link href="/create" className="hero-cta">
+          <Link href="/create-token" className="hero-cta">
             Create &amp; Launch Token
           </Link>
 
@@ -104,7 +104,7 @@ export default function Home() {
           </div>
           <div className="lp-services" data-stagger>
             <ServiceCard
-              href="/create"
+              href="/create-token"
               icon="◈"
               title="Create"
               body="Deploy SPL or Token-2022 tokens with custom supply, metadata, and authorities in minutes."
@@ -306,7 +306,7 @@ export default function Home() {
               Create your token, add liquidity, and start tracking — all from one non-custodial platform.
             </p>
             <div className="lp-actions lp-actions--center">
-              <Link href="/create" className="lp-btn lp-btn--primary">Create your token</Link>
+              <Link href="/create-token" className="lp-btn lp-btn--primary">Create your token</Link>
               <Link href="/tools" className="lp-btn lp-btn--secondary">Browse tools</Link>
             </div>
           </div>
