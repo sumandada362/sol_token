@@ -9,9 +9,11 @@ import { clusterApiUrl } from "@solana/web3.js";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 const NETWORK = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as "devnet" | "mainnet-beta") ?? "devnet";
+// Prefer an explicit public RPC URL (e.g. Helius public endpoint) over the slow default
+const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_URL ?? clusterApiUrl(NETWORK);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const endpoint = clusterApiUrl(NETWORK);
+  const endpoint = RPC_ENDPOINT;
   const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
 
   return (

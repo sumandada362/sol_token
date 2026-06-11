@@ -1,22 +1,21 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import Footer from "@/components/Footer";
+import { useWallet } from "@solana/wallet-adapter-react";
 
-export const metadata: Metadata = {
-  title: "Dashboard — FORGE",
-  description: "Manage your Solana tokens and pools.",
-};
+interface TokenRow {
+  mint: string;
+  name: string | null;
+  symbol: string | null;
+  created_at: string;
+}
 
-const myTokens = [
-  { mint: "ABC3", name: "Forge Token", symbol: "FRGE", holders: 3201, liquidity: "45.0 SOL", status: "active" },
-  { mint: "ABC1", name: "Solana Inu", symbol: "SINU", holders: 1240, liquidity: "12.4 SOL", status: "active" },
-];
-
-const activity = [
-  { type: "Created", token: "FRGE", detail: "Token created", time: "2d ago" },
-  { type: "Pool", token: "FRGE", detail: "Liquidity added on Raydium", time: "2d ago" },
-  { type: "Pool", token: "SINU", detail: "Liquidity added on Orca", time: "5d ago" },
-];
+interface SubRow {
+  mint: string;
+  expires_at: string;
+}
 
 const quickTools = [
   { href: "/tools/multisender", label: "Multisender", icon: "◈", desc: "Bulk send tokens" },
@@ -30,6 +29,30 @@ const quickTools = [
 ];
 
 export default function DashboardPage() {
+  const { connected, publicKey } = useWallet();
+  const [tokens, setTokens] = useState<TokenRow[]>([]);
+  const [subs, setSubs] = useState<Map<string, string>>(new Map()); // mint → expires_at
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!publicKey) { setTokens([]); setSubs(new Map()); return; }
+    const wallet = publicKey.toBase58();
+    setLoading(true);
+
+    Promise.all([
+      fetch(`/api/tokens/wallet/${wallet}`).then((r) => r.ok ? r.json() as Promise<TokenRow[]> : []),
+      fetch(`/api/subscriptions?wallet=${wallet}`).then((r) => r.ok ? r.json() as Promise<SubRow[]> : []),
+    ])
+      .then(([toks, subRows]) => {
+        setTokens(toks);
+        const m = new Map<string, string>();
+        for (const s of subRows) m.set(s.mint, s.expires_at);
+        setSubs(m);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [publicKey]);
+
   return (
     <div className="app-page">
       <div className="page-wrap">
@@ -38,52 +61,83 @@ export default function DashboardPage() {
           <Link href="/create-token" className="lp-btn lp-btn--primary">+ Create token</Link>
         </div>
 
-        {/* Summary tiles */}
-        <div className="dash-tiles">
-          <DashTile label="Tokens" value={myTokens.length.toString()} />
-          <DashTile label="Pools" value="3" />
-          <DashTile label="Total holders" value="4,441" />
-        </div>
-
-        {/* My tokens */}
-        <div className="dash-section">
-          <h2 className="dash-section-title">My tokens</h2>
-          {myTokens.length === 0 ? (
-            <div className="dash-empty lp-card">
-              <p>You haven&apos;t created any tokens yet.</p>
-              <Link href="/create-token" className="lp-btn lp-btn--primary">Create your first token</Link>
-            </div>
-          ) : (
-            <div className="dash-token-table">
-              <div className="dash-table-head">
-                <span>Token</span>
-                <span>Holders</span>
-                <span>Liquidity</span>
-                <span>Status</span>
-                <span>Actions</span>
+        {!connected ? (
+          <div className="lp-card" style={{ textAlign: "center", padding: "3rem" }}>
+            <p style={{ color: "var(--lp-muted)", marginBottom: "1rem" }}>Connect your wallet to see your tokens</p>
+          </div>
+        ) : (
+          <>
+            {/* Summary tiles */}
+            <div className="dash-tiles">
+              <div className="dash-tile lp-card">
+                <div className="dash-tile-value">{loading ? "…" : tokens.length}</div>
+                <div className="dash-tile-label">Tokens</div>
               </div>
-              {myTokens.map((t) => (
-                <div key={t.mint} className="dash-table-row">
-                  <div className="dash-token-cell">
-                    <div className="dash-token-avatar">{t.symbol.charAt(0)}</div>
-                    <div>
-                      <div className="dash-token-name">{t.name}</div>
-                      <div className="dash-token-sym">{t.symbol}</div>
-                    </div>
-                  </div>
-                  <div className="lp-mono">{t.holders.toLocaleString()}</div>
-                  <div className="lp-mono">{t.liquidity}</div>
-                  <div><span className="lp-pill lp-pill--ok">{t.status}</span></div>
-                  <div className="dash-row-actions">
-                    <Link href={`/pool?token=${t.mint}`} className="dash-action-btn">Pool</Link>
-                    <Link href={`/burn?token=${t.mint}`} className="dash-action-btn">Burn</Link>
-                    <Link href={`/token/${t.mint}`} className="dash-action-btn">View</Link>
-                  </div>
-                </div>
-              ))}
+              <div className="dash-tile lp-card">
+                <div className="dash-tile-value">{loading ? "…" : subs.size}</div>
+                <div className="dash-tile-label">Active subscriptions</div>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* My tokens */}
+            <div className="dash-section">
+              <h2 className="dash-section-title">My tokens</h2>
+              {loading ? (
+                <div className="lp-card" style={{ padding: "2rem", color: "var(--lp-muted)", textAlign: "center" }}>Loading…</div>
+              ) : tokens.length === 0 ? (
+                <div className="dash-empty lp-card">
+                  <p>You haven&apos;t created any tokens yet.</p>
+                  <Link href="/create-token" className="lp-btn lp-btn--primary">Create your first token</Link>
+                </div>
+              ) : (
+                <div className="dash-token-table">
+                  <div className="dash-table-head">
+                    <span>Token</span>
+                    <span>Analytics</span>
+                    <span>Created</span>
+                    <span>Actions</span>
+                  </div>
+                  {tokens.map((t) => {
+                    const hasSub = subs.has(t.mint);
+                    const expiry = subs.get(t.mint);
+                    return (
+                      <div key={t.mint} className="dash-table-row">
+                        <div className="dash-token-cell">
+                          <div className="dash-token-avatar">{(t.symbol ?? "?").charAt(0)}</div>
+                          <div>
+                            <div className="dash-token-name">{t.name ?? "Unknown"}</div>
+                            <div className="dash-token-sym lp-mono" style={{ fontSize: "0.75rem" }}>
+                              {t.mint.slice(0, 8)}…{t.mint.slice(-4)}
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          {hasSub ? (
+                            <span className="lp-pill lp-pill--ok" style={{ fontSize: "0.75rem" }}>
+                              Until {expiry ? new Date(expiry).toLocaleDateString() : "?"}
+                            </span>
+                          ) : (
+                            <Link href={`/analytics/${t.mint}`} className="lp-pill lp-pill--info" style={{ fontSize: "0.75rem", textDecoration: "none" }}>
+                              Unlock
+                            </Link>
+                          )}
+                        </div>
+                        <div style={{ fontSize: "0.82rem", color: "var(--lp-muted)" }}>
+                          {new Date(t.created_at).toLocaleDateString()}
+                        </div>
+                        <div className="dash-row-actions">
+                          <Link href={`/token/${t.mint}`} className="dash-action-btn">View</Link>
+                          {hasSub && <Link href={`/analytics/${t.mint}`} className="dash-action-btn">Analytics</Link>}
+                          <Link href={`/tools/multisender?mint=${t.mint}`} className="dash-action-btn">Send</Link>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
         {/* Quick tools */}
         <div className="dash-section">
@@ -99,32 +153,8 @@ export default function DashboardPage() {
           </div>
           <Link href="/tools" className="dash-all-tools-link">View all tools →</Link>
         </div>
-
-        {/* Recent activity */}
-        <div className="dash-section">
-          <h2 className="dash-section-title">Recent activity</h2>
-          <div className="lp-card dash-activity">
-            {activity.map((a, i) => (
-              <div key={i} className="dash-activity-row">
-                <span className={`dash-activity-type dash-activity-type--${a.type.toLowerCase()}`}>{a.type}</span>
-                <span className="dash-activity-detail">{a.detail}</span>
-                <span className="lp-mono dash-activity-sym">{a.token}</span>
-                <span className="dash-activity-time">{a.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
       <Footer />
-    </div>
-  );
-}
-
-function DashTile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="dash-tile lp-card">
-      <div className="dash-tile-value">{value}</div>
-      <div className="dash-tile-label">{label}</div>
     </div>
   );
 }

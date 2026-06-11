@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/snapshot-holders",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/aggregate-metrics",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/expire-subscriptions",
+      "schedule": "0 1 * * *"
+    }
+  ]
+}
