@@ -47,4 +47,7 @@ export async function cacheDel(key: string): Promise<void> {
 export const CACHE_KEYS = {
   token: (mint: string) => `token:${mint}`,
   walletTokens: (wallet: string) => `tokens:wallet:${wallet}`,
+  tokenPage: (mint: string) => `tokenpage:${mint}`,
+  analytics: (mint: string) => `analytics:${mint}`,
+  nonce: (nonce: string) => `nonce:${nonce}`,
 };
