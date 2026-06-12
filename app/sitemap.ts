@@ -25,6 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/tools/update-metadata",
     "/tools/revoke-mint",
     "/tools/revoke-freeze",
+    "/tools/revoke-update",
     "/tools/make-immutable",
     "/tools/market/create",
     "/tools/unit-converter",

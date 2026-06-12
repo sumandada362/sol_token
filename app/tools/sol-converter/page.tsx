@@ -1,7 +1,6 @@
 "use client";
 import type React from "react";
-import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Footer from "@/components/Footer";
 
 const MOCK_PRICES: Record<string, number> = {
@@ -13,21 +12,30 @@ const MOCK_PRICES: Record<string, number> = {
   JPY: 26200,
 };
 
+function formatFiat(converted: number, currency: string): string {
+  return currency === "BTC" ? converted.toFixed(6) : currency === "ETH" ? converted.toFixed(4) : converted.toFixed(2);
+}
+
 export default function SolConverterPage() {
   const [solAmt, setSolAmt] = useState("1");
   const [currency, setCurrency] = useState("USD");
-  const [fiatAmt, setFiatAmt] = useState("");
+  const [fiatAmt, setFiatAmt] = useState(formatFiat(MOCK_PRICES.USD, "USD"));
   const [lastUpdated] = useState("Live (simulated)");
 
   const price = MOCK_PRICES[currency] ?? 172.45;
 
-  useEffect(() => {
+  function onSolChange(v: string) {
+    setSolAmt(v);
+    const n = parseFloat(v);
+    if (!isNaN(n)) setFiatAmt(formatFiat(n * price, currency));
+  }
+
+  function onCurrencyChange(c: string) {
+    setCurrency(c);
+    const p = MOCK_PRICES[c] ?? 172.45;
     const n = parseFloat(solAmt);
-    if (!isNaN(n)) {
-      const converted = n * price;
-      setFiatAmt(currency === "BTC" ? converted.toFixed(6) : currency === "ETH" ? converted.toFixed(4) : converted.toFixed(2));
-    }
-  }, [solAmt, currency, price]);
+    if (!isNaN(n)) setFiatAmt(formatFiat(n * p, c));
+  }
 
   function onFiatChange(v: string) {
     setFiatAmt(v);
@@ -66,7 +74,7 @@ export default function SolConverterPage() {
                 min="0"
                 step="any"
                 value={solAmt}
-                onChange={(e) => setSolAmt(e.target.value)}
+                onChange={(e) => onSolChange(e.target.value)}
               />
             </div>
             <div className="converter-equals">=</div>
@@ -88,7 +96,7 @@ export default function SolConverterPage() {
               <button
                 key={c}
                 className={`converter-quick-btn${currency === c ? " converter-quick-btn--active" : ""}`}
-                onClick={() => setCurrency(c)}
+                onClick={() => onCurrencyChange(c)}
               >
                 {c}
               </button>

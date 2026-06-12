@@ -4,6 +4,9 @@ import { useState, useRef } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import Footer from "@/components/Footer";
+import { useScrollToTopOn } from "@/lib/useScrollToTop";
+import TokenSelect from "@/components/TokenSelect";
+import BalanceCheck from "@/components/BalanceCheck";
 import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
 import { parseError } from "@/lib/wallet/parseError";
 import type { AuthorityInfo } from "@/app/api/check-authority/route";
@@ -18,6 +21,8 @@ export default function UpdateMetadataPage() {
 
   const [mint, setMint] = useState("");
   const [phase, setPhase] = useState<Phase>("input");
+  // checking renders inside the input view, signing inside the edit form — no scroll for those
+  useScrollToTopOn(phase === "checking" ? "input" : phase === "signing" ? "edit" : phase);
   const [tokenInfo, setTokenInfo] = useState<AuthorityInfo | null>(null);
   const [checkError, setCheckError] = useState("");
 
@@ -309,6 +314,7 @@ export default function UpdateMetadataPage() {
               <div className="cost-row"><span>Platform fee</span><span className="lp-mono">0.05 SOL</span></div>
               <div className="cost-row"><span>Network fee</span><span className="lp-mono">~0.001 SOL</span></div>
               <div className="cost-row cost-row--total"><span>Total</span><span className="lp-mono">~0.051 SOL</span></div>
+              <BalanceCheck requiredSol={0.051} />
             </div>
 
             <div className="wizard-actions">
@@ -342,12 +348,7 @@ export default function UpdateMetadataPage() {
             <div className="lp-card burn-card">
               <div className="burn-field">
                 <label className="wizard-field-label">Mint address</label>
-                <input
-                  className="wizard-input"
-                  placeholder="Token mint address"
-                  value={mint}
-                  onChange={(e) => { setMint(e.target.value.trim()); setCheckError(""); }}
-                />
+                <TokenSelect value={mint} onChange={(m) => { setMint(m); setCheckError(""); }} />
               </div>
               {checkError && <p className="tool-error" style={{ marginTop: "0.5rem" }}>{checkError}</p>}
             </div>

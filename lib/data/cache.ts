@@ -1,5 +1,6 @@
 import { getPool } from "@/lib/db/postgres";
 import { cacheGet, cacheSet, CACHE_KEYS } from "@/lib/db/redis";
+import { isSafeExternalUrl } from "@/lib/safeUrl";
 import { getConnection } from "@/lib/solana/connection";
 import { PublicKey } from "@solana/web3.js";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
@@ -49,19 +50,23 @@ export async function getTokenPageData(mint: string): Promise<TokenPageData> {
     return cached;
   }
 
-  // 2. Postgres token_cache
-  const pool = getPool();
-  const pgRow = await pool.query<{ data: TokenPageData; updated_at: Date }>(
-    "SELECT data, updated_at FROM token_cache WHERE mint = $1",
-    [mint]
-  );
-  if (pgRow.rows.length > 0) {
-    const row = pgRow.rows[0];
-    const age = Date.now() - new Date(row.updated_at).getTime();
-    if (age < STALE_MS) {
-      await cacheSet(redisKey, row.data, 600);
-      return row.data;
+  // 2. Postgres token_cache (best-effort — a down datastore must not break the page)
+  try {
+    const pool = getPool();
+    const pgRow = await pool.query<{ data: TokenPageData; updated_at: Date }>(
+      "SELECT data, updated_at FROM token_cache WHERE mint = $1",
+      [mint]
+    );
+    if (pgRow.rows.length > 0) {
+      const row = pgRow.rows[0];
+      const age = Date.now() - new Date(row.updated_at).getTime();
+      if (age < STALE_MS) {
+        await cacheSet(redisKey, row.data, 600);
+        return row.data;
+      }
     }
+  } catch (err) {
+    console.error("[token-cache] postgres read failed, falling through to live fetch:", err);
   }
 
   // 3. Live fetch — assemble from Helius + Birdeye + RPC
@@ -73,7 +78,7 @@ export async function getTokenPageData(mint: string): Promise<TokenPageData> {
     VALUES ($1, $2, now())
     ON CONFLICT (mint) DO UPDATE SET data = EXCLUDED.data, updated_at = now()
   `;
-  await pool.query(upsertSql, [mint, JSON.stringify(data)]).catch(() => undefined);
+  await getPool().query(upsertSql, [mint, JSON.stringify(data)]).catch(() => undefined);
   await cacheSet(redisKey, data, 600);
 
   return data;
@@ -175,7 +180,7 @@ async function fetchMetaplexMetadata(mint: string): Promise<MetaplexMeta> {
     const metadata = await fetchMetadataFromSeeds(umi, { mint: umiPublicKey(mint) });
 
     let image: string | null = null;
-    if (metadata.uri) {
+    if (metadata.uri && isSafeExternalUrl(metadata.uri)) {
       try {
         const res = await fetch(metadata.uri, { signal: AbortSignal.timeout(4000) });
         if (res.ok) {

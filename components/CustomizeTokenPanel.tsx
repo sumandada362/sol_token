@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, type ChangeEvent, type KeyboardEvent } from "react";
+import { useState, useEffect, type ChangeEvent, type KeyboardEvent } from "react";
+import { useReducedMotion } from "@/lib/useReducedMotion";
 
 const MAX_TAGS = 3;
 const PHRASES  = ["Customize Token", "No Coding", "No Complexity"];
@@ -35,15 +36,10 @@ export default function CustomizeTokenPanel() {
   const [titleText, setTitleText] = useState("");
   const [phase, setPhase]         = useState<"typing" | "erasing">("typing");
   const [phraseIdx, setPhraseIdx] = useState(0);
-  const reducedRef = useRef(false);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
-    reducedRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedRef.current) setTitleText(PHRASES[0]);
-  }, []);
-
-  useEffect(() => {
-    if (reducedRef.current) return;
+    if (reduced) return;
     const phrase = PHRASES[phraseIdx];
     if (phase === "typing") {
       if (titleText.length < phrase.length) {
@@ -61,7 +57,7 @@ export default function CustomizeTokenPanel() {
       const t = setTimeout(() => { setPhraseIdx((i) => (i + 1) % PHRASES.length); setPhase("typing"); }, PAUSE_MS);
       return () => clearTimeout(t);
     }
-  }, [titleText, phase, phraseIdx]);
+  }, [titleText, phase, phraseIdx, reduced]);
 
   const full = tags.length >= MAX_TAGS;
 
@@ -125,8 +121,8 @@ export default function CustomizeTokenPanel() {
   return (
     <div id="hero-panel">
       <p className="panel-header" aria-label="Customize Token">
-        {titleText}
-        {!reducedRef.current && <span className="typewriter-cursor" aria-hidden>|</span>}
+        {reduced ? PHRASES[0] : titleText}
+        {!reduced && <span className="typewriter-cursor" aria-hidden>|</span>}
       </p>
       <div className="panel-divider" />
       <div className="panel-inputs">

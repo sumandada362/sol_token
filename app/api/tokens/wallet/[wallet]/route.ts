@@ -32,15 +32,21 @@ export async function GET(_req: Request, { params }: { params: Promise<{ wallet:
     });
   }
 
-  // Postgres fallback
-  const rows = await query<TokenRow>(
-    "SELECT mint, name, symbol, metadata_uri, standard, tx_signature, created_at FROM tokens WHERE creator_wallet = $1 ORDER BY created_at DESC",
-    [wallet]
-  );
-
-  await cacheSet(cacheKey, rows, WALLET_LIST_TTL);
-
-  return NextResponse.json(rows, {
-    headers: { "X-Cache": "MISS" },
-  });
+  // Postgres fallback — degrade to an empty list if the datastore is down
+  // (the on-chain state is the source of truth; this list is convenience data)
+  try {
+    const rows = await query<TokenRow>(
+      "SELECT mint, name, symbol, metadata_uri, standard, tx_signature, created_at FROM tokens WHERE creator_wallet = $1 ORDER BY created_at DESC",
+      [wallet]
+    );
+    await cacheSet(cacheKey, rows, WALLET_LIST_TTL);
+    return NextResponse.json(rows, {
+      headers: { "X-Cache": "MISS" },
+    });
+  } catch (err) {
+    console.error("[tokens/wallet] datastore unavailable:", err);
+    return NextResponse.json([], {
+      headers: { "X-Cache": "MISS", "X-DB-Degraded": "1" },
+    });
+  }
 }

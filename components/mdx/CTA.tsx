@@ -9,6 +9,7 @@ const TOOL_ROUTES: Record<string, string> = {
   updateMetadata: "/tools/update-metadata",
   revokeMint: "/tools/revoke-mint",
   revokeFreeze: "/tools/revoke-freeze",
+  revokeUpdate: "/tools/revoke-update",
   makeImmutable: "/tools/make-immutable",
   openbook: "/tools/market/create",
 };
@@ -22,6 +23,7 @@ const TOOL_LABELS: Record<string, string> = {
   updateMetadata: "Update metadata",
   revokeMint: "Revoke mint authority",
   revokeFreeze: "Revoke freeze authority",
+  revokeUpdate: "Revoke update authority",
   makeImmutable: "Make immutable",
   openbook: "Create OpenBook market",
 };

@@ -1,10 +1,14 @@
 import { getConnection } from "@/lib/solana/connection";
 import { PublicKey } from "@solana/web3.js";
 
-const HELIUS_BASE = "https://mainnet.helius-rpc.com";
-
-function heliusUrl() {
-  return `${HELIUS_BASE}/?api-key=${process.env.HELIUS_API_KEY}`;
+// Helius DAS is cluster-specific — querying mainnet for a devnet mint returns
+// wrong (empty) data. Testnet has no Helius DAS; callers get null there.
+function heliusUrl(): string | null {
+  const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet";
+  const sub =
+    network === "mainnet-beta" ? "mainnet" : network === "devnet" ? "devnet" : null;
+  if (!sub) return null;
+  return `https://${sub}.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`;
 }
 
 export interface HolderRaw {
@@ -54,6 +58,7 @@ export async function getTopHolders(mint: string): Promise<HolderRaw[]> {
 export async function getTotalHolderCount(mint: string): Promise<number | null> {
   try {
     const url = heliusUrl();
+    if (!url) return null;
     // First page — Helius returns total in the response
     const res = await fetch(url, {
       method: "POST",

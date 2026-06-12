@@ -2,10 +2,12 @@ import { SystemProgram, PublicKey, LAMPORTS_PER_SOL, TransactionInstruction } fr
 
 export const FEES = {
   createToken: 0.1,
+  customCreator: 0.1,
   mintMore: 0.05,
   updateMetadata: 0.05,
   revokeMint: 0.05,
   revokeFreeze: 0.05,
+  revokeUpdate: 0.05,
   makeImmutable: 0,
   burn: 0,
   freezeAccount: 0.01,

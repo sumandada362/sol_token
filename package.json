@@ -9,7 +9,10 @@
     "lint": "eslint",
     "devnet:wallets": "node scripts/devnet-wallets.mjs",
     "devnet:refresh": "node scripts/devnet-refresh.mjs",
-    "devnet:check": "node scripts/devnet-refresh.mjs --check"
+    "devnet:check": "node scripts/devnet-refresh.mjs --check",
+    "dev:redis": "node scripts/dev-redis.mjs",
+    "test:adversarial": "pnpm dlx tsx scripts/test-adversarial.mts",
+    "test:e2e": "node scripts/test-devnet-e2e.mjs"
   },
   "dependencies": {
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",

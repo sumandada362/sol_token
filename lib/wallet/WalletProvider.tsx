@@ -4,11 +4,12 @@ import { ConnectionProvider, WalletProvider as AdapterWalletProvider } from "@so
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
+import { WalletSessionGuard } from "./WalletSessionGuard";
 
 // Wallet adapter CSS — scoped to the modal only, does not affect app styles
 import "@solana/wallet-adapter-react-ui/styles.css";
 
-const NETWORK = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as "devnet" | "mainnet-beta") ?? "devnet";
+const NETWORK = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as "devnet" | "testnet" | "mainnet-beta") ?? "devnet";
 // Prefer an explicit public RPC URL (e.g. Helius public endpoint) over the slow default
 const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_URL ?? clusterApiUrl(NETWORK);
 
@@ -21,7 +22,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   return (
     <ConnectionProvider endpoint={endpoint}>
       <AdapterWalletProvider wallets={WALLETS} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        <WalletSessionGuard>
+          <WalletModalProvider>{children}</WalletModalProvider>
+        </WalletSessionGuard>
       </AdapterWalletProvider>
     </ConnectionProvider>
   );

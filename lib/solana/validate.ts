@@ -30,7 +30,7 @@ export const mintMoreSchema = z.object({
 export const revokeSchema = z.object({
   payer: pubkey,
   mint: pubkey,
-  type: z.enum(["mint", "freeze", "update"]),
+  type: z.enum(["mint", "freeze", "update", "updateAuthority"]),
 });
 
 export const updateMetadataSchema = z.object({
@@ -40,6 +40,9 @@ export const updateMetadataSchema = z.object({
   symbol: z.string().min(1).max(10),
   uri: httpsUrl,
 });
+
+// SPL token amounts are u64 — supply × 10^decimals must fit or the signed tx fails on-chain
+const U64_MAX = BigInt("18446744073709551615");
 
 export const createTokenSchema = z.object({
   payer: pubkey,
@@ -53,7 +56,18 @@ export const createTokenSchema = z.object({
   revokeMint: z.boolean(),
   revokeFreeze: z.boolean(),
   revokeUpdate: z.boolean(),
-});
+  customCreator: z.boolean(),
+}).refine(
+  (d) => {
+    try {
+      const raw = BigInt(d.supply) * BigInt(10) ** BigInt(d.decimals);
+      return raw > BigInt(0) && raw <= U64_MAX;
+    } catch {
+      return false;
+    }
+  },
+  { message: "Supply × 10^decimals must be between 1 and 2^64-1", path: ["supply"] }
+);
 
 export type BurnInput = z.infer<typeof burnSchema>;
 export type MintMoreInput = z.infer<typeof mintMoreSchema>;

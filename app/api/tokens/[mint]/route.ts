@@ -30,10 +30,16 @@ export async function GET(_req: Request, { params }: { params: Promise<{ mint: s
   }
 
   // Postgres fallback
-  const row = await queryOne<TokenRow>(
-    "SELECT * FROM tokens WHERE mint = $1",
-    [mint]
-  );
+  let row: TokenRow | null;
+  try {
+    row = await queryOne<TokenRow>(
+      "SELECT * FROM tokens WHERE mint = $1",
+      [mint]
+    );
+  } catch (err) {
+    console.error("[tokens/mint] datastore unavailable:", err);
+    return NextResponse.json({ error: "Token record temporarily unavailable" }, { status: 503 });
+  }
 
   if (!row) {
     return NextResponse.json({ error: "Token not found" }, { status: 404 });

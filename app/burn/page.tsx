@@ -1,22 +1,35 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import Footer from "@/components/Footer";
+import { useScrollToTopOn } from "@/lib/useScrollToTop";
+import TokenSelect from "@/components/TokenSelect";
+import BalanceCheck from "@/components/BalanceCheck";
 import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
 import { parseError } from "@/lib/wallet/parseError";
 
+/** Whole-token amount string → raw base-unit string, without float precision loss. */
+function toRawAmount(amount: string, decimals: number): string {
+  const [int = "0", frac = ""] = amount.split(".");
+  const fracPadded = (frac + "0".repeat(decimals)).slice(0, decimals);
+  return (BigInt(int || "0") * BigInt(10) ** BigInt(decimals) + BigInt(fracPadded || "0")).toString();
+}
+
 export default function BurnPage() {
   const { publicKey } = useWallet();
+  const { connection } = useConnection();
   const { setVisible } = useWalletModal();
   const { execute } = useTransaction();
 
   const [mint, setMint] = useState("");
+  const [balance, setBalance] = useState<number | null>(null);
   const [amount, setAmount] = useState("");
   const [txState, setTxState] = useState<TxState>("idle");
+  useScrollToTopOn(txState === "confirmed");
   const [sig, setSig] = useState("");
   const [error, setError] = useState("");
 
@@ -26,16 +39,27 @@ export default function BurnPage() {
     if (!publicKey) { setVisible(true); return; }
     setError("");
 
-    let tokenAccount: string;
+    let mintPk: PublicKey;
     try {
-      const mintPk = new PublicKey(mint);
-      tokenAccount = getAssociatedTokenAddressSync(mintPk, publicKey, false, TOKEN_PROGRAM_ID).toBase58();
+      mintPk = new PublicKey(mint);
     } catch {
       setError("Invalid mint address");
       return;
     }
 
     try {
+      // The mint account provides decimals (for raw-amount conversion) and the
+      // owning program (SPL vs Token-2022) needed to derive the right ATA
+      const info = await connection.getParsedAccountInfo(mintPk);
+      const acc = info.value;
+      const decimals: number | undefined =
+        acc && "parsed" in acc.data ? acc.data.parsed?.info?.decimals : undefined;
+      if (!acc || decimals === undefined) {
+        setError("Token mint not found on this network.");
+        return;
+      }
+      const tokenAccount = getAssociatedTokenAddressSync(mintPk, publicKey, false, acc.owner).toBase58();
+
       const { signature } = await execute(
         () =>
           fetch("/api/tx/burn", {
@@ -45,8 +69,8 @@ export default function BurnPage() {
               payer: publicKey.toBase58(),
               mint,
               tokenAccount,
-              amount: String(burnAmt),
-              decimals: 0, // user enters whole-token amounts; server treats as raw
+              amount: toRawAmount(amount, decimals),
+              decimals,
             }),
           }).then(async (r) => {
             const d = await r.json();
@@ -80,6 +104,9 @@ export default function BurnPage() {
             <div className="tool-fee-badge tool-fee-badge--free">Free</div>
           </div>
           <p className="page-sub">Permanently remove tokens from circulation. This action is irreversible.</p>
+          <div className="tool-header-links">
+            <Link href="/docs/burn-tokens" className="tool-doc-link">Docs</Link>
+          </div>
         </div>
 
         {txState === "confirmed" ? (
@@ -104,24 +131,29 @@ export default function BurnPage() {
           <div className="lp-card burn-card" data-reveal style={{ "--delay": "80ms" } as React.CSSProperties}>
             <div className="burn-field">
               <label className="wizard-field-label">Mint address</label>
-              <input
-                className="wizard-input"
-                placeholder="Token mint address"
-                value={mint}
-                onChange={(e) => setMint(e.target.value.trim())}
-              />
+              <TokenSelect value={mint} onChange={(m, t) => { setMint(m); setBalance(t?.amount ?? null); setError(""); }} />
             </div>
 
             <div className="burn-field">
               <label className="wizard-field-label">Amount to burn</label>
-              <input
-                className="wizard-input"
-                type="number"
-                placeholder="0"
-                min="0"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
+              <div className="burn-amount-row">
+                <input
+                  className="wizard-input"
+                  type="number"
+                  placeholder="0"
+                  min="0"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+                {balance !== null && (
+                  <button type="button" className="pool-max-btn" onClick={() => setAmount(String(balance))}>
+                    Max
+                  </button>
+                )}
+              </div>
+              {balance !== null && (
+                <span className="burn-balance">Balance: {balance.toLocaleString(undefined, { maximumFractionDigits: 6 })}</span>
+              )}
             </div>
 
             <div className="burn-warning">
@@ -131,6 +163,8 @@ export default function BurnPage() {
                 Burned tokens are removed from total supply forever.
               </div>
             </div>
+
+            <BalanceCheck requiredSol={0.001} />
 
             {error && <p className="tool-error">{error}</p>}
 

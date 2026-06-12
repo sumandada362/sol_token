@@ -71,7 +71,7 @@ export default async function TokenPage({ params }: { params: Promise<{ mint: st
           </div>
           <div className="token-header-actions">
             <a
-              href={`https://solscan.io/token/${mint}`}
+              href={`https://solscan.io/token/${mint}?cluster=${process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet"}`}
               target="_blank"
               rel="noopener noreferrer"
               className="lp-link"

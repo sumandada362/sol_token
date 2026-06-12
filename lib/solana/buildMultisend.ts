@@ -6,16 +6,15 @@ import {
 } from "@solana/web3.js";
 import {
   getAssociatedTokenAddressSync,
-  createAssociatedTokenAccountInstruction,
+  createAssociatedTokenAccountIdempotentInstruction,
   createTransferCheckedInstruction,
-  TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { getConnection } from "./connection";
+import { getMintProgramId } from "./program";
 import { feeIx } from "./fees";
 import crypto from "crypto";
 
-export const MULTISEND_FEE_PER_RECIPIENT = 0.001;
-export const MULTISEND_MIN_FEE = 0.02;
+export const MULTISEND_FEE_PER_TX = 0.02;
 const INSTRUCTIONS_PER_BATCH = 8; // conservative — ATA creations are larger
 
 export interface Recipient {
@@ -49,7 +48,7 @@ export interface MultisendResult {
 /**
  * Builds batched multisend transactions.
  * Checks which recipient ATAs already exist to include accurate rent cost.
- * Platform fee is spread pro-rata across batches.
+ * Each batch carries the flat per-transaction platform fee.
  */
 export async function buildMultisendTxs(
   payer: string,
@@ -60,10 +59,11 @@ export async function buildMultisendTxs(
   const conn = getConnection();
   const payerPk = new PublicKey(payer);
   const mintPk = new PublicKey(mint);
+  const programId = await getMintProgramId(conn, mintPk);
 
   // Derive all ATAs and check existence in parallel
   const atas = recipients.map((r) =>
-    getAssociatedTokenAddressSync(mintPk, new PublicKey(r.address), false, TOKEN_PROGRAM_ID)
+    getAssociatedTokenAddressSync(mintPk, new PublicKey(r.address), false, programId)
   );
 
   // Check in batches of 100 (getMultipleAccounts limit)
@@ -79,9 +79,10 @@ export async function buildMultisendTxs(
   const ataCreations = [...existsMap.values()].filter((v) => !v).length;
   const ATA_RENT_LAMPORTS = 2_039_280; // ~0.002 SOL
 
-  // Platform fee
-  const platformFeeSol = Math.max(MULTISEND_MIN_FEE, recipients.length * MULTISEND_FEE_PER_RECIPIENT);
-  const platformFeeLamperRecipient = Math.ceil((platformFeeSol * LAMPORTS_PER_SOL) / Math.ceil(recipients.length / INSTRUCTIONS_PER_BATCH));
+  // Platform fee — flat per transaction batch
+  const batchCount = Math.ceil(recipients.length / INSTRUCTIONS_PER_BATCH);
+  const platformFeeSol = batchCount * MULTISEND_FEE_PER_TX;
+  const platformFeeLamportsPerBatch = Math.round(MULTISEND_FEE_PER_TX * LAMPORTS_PER_SOL);
 
   // Upload hash for journal keying
   const uploadHash = crypto
@@ -102,26 +103,31 @@ export async function buildMultisendTxs(
     chunks.map(async (chunk, batchIdx) => {
       const tx = new Transaction({ blockhash, lastValidBlockHeight, feePayer: payerPk });
 
-      // Pro-rata platform fee on every batch
-      const feeInstruction = feeIx(payerPk, platformFeeLamperRecipient / LAMPORTS_PER_SOL);
+      // Flat platform fee on every batch
+      const feeInstruction = feeIx(payerPk, MULTISEND_FEE_PER_TX);
       if (feeInstruction) tx.add(feeInstruction);
 
       for (const r of chunk) {
         const recipientPk = new PublicKey(r.address);
-        const ata = getAssociatedTokenAddressSync(mintPk, recipientPk, false, TOKEN_PROGRAM_ID);
+        const ata = getAssociatedTokenAddressSync(mintPk, recipientPk, false, programId);
 
         if (!existsMap.get(ata.toBase58())) {
-          tx.add(createAssociatedTokenAccountInstruction(payerPk, ata, recipientPk, mintPk));
+          // Idempotent: a no-op if the ATA appears between quote and send
+          tx.add(
+            createAssociatedTokenAccountIdempotentInstruction(payerPk, ata, recipientPk, mintPk, programId)
+          );
         }
 
         tx.add(
           createTransferCheckedInstruction(
-            getAssociatedTokenAddressSync(mintPk, payerPk, false, TOKEN_PROGRAM_ID),
+            getAssociatedTokenAddressSync(mintPk, payerPk, false, programId),
             mintPk,
             ata,
             payerPk,
             BigInt(r.amount),
-            decimals
+            decimals,
+            [],
+            programId
           )
         );
       }
@@ -132,16 +138,17 @@ export async function buildMultisendTxs(
         tx: serialized,
         lastValidBlockHeight,
         recipientCount: chunk.length,
-        platformFeeLamports: platformFeeLamperRecipient,
+        platformFeeLamports: platformFeeLamportsPerBatch,
       };
     })
   );
 
+  const networkFeeSol = batches.length * 0.000005;
   const quote: MultisendQuote = {
     platformFeeSol,
     ataRentSol: (ataCreations * ATA_RENT_LAMPORTS) / LAMPORTS_PER_SOL,
-    networkFeeSol: Math.max(0.001, batches.length * 0.000005),
-    totalSol: platformFeeSol + (ataCreations * ATA_RENT_LAMPORTS) / LAMPORTS_PER_SOL + Math.max(0.001, batches.length * 0.000005),
+    networkFeeSol,
+    totalSol: platformFeeSol + (ataCreations * ATA_RENT_LAMPORTS) / LAMPORTS_PER_SOL + networkFeeSol,
     ataCreations,
     recipientCount: recipients.length,
   };
@@ -153,13 +160,14 @@ export async function buildMultisendTxs(
  * Validates a recipient list (pure function — also run client-side).
  * Returns errors indexed by row number.
  */
+const U64_MAX = BigInt("18446744073709551615");
+
 export function validateRecipients(
   rows: Array<{ address: string; amount: string }>,
   decimals: number
 ): Map<number, string> {
   const errors = new Map<number, string>();
   const seen = new Set<string>();
-  const maxUnits = BigInt(10) ** BigInt(decimals);
 
   for (let i = 0; i < rows.length; i++) {
     const { address, amount } = rows[i];
@@ -172,25 +180,29 @@ export function validateRecipients(
     if (seen.has(address)) { errors.set(i, "Duplicate address"); continue; }
     seen.add(address);
 
-    const amtNum = parseFloat(amount);
-    if (isNaN(amtNum) || amtNum <= 0) { errors.set(i, "Amount must be positive"); continue; }
+    if (!/^\d+(\.\d+)?$/.test(amount.trim())) { errors.set(i, "Amount must be positive"); continue; }
 
     // Check decimal precision
-    const parts = amount.split(".");
+    const parts = amount.trim().split(".");
     if (parts[1] && parts[1].length > decimals) {
       errors.set(i, `Exceeds ${decimals} decimal places`);
       continue;
     }
 
-    // Check overflow (raw units > u64 max is caught by BigInt parse)
-    const rawUnits = BigInt(Math.round(amtNum * Number(maxUnits)));
+    const rawUnits = BigInt(toRawUnits(amount, decimals));
     if (rawUnits <= BigInt(0)) { errors.set(i, "Amount rounds to zero"); continue; }
+    if (rawUnits > U64_MAX) { errors.set(i, "Amount exceeds the maximum token supply"); continue; }
   }
   return errors;
 }
 
-/** Convert human amount string to raw units string */
+/**
+ * Convert a human decimal amount string to raw units, exactly.
+ * Pure string/BigInt math — parseFloat loses precision above 2^53 raw units,
+ * which silently corrupts large airdrops.
+ */
 export function toRawUnits(amount: string, decimals: number): string {
-  const factor = 10 ** decimals;
-  return String(Math.round(parseFloat(amount) * factor));
+  const [whole, frac = ""] = amount.trim().split(".");
+  const fracPadded = frac.slice(0, decimals).padEnd(decimals, "0");
+  return (BigInt(whole || "0") * BigInt(10) ** BigInt(decimals) + BigInt(fracPadded || "0")).toString();
 }

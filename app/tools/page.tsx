@@ -14,7 +14,7 @@ const tools = [
     icon: "◈",
     name: "Multisender",
     desc: "Send tokens to hundreds of wallets in one transaction batch.",
-    fee: "0.01 SOL / tx",
+    fee: "0.02 SOL / tx",
     category: "distribution",
   },
   {
@@ -22,7 +22,15 @@ const tools = [
     icon: "⊕",
     name: "Mint Tokens",
     desc: "Increase token supply by minting new tokens to any wallet.",
-    fee: "0.1 SOL",
+    fee: "0.05 SOL",
+    category: "supply",
+  },
+  {
+    href: "/burn",
+    icon: "△",
+    name: "Burn Tokens",
+    desc: "Permanently destroy tokens from your wallet — reduces total supply.",
+    fee: "Free",
     category: "supply",
   },
   {
@@ -50,6 +58,14 @@ const tools = [
     category: "authority",
   },
   {
+    href: "/tools/revoke-update",
+    icon: "⊝",
+    name: "Revoke Update",
+    desc: "Remove update authority from your wallet — metadata can never change.",
+    fee: "0.05 SOL",
+    category: "authority",
+  },
+  {
     href: "/tools/freeze-account",
     icon: "❄",
     name: "Freeze Account",
@@ -69,9 +85,45 @@ const tools = [
     href: "/tools/make-immutable",
     icon: "◻",
     name: "Make Immutable",
-    desc: "Revoke update authority — lock metadata permanently.",
+    desc: "Lock metadata permanently — free alternative to revoking update authority.",
     fee: "Free",
     category: "authority",
+  },
+  {
+    href: "/pool",
+    icon: "◎",
+    name: "Create Pool",
+    desc: "Create a liquidity pool on Raydium, Orca, Meteora, and more.",
+    fee: "0.1 SOL / DEX",
+    category: "liquidity",
+    comingSoon: true,
+  },
+  {
+    href: "/pool/add",
+    icon: "⊞",
+    name: "Add Liquidity",
+    desc: "Deposit tokens into an existing pool to earn trading fees.",
+    fee: "0.05 SOL",
+    category: "liquidity",
+    comingSoon: true,
+  },
+  {
+    href: "/pool/remove",
+    icon: "⊖",
+    name: "Remove Liquidity",
+    desc: "Withdraw your tokens and SOL from a liquidity position.",
+    fee: "0.05 SOL",
+    category: "liquidity",
+    comingSoon: true,
+  },
+  {
+    href: "/tools/market/create",
+    icon: "⬡",
+    name: "OpenBook Market",
+    desc: "Create an OpenBook v2 order-book market for your token.",
+    fee: "0.05 SOL + pass-through",
+    category: "liquidity",
+    comingSoon: true,
   },
   {
     href: "/tools/burn-lp",
@@ -80,14 +132,7 @@ const tools = [
     desc: "Permanently burn your LP position tokens from a liquidity pool.",
     fee: "Free",
     category: "liquidity",
-  },
-  {
-    href: "/tools/market/create",
-    icon: "⬡",
-    name: "OpenBook Market",
-    desc: "Create an OpenBook v2 order-book market for your token.",
-    fee: "0.05 SOL + pass-through",
-    category: "market",
+    comingSoon: true,
   },
   {
     href: "/tools/unit-converter",
@@ -108,16 +153,21 @@ const tools = [
 ];
 
 const feeNotes: Record<string, string> = {
-  "/tools/multisender":      "Flat 0.01 SOL per transaction + ~0.002 SOL Solana rent per new account",
+  "/tools/multisender":      "Flat 0.02 SOL per transaction + ~0.002 SOL Solana rent per new account",
   "/tools/mint-tokens":      "Requires active mint authority on the token; inflates supply",
+  "/burn":                   "Free — only Solana gas (~0.000005 SOL); permanently reduces total supply",
   "/tools/update-metadata":  "Requires update authority; metadata storage rent extra",
   "/tools/revoke-mint":      "0.05 SOL FORGE fee + network gas (~0.000005 SOL)",
   "/tools/revoke-freeze":    "0.05 SOL FORGE fee + network gas (~0.000005 SOL)",
+  "/tools/revoke-update":    "0.05 SOL FORGE fee + network gas; transfers authority to the system program",
   "/tools/freeze-account":   "0.01 SOL per address frozen; requires active freeze authority",
   "/tools/unfreeze-account": "0.01 SOL per address unfrozen; requires active freeze authority",
   "/tools/make-immutable":   "Only Solana gas (~0.000005 SOL); no FORGE fee",
-  "/tools/burn-lp":          "Permanently removes LP position; underlying assets remain in pool",
-  "/tools/market/create":    "Plus protocol deposit required by OpenBook v2",
+  "/pool":                   "Coming soon — + 0.4–0.6 SOL DEX setup cost paid directly to the DEX",
+  "/pool/add":               "Coming soon — token/SOL deposit becomes your LP position, not a fee",
+  "/pool/remove":            "Coming soon — withdraws your share from the pool",
+  "/tools/burn-lp":          "Coming soon — permanently removes LP position; underlying assets remain in pool",
+  "/tools/market/create":    "Coming soon — plus protocol deposit required by OpenBook v2",
   "/tools/unit-converter":   "Fully client-side — no transaction, no fee",
   "/tools/sol-converter":    "Fully client-side — no transaction, no fee",
 };
@@ -129,7 +179,6 @@ const categories = [
   { id: "metadata", label: "Metadata" },
   { id: "authority", label: "Authority" },
   { id: "liquidity", label: "Liquidity" },
-  { id: "market", label: "Market" },
   { id: "utility", label: "Utilities" },
 ];
 
@@ -179,22 +228,7 @@ export default function ToolsPage() {
             <div className="pricing-fee-row">
               <Link href="/create-token" className="pricing-fee-link">Custom creator info (at creation)</Link>
               <span className="pricing-fee-val">0.1 SOL</span>
-              <span className="pricing-fee-note">Embed creator identity on-chain — optional add-on at token creation</span>
-            </div>
-            <div className="pricing-fee-row">
-              <Link href="/pool" className="pricing-fee-link">Create liquidity pool (per DEX)</Link>
-              <span className="pricing-fee-val">0.1 SOL</span>
-              <span className="pricing-fee-note">+ 0.4–0.6 SOL DEX setup cost paid directly to the DEX</span>
-            </div>
-            <div className="pricing-fee-row">
-              <Link href="/pool/add" className="pricing-fee-link">Add liquidity (existing pool)</Link>
-              <span className="pricing-fee-val">0.05 SOL</span>
-              <span className="pricing-fee-note">Token/SOL deposit becomes your LP position, not a fee</span>
-            </div>
-            <div className="pricing-fee-row">
-              <Link href="/pool/remove" className="pricing-fee-link">Remove liquidity</Link>
-              <span className="pricing-fee-val">0.05 SOL</span>
-              <span className="pricing-fee-note">Withdraws your share from the pool</span>
+              <span className="pricing-fee-note">Your name and website embedded as the token&apos;s verified creator</span>
             </div>
             {/* Tools */}
             <div className="pricing-fee-row pricing-fee-row--group">
@@ -225,10 +259,10 @@ export default function ToolsPage() {
                 <strong>Create token:</strong> 0.1 SOL base (metadata, socials, token page) + 0.05 SOL each to revoke mint/freeze at creation + 0.1 SOL custom creator info (optional). Make immutable at creation is free.<br />
                 <strong>Create pool (per DEX):</strong> 0.1 SOL FORGE fee + 0.4–0.6 SOL DEX setup (paid to the DEX).<br />
                 <strong>Add / Remove liquidity:</strong> 0.05 SOL each.<br />
-                <strong>Multisender:</strong> 0.01 SOL flat per transaction.<br />
-                <strong>Mint tokens:</strong> 0.1 SOL.<br />
+                <strong>Multisender:</strong> 0.02 SOL flat per transaction.<br />
+                <strong>Mint tokens:</strong> 0.05 SOL.<br />
                 <strong>Update metadata / OpenBook market:</strong> 0.05 SOL each.<br />
-                <strong>Revoke mint authority / Revoke freeze authority:</strong> 0.05 SOL each.<br />
+                <strong>Revoke mint / freeze / update authority:</strong> 0.05 SOL each.<br />
                 <strong>Freeze account / Unfreeze account:</strong> 0.01 SOL per address.<br />
                 <strong>Burn / Burn LP tokens / Make immutable:</strong> Free.<br />
                 Network rent and DEX setup costs are always shown upfront and are separate from FORGE fees.
@@ -253,7 +287,7 @@ export default function ToolsPage() {
               </summary>
               <div className="lp-faq-answer">
                 Burn, Burn LP tokens, Make Immutable, and both converter tools have zero FORGE platform fee.
-                Revoke Mint and Revoke Freeze each cost 0.05 SOL.
+                Revoke Mint, Revoke Freeze, and Revoke Update each cost 0.05 SOL.
                 Freeze Account and Unfreeze Account each cost 0.01 SOL per address.
                 All transactions also incur the standard Solana network fee (~0.000005 SOL), which goes directly to validators — not to FORGE.
               </div>
@@ -272,7 +306,7 @@ export default function ToolsPage() {
             </details>
             <details className="lp-faq-item">
               <summary>
-                <span>What are "pass-through" fees on OpenBook Market?</span>
+                <span>What are &ldquo;pass-through&rdquo; fees on OpenBook Market?</span>
                 <span className="lp-faq-icon" aria-hidden>+</span>
               </summary>
               <div className="lp-faq-answer">
@@ -300,7 +334,7 @@ export default function ToolsPage() {
               <div className="lp-faq-answer">
                 No. Network rent — the SOL deposited to store account data on-chain — is separate from FORGE fees and goes directly to the Solana network.
                 For Multisender, each new recipient token account costs ~0.002 SOL in rent. Existing accounts cost nothing extra.
-                The fee table shows FORGE's portion only.
+                The fee table shows FORGE&apos;s portion only.
               </div>
             </details>
             <details className="lp-faq-item">

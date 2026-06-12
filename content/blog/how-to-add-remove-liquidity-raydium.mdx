@@ -17,7 +17,7 @@ faq:
   - q: "If I burned my LP tokens, can I remove liquidity?"
     a: "No. Burning LP tokens permanently surrenders your right to withdraw liquidity. This is intentional — it signals that the liquidity is locked forever."
   - q: "Does adding or removing liquidity cost FORGE fees?"
-    a: "No. Adding liquidity to an existing pool and removing liquidity are free (no FORGE fee). You pay only Solana network gas (~0.001 SOL)."
+    a: "Each costs a flat 0.05 SOL FORGE fee plus Solana network gas (~0.001 SOL). Creating a new pool costs 0.1 SOL plus the DEX setup cost."
 ---
 
 Once you've created a Raydium pool, you'll often need to add more liquidity as your project grows, or eventually remove it. This guide covers how to do both using FORGE, plus what to understand about LP tokens before you act.
@@ -52,7 +52,7 @@ You can enter either the SOL amount or the token amount — the other side auto-
 
 ### Step 4 — Sign
 
-No FORGE fee. You pay Solana gas only (~0.001 SOL). Approve the transaction and receive additional LP tokens.
+FORGE charges a flat 0.05 SOL plus Solana gas (~0.001 SOL). Approve the transaction and receive additional LP tokens.
 
 ## How to remove liquidity
 

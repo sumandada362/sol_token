@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useReducedMotion } from "@/lib/useReducedMotion";
 
 const PHRASES  = ["No Coding", "No Complexity"];
 const TYPE_MS  = 78;
@@ -11,11 +12,7 @@ export default function Typewriter() {
   const [display, setDisplay]     = useState("");
   const [phase, setPhase]         = useState<"typing" | "erasing">("typing");
   const [phraseIdx, setPhraseIdx] = useState(0);
-  const [reduced, setReduced]     = useState(false);
-
-  useEffect(() => {
-    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  }, []);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     if (reduced) return;

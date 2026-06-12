@@ -80,6 +80,11 @@ export async function buildCreateTokenTx(input: CreateTokenInput): Promise<Trans
     sellerFeeBasisPoints: percentAmount(0),
     tokenStandard: TokenStandard.Fungible,
     isMutable: !input.revokeUpdate,
+    // Custom creator info: embed the payer as the verified on-chain creator
+    // (payer signs the tx, so on-chain verification succeeds)
+    creators: input.customCreator
+      ? [{ address: umiPublicKey(input.payer), verified: true, share: 100 }]
+      : none(),
     ...(isToken2022 ? { splTokenProgram: umiPublicKey(TOKEN_2022_ID) } : {}),
   });
 
@@ -97,6 +102,7 @@ export async function buildCreateTokenTx(input: CreateTokenInput): Promise<Trans
   let totalFee = FEES.createToken;
   if (input.revokeMint) totalFee += FEES.revokeMint;
   if (input.revokeFreeze) totalFee += FEES.revokeFreeze;
+  if (input.customCreator) totalFee += FEES.customCreator;
   const fee = feeIx(payer, totalFee);
   if (fee) tx.add(fee);
 

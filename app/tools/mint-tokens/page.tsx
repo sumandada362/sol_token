@@ -3,9 +3,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import Footer from "@/components/Footer";
+import { useScrollToTopOn } from "@/lib/useScrollToTop";
+import TokenSelect from "@/components/TokenSelect";
+import BalanceCheck from "@/components/BalanceCheck";
 import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
 import { parseError } from "@/lib/wallet/parseError";
 import type { AuthorityInfo } from "@/app/api/check-authority/route";
@@ -19,6 +21,8 @@ export default function MintTokensPage() {
 
   const [mint, setMint] = useState("");
   const [phase, setPhase] = useState<Phase>("input");
+  // checking renders inside the input view, signing inside the form — no scroll for those
+  useScrollToTopOn(phase === "checking" ? "input" : phase === "signing" ? "form" : phase);
   const [tokenInfo, setTokenInfo] = useState<AuthorityInfo | null>(null);
   const [checkError, setCheckError] = useState("");
 
@@ -65,12 +69,12 @@ export default function MintTokensPage() {
     if (!publicKey) return;
     setTxError("");
 
+    // Destination is a WALLET address — the server derives (and creates) the ATA
     let destAddr: string;
     try {
-      const mintPk = new PublicKey(mint.trim());
       destAddr = destination.trim()
         ? new PublicKey(destination.trim()).toBase58()
-        : getAssociatedTokenAddressSync(mintPk, publicKey, false, TOKEN_PROGRAM_ID).toBase58();
+        : publicKey.toBase58();
     } catch {
       setTxError("Invalid destination address.");
       return;
@@ -209,6 +213,7 @@ export default function MintTokensPage() {
               <div className="cost-row"><span>Platform fee</span><span className="lp-mono">0.05 SOL</span></div>
               <div className="cost-row"><span>Network fee</span><span className="lp-mono">~0.001 SOL</span></div>
               <div className="cost-row cost-row--total"><span>Total</span><span className="lp-mono">~0.051 SOL</span></div>
+              <BalanceCheck requiredSol={0.051} />
             </div>
 
             <div className="wizard-actions">
@@ -240,8 +245,7 @@ export default function MintTokensPage() {
             <div className="lp-card burn-card">
               <div className="burn-field">
                 <label className="wizard-field-label">Mint address</label>
-                <input className="wizard-input" placeholder="Token mint address" value={mint}
-                  onChange={(e) => { setMint(e.target.value.trim()); setCheckError(""); }} />
+                <TokenSelect value={mint} onChange={(m) => { setMint(m); setCheckError(""); }} />
               </div>
               {checkError && <p className="tool-error" style={{ marginTop: "0.5rem" }}>{checkError}</p>}
             </div>

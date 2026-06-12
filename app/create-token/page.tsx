@@ -6,6 +6,8 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Keypair } from "@solana/web3.js";
 import Footer from "@/components/Footer";
+import { useScrollToTopOn } from "@/lib/useScrollToTop";
+import BalanceCheck from "@/components/BalanceCheck";
 import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
 import { PREFILL_KEY } from "@/components/CustomizeTokenPanel";
 import { parseError } from "@/lib/wallet/parseError";
@@ -18,12 +20,14 @@ interface FormState {
   standard: "spl" | "token2022";
   revokeMint: boolean; revokeFreeze: boolean; revokeUpdate: boolean;
   vanityAddress: boolean;
+  customCreator: boolean; creatorName: string; creatorWebsite: string;
 }
 
 const DEFAULT_FORM: FormState = {
   name: "", symbol: "", supply: "1000000000", decimals: "9",
   description: "", website: "", twitter: "", telegram: "",
   standard: "spl", revokeMint: false, revokeFreeze: false, revokeUpdate: false, vanityAddress: false,
+  customCreator: false, creatorName: "", creatorWebsite: "",
 };
 
 export default function CreatePage() {
@@ -32,13 +36,19 @@ export default function CreatePage() {
   const { execute } = useTransaction();
 
   const [step, setStep] = useState(1);
+  useScrollToTopOn(step);
   const [form, setForm] = useState<FormState>(DEFAULT_FORM);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState("");
+  const [dragActive, setDragActive] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [prefilled, setPrefilled] = useState(false);
 
-  // Read pre-fill data written by the homepage CustomizeTokenPanel
+  // Read pre-fill data written by the homepage CustomizeTokenPanel.
+  // sessionStorage is browser-only, so a mount-time read that re-renders is
+  // unavoidable here — the rule's cascade concern doesn't apply to a once-only,
+  // empty-deps effect.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const raw = sessionStorage.getItem(PREFILL_KEY);
     if (!raw) return;
@@ -79,6 +89,7 @@ export default function CreatePage() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
   const [txState, setTxState] = useState<TxState>("idle");
   const [txError, setTxError] = useState("");
   const [mintAddress, setMintAddress] = useState("");
@@ -88,9 +99,7 @@ export default function CreatePage() {
   function next() { if (step < 5) setStep((s) => s + 1); }
   function back() { if (step > 1) setStep((s) => s - 1); }
 
-  function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  function acceptLogoFile(file: File) {
     if (file.size > 2 * 1024 * 1024) { setUploadError("Image must be under 2 MB"); return; }
     if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
       setUploadError("Only PNG, JPG, or WebP allowed"); return;
@@ -100,9 +109,22 @@ export default function CreatePage() {
     setLogoPreview(URL.createObjectURL(file));
   }
 
+  function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) acceptLogoFile(file);
+  }
+
+  function handleLogoDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) acceptLogoFile(file);
+  }
+
   const platformFee = 0.1
     + (form.revokeMint ? 0.05 : 0)
-    + (form.revokeFreeze ? 0.05 : 0);
+    + (form.revokeFreeze ? 0.05 : 0)
+    + (form.customCreator ? 0.1 : 0);
   const totalFee = platformFee + 0.018;
 
   async function handleCreate() {
@@ -124,6 +146,10 @@ export default function CreatePage() {
         if (form.website) uploadForm.append("website", form.website);
         if (form.twitter) uploadForm.append("twitter", form.twitter);
         if (form.telegram) uploadForm.append("telegram", form.telegram);
+        if (form.customCreator && form.creatorName.trim()) {
+          uploadForm.append("creatorName", form.creatorName.trim());
+          if (form.creatorWebsite.trim()) uploadForm.append("creatorWebsite", form.creatorWebsite.trim());
+        }
 
         const uploadRes = await fetch("/api/upload", { method: "POST", body: uploadForm });
         const uploadData = await uploadRes.json();
@@ -153,6 +179,7 @@ export default function CreatePage() {
               revokeMint: form.revokeMint,
               revokeFreeze: form.revokeFreeze,
               revokeUpdate: form.revokeUpdate,
+              customCreator: form.customCreator,
             }),
           }).then(async (r) => {
             const d = await r.json();
@@ -287,8 +314,11 @@ export default function CreatePage() {
               <div className="wizard-form-grid">
                 <FormField label="Logo" hint="PNG, JPG, or WebP — max 2 MB, 1:1 ratio recommended" className="wizard-col-full">
                   <div
-                    className="logo-upload-zone"
+                    className={`logo-upload-zone${dragActive ? " drag-active" : ""}`}
                     onClick={() => fileRef.current?.click()}
+                    onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+                    onDragLeave={() => setDragActive(false)}
+                    onDrop={handleLogoDrop}
                     style={{ cursor: "pointer" }}
                   >
                     {logoPreview ? (
@@ -347,8 +377,28 @@ export default function CreatePage() {
                 <ToggleRow label="Revoke mint authority" hint="Permanently cap supply — +0.05 SOL" checked={form.revokeMint} onChange={(v) => setForm({ ...form, revokeMint: v })} />
                 <ToggleRow label="Revoke freeze authority" hint="No wallet can ever be frozen — +0.05 SOL" checked={form.revokeFreeze} onChange={(v) => setForm({ ...form, revokeFreeze: v })} />
                 <ToggleRow label="Make immutable" hint="Lock metadata permanently — Free" checked={form.revokeUpdate} onChange={(v) => setForm({ ...form, revokeUpdate: v })} />
+                <ToggleRow label="Custom creator info" hint="Show your own creator name on explorers — +0.1 SOL" checked={form.customCreator} onChange={(v) => setForm({ ...form, customCreator: v })} />
+                {form.customCreator && (
+                  <div className="wizard-form-grid" style={{ marginTop: "0.75rem" }}>
+                    <FormField label="Creator name" required hint="Shown as the token's creator">
+                      <input
+                        value={form.creatorName}
+                        onChange={(e) => setForm({ ...form, creatorName: e.target.value })}
+                        placeholder="e.g. Forge Labs"
+                        maxLength={50}
+                      />
+                    </FormField>
+                    <FormField label="Creator website" hint="Optional">
+                      <input
+                        value={form.creatorWebsite}
+                        onChange={(e) => setForm({ ...form, creatorWebsite: e.target.value })}
+                        placeholder="https://…"
+                      />
+                    </FormField>
+                  </div>
+                )}
               </div>
-              <WizardNav onBack={back} onNext={next} />
+              <WizardNav onBack={back} onNext={next} nextDisabled={form.customCreator && !form.creatorName.trim()} />
             </WizardCard>
           )}
 
@@ -364,6 +414,7 @@ export default function CreatePage() {
                 <ReviewRow label="Mint authority" value={form.revokeMint ? "Will be revoked" : "Active"} />
                 <ReviewRow label="Freeze authority" value={form.revokeFreeze ? "Will be revoked" : "Active"} />
                 <ReviewRow label="Update authority" value={form.revokeUpdate ? "Will be revoked (immutable)" : "Active"} />
+                {form.customCreator && <ReviewRow label="Creator" value={form.creatorName || "—"} />}
                 {logoFile && <ReviewRow label="Logo" value={logoFile.name} />}
               </div>
               <div className="cost-summary">
@@ -372,9 +423,11 @@ export default function CreatePage() {
                 {form.revokeMint && <div className="cost-row"><span>Revoke mint authority</span><span className="lp-mono">0.05 SOL</span></div>}
                 {form.revokeFreeze && <div className="cost-row"><span>Revoke freeze authority</span><span className="lp-mono">0.05 SOL</span></div>}
                 {form.revokeUpdate && <div className="cost-row"><span>Make immutable</span><span className="lp-mono">Free</span></div>}
+                {form.customCreator && <div className="cost-row"><span>Custom creator info</span><span className="lp-mono">0.1 SOL</span></div>}
                 <div className="cost-row"><span>Network rent (est.)</span><span className="lp-mono">~0.018 SOL</span></div>
                 <div className="cost-row cost-row--total"><span>Total</span><span className="lp-mono">~{totalFee.toFixed(3)} SOL</span></div>
               </div>
+              <BalanceCheck requiredSol={totalFee} />
               <div className="wizard-actions">
                 <button className="lp-btn lp-btn--secondary" onClick={back}>Back</button>
                 <button className="lp-btn lp-btn--primary" onClick={handleCreate}>
@@ -455,11 +508,11 @@ function WizardCard({ title, subtitle, children }: { title: string; subtitle?: s
   );
 }
 
-function WizardNav({ onBack, onNext, nextLabel = "Next" }: { onBack?: () => void; onNext?: () => void; nextLabel?: string }) {
+function WizardNav({ onBack, onNext, nextLabel = "Next", nextDisabled = false }: { onBack?: () => void; onNext?: () => void; nextLabel?: string; nextDisabled?: boolean }) {
   return (
     <div className="wizard-actions">
       {onBack && <button className="lp-btn lp-btn--secondary" onClick={onBack}>Back</button>}
-      {onNext && <button className="lp-btn lp-btn--primary" onClick={onNext}>{nextLabel}</button>}
+      {onNext && <button className="lp-btn lp-btn--primary" onClick={onNext} disabled={nextDisabled}>{nextLabel}</button>}
     </div>
   );
 }

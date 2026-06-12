@@ -3,8 +3,8 @@
  * Adversarial spot-check script — implements QA Matrix B5.
  *
  * Run against a local dev server:
- *   pnpm dlx tsx scripts/test-adversarial.ts
- *   BASE_URL=https://your-preview.vercel.app pnpm dlx tsx scripts/test-adversarial.ts
+ *   pnpm dlx tsx scripts/test-adversarial.mts
+ *   BASE_URL=https://your-preview.vercel.app pnpm dlx tsx scripts/test-adversarial.mts
  *
  * The script hits real HTTP endpoints and verifies input-handling behavior.
  * It does NOT require a funded wallet or live blockchain — all transactions

@@ -222,23 +222,23 @@ export default function Home() {
               <span className="lp-fee-amount">0.1 SOL</span>
             </div>
             <div className="lp-fee-row">
-              <span className="lp-fee-label">Add liquidity (per DEX pool)</span>
+              <span className="lp-fee-label">Create pool (per DEX)</span>
               <span className="lp-fee-amount">0.1 SOL</span>
             </div>
             <div className="lp-fee-row">
               <span className="lp-fee-label">Multisender (bulk send)</span>
-              <span className="lp-fee-amount">0.01 SOL / tx</span>
+              <span className="lp-fee-amount">0.02 SOL / tx</span>
             </div>
             <div className="lp-fee-row">
               <span className="lp-fee-label">Mint more tokens</span>
-              <span className="lp-fee-amount">0.1 SOL</span>
+              <span className="lp-fee-amount">0.05 SOL</span>
             </div>
             <div className="lp-fee-row">
               <span className="lp-fee-label">Metadata update / OpenBook market</span>
               <span className="lp-fee-amount">0.05 SOL</span>
             </div>
             <div className="lp-fee-row">
-              <span className="lp-fee-label">Revoke mint / freeze authority</span>
+              <span className="lp-fee-label">Revoke mint / freeze / update authority</span>
               <span className="lp-fee-amount">0.05 SOL each</span>
             </div>
             <div className="lp-fee-row">

@@ -4,6 +4,7 @@ import { PublicKey } from "@solana/web3.js";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { mplTokenMetadata, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token-metadata";
 import { publicKey as umiPublicKey } from "@metaplex-foundation/umi";
+import { isSafeExternalUrl } from "@/lib/safeUrl";
 
 export interface AuthorityInfo {
   name: string;
@@ -51,9 +52,9 @@ export async function GET(req: NextRequest) {
     const mintAuthority: string | null = parsed?.mintAuthority ?? null;
     const freezeAuthority: string | null = parsed?.freezeAuthority ?? null;
 
-    // Fetch off-chain JSON (best-effort)
+    // Fetch off-chain JSON (best-effort; URL is attacker-controlled — SSRF guard)
     let offChain: OffChainMeta = {};
-    if (metadata.uri) {
+    if (metadata.uri && isSafeExternalUrl(metadata.uri)) {
       try {
         const res = await fetch(metadata.uri, { signal: AbortSignal.timeout(4000) });
         if (res.ok) offChain = await res.json() as OffChainMeta;

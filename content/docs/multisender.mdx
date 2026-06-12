@@ -10,7 +10,7 @@ faq:
   - q: "What tokens can I send with Multisender?"
     a: "SOL, USDC, USDT, BONK, and any SPL token by mint address. There are dedicated shortcuts for common tokens at /tools/multisender/sol, /usdc, /usdt, /bonk."
   - q: "What is the cost per send?"
-    a: "0.01 SOL flat FORGE fee per transaction, plus ~0.002 SOL Solana rent per new token account created. If the recipient already has a token account, no rent is needed. Large airdrops are batched into multiple transactions automatically."
+    a: "0.02 SOL flat FORGE fee per transaction, plus ~0.002 SOL Solana rent per new token account created. If the recipient already has a token account, no rent is needed. Large airdrops are batched into multiple transactions automatically."
   - q: "What is the CSV format?"
     a: "One recipient per line: wallet_address,amount. Example: 7xKqAb...123,1000. No header row needed. Amounts are in human-readable units (not raw lamports)."
   - q: "Is there a limit on recipients per transaction?"
@@ -27,7 +27,7 @@ FORGE Multisender distributes SPL tokens or SOL to multiple wallets in bulk. Upl
 
 | Item | Cost |
 |------|------|
-| FORGE fee | 0.01 SOL per transaction |
+| FORGE fee | 0.02 SOL per transaction |
 | Token account creation (per new recipient) | ~0.002 SOL |
 | Solana gas | ~0.0001 SOL per transaction |
 

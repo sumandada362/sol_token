@@ -1,21 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenPageData } from "@/lib/data/cache";
-
-const RATE_LIMIT_MAP = new Map<string, { count: number; reset: number }>();
-const RATE_LIMIT = 60;
-const RATE_WINDOW_MS = 60_000;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = RATE_LIMIT_MAP.get(ip);
-  if (!entry || now > entry.reset) {
-    RATE_LIMIT_MAP.set(ip, { count: 1, reset: now + RATE_WINDOW_MS });
-    return true;
-  }
-  if (entry.count >= RATE_LIMIT) return false;
-  entry.count++;
-  return true;
-}
+import { rateLimit, RATE_LIMITS } from "@/lib/rateLimit";
+import { apiError } from "@/lib/api/errors";
 
 export async function GET(
   req: NextRequest,
@@ -26,10 +12,8 @@ export async function GET(
     return NextResponse.json({ error: "Invalid mint address" }, { status: 400 });
   }
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (!checkRateLimit(ip)) {
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
-  }
+  const limited = await rateLimit(req, RATE_LIMITS.general);
+  if (limited) return limited;
 
   try {
     const data = await getTokenPageData(mint);
@@ -39,7 +23,6 @@ export async function GET(
       },
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return apiError(err, "token/mint");
   }
 }

@@ -94,7 +94,7 @@ Re-run the ★ critical rows on mainnet with own funds before a major release.
 
 ## R9. Security hardening spot-checks
 
-Run `pnpm dlx tsx scripts/test-adversarial.ts` — all tests must pass.
+Run `pnpm dlx tsx scripts/test-adversarial.mts` — all tests must pass.
 
 Manual checks:
 - [ ] `curl -I https://your-domain/` shows `X-Frame-Options: DENY`

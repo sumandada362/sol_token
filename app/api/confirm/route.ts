@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { z } from "zod";
+import { getConnection } from "@/lib/solana/connection";
 import { query } from "@/lib/db/postgres";
 import { cacheSet, cacheDel, CACHE_KEYS } from "@/lib/db/redis";
 import { FEES } from "@/lib/solana/fees";
@@ -16,6 +17,7 @@ const schema = z.object({
     "updateMetadata",
     "revokeMint",
     "revokeFreeze",
+    "revokeUpdate",
     "makeImmutable",
     "burn",
     "freezeAccounts",
@@ -38,6 +40,7 @@ const MIN_FEE_LAMPORTS: Partial<Record<string, number>> = {
   updateMetadata: Math.floor(FEES.updateMetadata * LAMPORTS_PER_SOL),
   revokeMint: Math.floor(FEES.revokeMint * LAMPORTS_PER_SOL),
   revokeFreeze: Math.floor(FEES.revokeFreeze * LAMPORTS_PER_SOL),
+  revokeUpdate: Math.floor(FEES.revokeUpdate * LAMPORTS_PER_SOL),
   // makeImmutable and burn are free — no fee check needed
 };
 
@@ -56,11 +59,17 @@ export async function POST(req: NextRequest) {
     const walletLimited = await rateLimitByKey(wallet, RATE_LIMITS.walletConfirm);
     if (walletLimited) return walletLimited;
 
-    const connection = new Connection(process.env.SOLANA_RPC_URL!, "confirmed");
-    const txInfo = await connection.getTransaction(signature, {
-      commitment: "confirmed",
-      maxSupportedTransactionVersion: 0,
-    });
+    const connection = getConnection();
+    // Malformed signatures make the RPC throw — that's a client error, not a 500
+    let txInfo;
+    try {
+      txInfo = await connection.getTransaction(signature, {
+        commitment: "confirmed",
+        maxSupportedTransactionVersion: 0,
+      });
+    } catch {
+      txInfo = null;
+    }
 
     if (!txInfo || txInfo.meta?.err) {
       return NextResponse.json({ error: "Transaction not confirmed or failed" }, { status: 400 });
@@ -103,45 +112,52 @@ export async function POST(req: NextRequest) {
             (txInfo.meta?.preBalances?.[feeWalletIdx] ?? 0))
         : 0;
 
-    // --- Postgres writes ---
-
-    // fee_events — unique on signature, duplicate confirms are idempotent
-    await query(
-      `INSERT INTO fee_events (wallet, action, lamports, signature, mint)
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (signature) DO NOTHING`,
-      [wallet, action, Math.max(actualLamports, 0), signature, mint ?? null]
-    );
-
-    if (action === "createToken" && mint) {
-      const tokenRow = {
-        mint,
-        creator_wallet: wallet,
-        name: name ?? null,
-        symbol: symbol ?? null,
-        metadata_uri: metadataUri ?? null,
-        standard: standard ?? "spl",
-        fee_paid_lamports: Math.max(actualLamports, 0),
-        tx_signature: signature,
-      };
-
+    // --- Postgres writes (best-effort) ---
+    // The on-chain fee check above is the security boundary. If the datastore
+    // is down, the user's tx already succeeded — never turn that into an error.
+    let recorded = true;
+    try {
+      // fee_events — unique on signature, duplicate confirms are idempotent
       await query(
-        `INSERT INTO tokens
-           (mint, creator_wallet, name, symbol, metadata_uri, standard, fee_paid_lamports, tx_signature)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         ON CONFLICT (mint) DO NOTHING`,
-        Object.values(tokenRow)
+        `INSERT INTO fee_events (wallet, action, lamports, signature, mint)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (signature) DO NOTHING`,
+        [wallet, action, Math.max(actualLamports, 0), signature, mint ?? null]
       );
 
-      await cacheSet(CACHE_KEYS.token(mint), tokenRow);
-      await cacheDel(CACHE_KEYS.walletTokens(wallet));
+      if (action === "createToken" && mint) {
+        const tokenRow = {
+          mint,
+          creator_wallet: wallet,
+          name: name ?? null,
+          symbol: symbol ?? null,
+          metadata_uri: metadataUri ?? null,
+          standard: standard ?? "spl",
+          fee_paid_lamports: Math.max(actualLamports, 0),
+          tx_signature: signature,
+        };
+
+        await query(
+          `INSERT INTO tokens
+             (mint, creator_wallet, name, symbol, metadata_uri, standard, fee_paid_lamports, tx_signature)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+           ON CONFLICT (mint) DO NOTHING`,
+          Object.values(tokenRow)
+        );
+
+        await cacheSet(CACHE_KEYS.token(mint), tokenRow);
+        await cacheDel(CACHE_KEYS.walletTokens(wallet));
+      }
+    } catch (dbErr) {
+      recorded = false;
+      console.error(`[confirm] datastore write failed (tx ${signature} confirmed on-chain):`, dbErr);
     }
 
-    if (["updateMetadata", "revokeMint", "revokeFreeze", "makeImmutable"].includes(action) && mint) {
+    if (["updateMetadata", "revokeMint", "revokeFreeze", "revokeUpdate", "makeImmutable"].includes(action) && mint) {
       await cacheDel(CACHE_KEYS.token(mint));
     }
 
-    return NextResponse.json({ ok: true, signature });
+    return NextResponse.json({ ok: true, signature, recorded });
   } catch (err) {
     return apiError(err, "confirm");
   }

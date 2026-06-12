@@ -30,9 +30,10 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/create-token", label: "Create" },
+    { href: "/pool", label: "Liquidity" },
     { href: "/tools", label: "Tools" },
-    { href: "/blog", label: "Blog" },
     { href: "/docs", label: "Docs" },
+    { href: "/blog", label: "Blog" },
   ];
 
   const address = publicKey?.toBase58() ?? "";

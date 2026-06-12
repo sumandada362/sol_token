@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Read-only snapshot of the pre-Phase-1 codebase — not part of the app
+    "reference/**",
   ]),
 ]);
 

@@ -10,6 +10,7 @@ interface Tool {
   desc: string;
   fee: string;
   category: string;
+  comingSoon?: boolean;
 }
 
 interface Category {
@@ -45,7 +46,11 @@ export default function ToolsGrid({ tools, categories }: { tools: Tool[]; catego
               <div className="tool-card-desc">{t.desc}</div>
             </div>
             <div className="tool-card-footer">
-              <span className={`tool-card-fee${t.fee === "Free" ? " tool-card-fee--free" : ""}`}>{t.fee}</span>
+              {t.comingSoon ? (
+                <span className="coming-soon-badge">Coming soon</span>
+              ) : (
+                <span className={`tool-card-fee${t.fee === "Free" ? " tool-card-fee--free" : ""}`}>{t.fee}</span>
+              )}
               <span className="tool-card-arrow">→</span>
             </div>
           </Link>

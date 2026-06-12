@@ -11,7 +11,7 @@ faq:
   - q: "What is the CSV format for the recipient list?"
     a: "One recipient per line: wallet_address,amount. Example: 7xKqAbcDef123,1000. No header row needed. Amounts are in human-readable units."
   - q: "What does it cost to use Multisender?"
-    a: "0.01 SOL flat FORGE fee per transaction batch, plus ~0.002 SOL Solana rent for each new token account created. Recipients who already have a token account for your token do not incur rent."
+    a: "0.02 SOL flat FORGE fee per transaction batch, plus ~0.002 SOL Solana rent for each new token account created. Recipients who already have a token account for your token do not incur rent."
   - q: "Is there a limit on how many wallets I can send to?"
     a: "No hard limit. FORGE batches large lists into multiple transactions automatically. Very large airdrops (thousands of wallets) are sent across multiple transaction batches, each requiring a separate wallet signature."
   - q: "Can I send SOL with Multisender, not just SPL tokens?"
@@ -39,13 +39,13 @@ FORGE Multisender sends SPL tokens (or SOL) to a list of wallets you provide. Yo
 
 | Cost | Amount |
 |------|--------|
-| FORGE fee | 0.01 SOL per transaction batch |
+| FORGE fee | 0.02 SOL per transaction batch |
 | Token account rent (per new recipient) | ~0.002 SOL |
 | Solana gas | ~0.0001 SOL per transaction |
 
 **Key variable:** The rent cost depends on how many recipients don't already have a token account for your specific token. For a brand-new token being airdropped to fresh wallets, budget ~0.002 SOL per recipient. For a token that's been trading for a while, many recipients may already have accounts.
 
-**Example:** Airdropping to 500 new wallets ≈ 500 × 0.002 SOL rent + ~1 SOL FORGE fees (for ~100 transaction batches of 5 recipients each) = approximately **2 SOL total overhead**, not including tokens.
+**Example:** Airdropping to 500 new wallets ≈ 500 × 0.002 SOL rent (1 SOL) + ~63 transaction batches × 0.02 SOL FORGE fee (~1.26 SOL) = approximately **2.3 SOL total overhead**, not including tokens.
 
 (Actual batch sizes vary — FORGE optimizes for max recipients per transaction within Solana's limits.)
 

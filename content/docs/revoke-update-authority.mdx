@@ -1,0 +1,70 @@
+---
+title: "Revoke Update Authority"
+description: "How to permanently remove the update authority from your Solana token so the name, symbol, and logo can never be changed — and how this differs from making a token immutable."
+slug: "revoke-update-authority"
+date: "2026-06-12"
+updated: "2026-06-12"
+category: docs
+tool: revokeUpdate
+faq:
+  - q: "What does revoking update authority do?"
+    a: "It transfers your token's update authority to the Solana system program, an address no one can sign for. After that, no one — including you — can ever change the token's name, symbol, or metadata URI."
+  - q: "Can I undo it later?"
+    a: "No. Revoking update authority is permanent. The system program cannot sign transactions, so the authority can never be transferred back."
+  - q: "How is this different from Make Immutable?"
+    a: "Make Immutable flips the metadata's isMutable flag to false, locking it while your wallet technically remains listed as authority. Revoke Update transfers the authority itself to the system program, so your wallet is no longer associated with the token at all. Both permanently prevent metadata changes."
+  - q: "How much does it cost?"
+    a: "0.05 SOL FORGE fee plus the standard Solana network fee (~0.000005 SOL). Make Immutable is a free alternative."
+  - q: "Will DEX scanners show my token as safer?"
+    a: "Yes. Scanners like Rugcheck and DEXScreener flag tokens whose metadata can still be changed. After revoking, your token shows as immutable / metadata-locked, which is a positive trust signal."
+---
+
+## What update authority is
+
+Every Solana token created with Metaplex metadata has an **update authority** — the wallet allowed to change the token's on-chain metadata: name, symbol, and the metadata URI that points to the logo and description.
+
+While the update authority is active, holders have no guarantee the token they bought keeps its identity. The authority holder could rename the token, swap the logo, or point the metadata at entirely different content.
+
+## What revoking does
+
+Solana's Metaplex metadata program has no concept of a "null" update authority. The standard way to revoke it is to **transfer the authority to the system program** (`11111111111111111111111111111111`) — an address that has no private key and can never sign a transaction.
+
+After the transfer:
+
+| Before | After |
+|--------|-------|
+| Your wallet can change name, symbol, and logo | No one can change anything |
+| Scanners flag "update authority active" | Scanners show metadata as locked |
+| Your wallet is listed as the token's authority | The token is no longer associated with your wallet |
+
+## Revoke Update vs. Make Immutable
+
+FORGE offers two ways to lock metadata permanently:
+
+| | Revoke Update | Make Immutable |
+|---|---|---|
+| Mechanism | Transfers authority to the system program | Sets the `isMutable` flag to `false` |
+| Your wallet still listed as authority | No | Yes (but powerless) |
+| Reversible | No | No |
+| Cost | 0.05 SOL | Free |
+
+Both achieve the same practical outcome — metadata can never change. Choose **Revoke Update** if you also want your wallet fully dissociated from the token's authority field; choose **Make Immutable** if you just want the lock.
+
+<Warning>
+**Revoking update authority is permanent.** Finalize your token's name, symbol, logo, and metadata URI before revoking. If anything needs fixing, use the Update Metadata tool first.
+</Warning>
+
+## How to revoke update authority
+
+1. Open **FORGE → Tools → Revoke Update**
+2. Connect the wallet that currently holds the update authority
+3. Paste your token's mint address — FORGE verifies the authority on-chain
+4. Check the irreversibility confirmation box and sign the transaction
+
+Cost: **0.05 SOL** FORGE fee + Solana gas (~0.000005 SOL).
+
+## Verify on-chain
+
+After the transaction confirms, search your mint address on Solscan. The "Update Authority" field shows the system program address (`1111…1111`), which scanners read as revoked.
+
+<CTA tool="revokeUpdate" />

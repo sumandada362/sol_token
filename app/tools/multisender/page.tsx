@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import Footer from "@/components/Footer";
+import { useScrollToTopOn } from "@/lib/useScrollToTop";
+import TokenSelect from "@/components/TokenSelect";
+import BalanceCheck from "@/components/BalanceCheck";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { parseError } from "@/lib/wallet/parseError";
-import { Transaction, PublicKey } from "@solana/web3.js";
-import { Connection } from "@solana/web3.js";
+import { Transaction, PublicKey, Connection, clusterApiUrl, type Cluster } from "@solana/web3.js";
 
 interface ParsedRow { address: string; amount: string; error?: string }
 interface BatchInfo { index: number; tx: string; lastValidBlockHeight: number; recipientCount: number; platformFeeLamports: number }
@@ -49,6 +51,8 @@ export default function MultisenderPage() {
   const [decimals, setDecimals] = useState(9);
   const [csvText, setCsvText] = useState("");
   const [phase, setPhase] = useState<Phase>("input");
+  // quoting/quoted/sending all render inside the main view — only the done screen swaps
+  useScrollToTopOn(phase === "done");
   const [response, setResponse] = useState<MultisendResponse | null>(null);
   const [journal, setJournal] = useState<JournalEntry[]>([]);
   const [currentBatch, setCurrentBatch] = useState(0);
@@ -74,7 +78,9 @@ export default function MultisenderPage() {
     reader.readAsText(file);
   }
 
-  const handleQuote = useCallback(async () => {
+  // Plain functions: these are click handlers over per-render state (validRows
+  // is recomputed each render), so memoizing them buys nothing.
+  async function handleQuote() {
     if (!wallet.publicKey) { setError("Connect wallet first"); return; }
     if (validRows.length === 0) { setError("No valid recipients"); return; }
     if (validRows.length > 10_000) { setError("Max 10,000 recipients"); return; }
@@ -118,14 +124,18 @@ export default function MultisenderPage() {
       setError(parseError(e, "multisender-quote"));
       setPhase("input");
     }
-  }, [wallet.publicKey, validRows, mintInput, decimals]);
+  }
 
-  const handleSend = useCallback(async () => {
+  async function handleSend() {
     if (!response || !wallet.publicKey || !wallet.sendTransaction) return;
     setPhase("sending");
     setError("");
 
-    const conn = new Connection(process.env.NEXT_PUBLIC_RPC_URL ?? "https://api.devnet.solana.com", "confirmed");
+    const conn = new Connection(
+      process.env.NEXT_PUBLIC_RPC_URL ??
+        clusterApiUrl((process.env.NEXT_PUBLIC_SOLANA_NETWORK as Cluster) ?? "devnet"),
+      "confirmed"
+    );
 
     let updatedJournal = [...journal];
 
@@ -162,7 +172,7 @@ export default function MultisenderPage() {
     setPhase("done");
     // Clear journal on success
     if (response) localStorage.removeItem(JOURNAL_KEY(response.uploadHash));
-  }, [response, wallet, journal]);
+  }
 
   const q = response?.quote;
   const confirmedCount = journal.filter((j) => j.status === "confirmed").length;
@@ -175,7 +185,7 @@ export default function MultisenderPage() {
         <div className="tool-header" data-reveal>
           <div className="tool-header-meta">
             <h1 className="page-title">Multisender</h1>
-            <div className="tool-fee-badge">0.001 SOL/recipient</div>
+            <div className="tool-fee-badge">0.02 SOL / tx</div>
           </div>
           <p className="page-sub">Bulk-send any SPL token to up to 10,000 wallets in one batched signing flow.</p>
           <div className="tool-header-links">
@@ -200,11 +210,9 @@ export default function MultisenderPage() {
             {/* Step 1 — Token */}
             <div className="lp-card pool-section">
               <div className="pool-section-title">1. Token mint address</div>
-              <input
-                className="wizard-input"
-                placeholder="Token mint address…"
+              <TokenSelect
                 value={mintInput}
-                onChange={(e) => setMintInput(e.target.value)}
+                onChange={(m, t) => { setMintInput(m); if (t) setDecimals(t.decimals); }}
                 disabled={phase !== "input"}
               />
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.75rem" }}>
@@ -275,9 +283,9 @@ export default function MultisenderPage() {
                   {hasResumable && <span className="lp-pill lp-pill--ok" style={{ marginLeft: "0.75rem", fontSize: "0.75rem" }}>Resumable — {confirmedCount}/{totalBatches} batches done</span>}
                 </div>
                 {[
-                  { label: `Platform fee (${q.recipientCount} × 0.001 SOL)`, val: `${q.platformFeeSol.toFixed(4)} SOL` },
+                  { label: `Platform fee (${totalBatches} × 0.02 SOL)`, val: `${q.platformFeeSol.toFixed(4)} SOL` },
                   { label: `ATA rent (${q.ataCreations} new accounts × ~0.002 SOL)`, val: `~${q.ataRentSol.toFixed(4)} SOL` },
-                  { label: "Network fees", val: `~${q.networkFeeSol.toFixed(4)} SOL` },
+                  { label: "Network fees", val: `~${q.networkFeeSol.toFixed(6)} SOL` },
                   { label: "Batches", val: `${totalBatches} transactions` },
                 ].map(({ label, val }) => (
                   <div key={label} className="cost-row">
@@ -289,6 +297,7 @@ export default function MultisenderPage() {
                   <span>Total (est.)</span>
                   <span className="lp-mono">~{q.totalSol.toFixed(4)} SOL</span>
                 </div>
+                <BalanceCheck requiredSol={q.totalSol} />
               </div>
             )}
 

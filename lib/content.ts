@@ -39,6 +39,8 @@ export function getAllSlugs(section: "blog" | "docs"): string[] {
 }
 
 export function getArticle(section: "blog" | "docs", slug: string): Article | null {
+  // Slug feeds a filesystem path — reject anything that isn't a plain slug
+  if (!/^[a-z0-9-]+$/i.test(slug)) return null;
   const filePath = path.join(contentDir(section), `${slug}.mdx`);
   if (!fs.existsSync(filePath)) return null;
   const raw = fs.readFileSync(filePath, "utf-8");

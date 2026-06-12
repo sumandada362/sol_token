@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import Footer from "@/components/Footer";
+import { useScrollToTopOn } from "@/lib/useScrollToTop";
+import TokenSelect from "@/components/TokenSelect";
+import BalanceCheck from "@/components/BalanceCheck";
 import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
 import { parseError } from "@/lib/wallet/parseError";
 import type { AuthorityInfo } from "@/app/api/check-authority/route";
@@ -17,6 +20,8 @@ export default function RevokeMintPage() {
 
   const [mint, setMint] = useState("");
   const [phase, setPhase] = useState<Phase>("input");
+  // checking renders inside the input view, signing inside the confirm card — no scroll for those
+  useScrollToTopOn(phase === "checking" ? "input" : phase === "signing" ? "confirmed" : phase);
   const [tokenInfo, setTokenInfo] = useState<AuthorityInfo | null>(null);
   const [checkError, setCheckError] = useState("");
   const [confirmed, setConfirmed] = useState(false);
@@ -162,6 +167,8 @@ export default function RevokeMintPage() {
               I understand this action is irreversible and permanently caps the supply
             </label>
 
+            <BalanceCheck requiredSol={0.051} />
+
             {txError && <p className="tool-error" style={{ marginTop: "0.75rem" }}>{txError}</p>}
 
             <div className="wizard-actions" style={{ marginTop: "1rem" }}>
@@ -192,12 +199,7 @@ export default function RevokeMintPage() {
             <div className="lp-card burn-card">
               <div className="burn-field">
                 <label className="wizard-field-label">Mint address</label>
-                <input
-                  className="wizard-input"
-                  placeholder="Token mint address"
-                  value={mint}
-                  onChange={(e) => { setMint(e.target.value.trim()); setCheckError(""); }}
-                />
+                <TokenSelect value={mint} onChange={(m) => { setMint(m); setCheckError(""); }} />
               </div>
               {checkError && <p className="tool-error" style={{ marginTop: "0.5rem" }}>{checkError}</p>}
             </div>

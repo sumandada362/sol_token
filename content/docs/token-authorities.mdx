@@ -10,7 +10,7 @@ faq:
   - q: "Can I revoke only one authority and keep the others?"
     a: "Yes. Each authority is independent. You can revoke mint authority while keeping freeze and update authority, or any combination."
   - q: "What is the cost to revoke authorities?"
-    a: "0.05 SOL per authority (mint or freeze). Revoking update authority (making immutable) is free. You can revoke all three at token creation or separately later."
+    a: "0.05 SOL per authority (mint, freeze, or update). Making a token immutable via the isMutable flag is a free alternative for locking metadata. You can revoke all three at token creation or separately later."
   - q: "Can I restore an authority after revoking it?"
     a: "No. Revoking an authority is permanent. There is no way to restore it. Make sure your supply is finalized before revoking mint authority."
   - q: "Do I need to revoke authorities?"
@@ -73,7 +73,10 @@ Enable the options in Step 5 of the Create Token flow. Cost: +0.05 SOL each for 
 Go to **FORGE Tools** and select:
 - **Revoke Mint** to revoke mint authority
 - **Revoke Freeze** to revoke freeze authority
-- **Make Immutable** to revoke update authority
+- **Revoke Update** to transfer update authority to the system program (0.05 SOL)
+- **Make Immutable** to lock metadata via the `isMutable` flag (free)
+
+Revoke Update and Make Immutable both lock metadata permanently — see [Revoke Update Authority](/docs/revoke-update-authority) for the difference.
 
 Each action requires your wallet to sign a transaction confirming you hold the current authority.
 
