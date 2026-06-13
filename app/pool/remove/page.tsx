@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 
-const BASE = "https://forge.solana.tools";
+const BASE = "https://solanatoken.app";
 
 export const metadata: Metadata = {
-  title: "Remove Liquidity on Solana — Coming Soon — FORGE",
+  title: "Remove Liquidity on Solana — Coming Soon — Solana Token",
   description:
     "Withdraw your share from Raydium, Orca, or Meteora liquidity pools. This tool is in development and ships together with pool creation.",
   alternates: { canonical: `${BASE}/pool/remove` },

@@ -149,7 +149,7 @@ function buildTxt(wallets, isAppend, existingCount) {
 
   if (!isAppend || existingCount === 0) {
     out += `${divider}\n`;
-    out += ` FORGE ${NETWORK.toUpperCase()} WALLETS — IMPORT GUIDE\n`;
+    out += ` Solana Token ${NETWORK.toUpperCase()} WALLETS — IMPORT GUIDE\n`;
     out += ` Generated : ${new Date().toISOString()}\n`;
     out += ` Network   : ${NETWORK.toUpperCase()}  ⚠  Never import these on mainnet\n`;
     out += `${divider}\n\n`;
@@ -279,7 +279,7 @@ async function main() {
   const wordCount = WORDS === 128 ? 12 : 24;
   const connection = NO_AIRDROP ? null : new Connection(RPC_URL, "confirmed");
 
-  console.log(`\n=== Forge Wallet Generator (${NETWORK}) ===\n`);
+  console.log(`\n=== Solana Token Wallet Generator (${NETWORK}) ===\n`);
   console.log(`  Wallets    : ${COUNT}`);
   console.log(`  Mnemonic   : ${wordCount} words (BIP39, m/44'/501'/0'/0')`);
   if (!NO_AIRDROP) {

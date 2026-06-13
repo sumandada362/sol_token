@@ -384,7 +384,7 @@ export default function CreatePage() {
                       <input
                         value={form.creatorName}
                         onChange={(e) => setForm({ ...form, creatorName: e.target.value })}
-                        placeholder="e.g. Forge Labs"
+                        placeholder="e.g. Acme Labs"
                         maxLength={50}
                       />
                     </FormField>

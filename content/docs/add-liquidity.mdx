@@ -12,20 +12,20 @@ faq:
   - q: "What is an OpenBook market and do I need one?"
     a: "OpenBook is a separate order-book DEX. You only need it if you're creating a Raydium Legacy AMM pool. Raydium CPMM does not require it. Most new tokens use CPMM."
   - q: "Can I add liquidity to multiple DEXs at once?"
-    a: "Yes. FORGE lets you select multiple DEXs in the pool flow and fund each with custom amounts in a single session."
+    a: "Yes. Solana Token lets you select multiple DEXs in the pool flow and fund each with custom amounts in a single session."
   - q: "Can I remove liquidity later?"
-    a: "Yes, from FORGE Pool → Remove. You get back your LP tokens' value minus trading fees earned. Some DEXs lock liquidity for a period at creation — check the DEX's terms."
+    a: "Yes, from Solana Token Pool → Remove. You get back your LP tokens' value minus trading fees earned. Some DEXs lock liquidity for a period at creation — check the DEX's terms."
   - q: "What happens if I add liquidity at the wrong price ratio?"
     a: "The ratio of tokens to SOL you deposit sets the initial price. If it differs significantly from market prices on other DEXs, arbitrageurs will trade against the pool until prices equalize — you may lose some value to arbitrage. Set a price ratio you intend to honor."
 ---
 
 ## What this tool does
 
-FORGE Pool lets you create trading pools for your token on Solana DEXs, add liquidity, and remove it — all from your wallet without navigating each DEX's interface separately.
+Solana Token Pool lets you create trading pools for your token on Solana DEXs, add liquidity, and remove it — all from your wallet without navigating each DEX's interface separately.
 
 ## What it costs
 
-| Action | FORGE fee | DEX setup cost |
+| Action | Solana Token fee | DEX setup cost |
 |--------|-----------|----------------|
 | Create pool (per DEX) | 0.1 SOL | 0.4–0.6 SOL (paid to DEX) |
 | Add liquidity to existing pool | 0.05 SOL | Solana gas (~0.001 SOL) |
@@ -36,7 +36,7 @@ DEX setup costs are pass-throughs paid directly to the DEX protocol. They vary a
 ## Before you start
 
 - Token already created (you need the mint address)
-- SOL for liquidity deposit + FORGE fee + DEX setup fee
+- SOL for liquidity deposit + Solana Token fee + DEX setup fee
 - Tokens to deposit (in your wallet)
 - Decision on which DEX(s) to use
 
@@ -44,7 +44,7 @@ DEX setup costs are pass-throughs paid directly to the DEX protocol. They vary a
 
 ### Step 1 — Select your token
 
-Go to FORGE → Pool. Paste your token mint address or select it from the dropdown if you recently created it.
+Go to Solana Token → Pool. Paste your token mint address or select it from the dropdown if you recently created it.
 
 ### Step 2 — Choose a DEX
 
@@ -60,13 +60,13 @@ The ratio determines the initial price. Example: 1,000,000 tokens + 10 SOL = 0.0
 
 ### Step 4 — Review cost and sign
 
-The cost summary shows the FORGE fee (0.1 SOL per pool) plus the DEX setup cost. Review and approve in your wallet.
+The cost summary shows the Solana Token fee (0.1 SOL per pool) plus the DEX setup cost. Review and approve in your wallet.
 
 ## Step-by-step: Add to existing pool
 
 ### Step 1 — Go to Pool → Add
 
-Select your token. FORGE will detect existing pools for your token.
+Select your token. Solana Token will detect existing pools for your token.
 
 ### Step 2 — Enter amount
 
@@ -95,7 +95,7 @@ Approve and receive your underlying tokens and SOL back.
 Pool creation calls the DEX's on-chain program (e.g., Raydium's AMM or CPMM program) to initialize a new pool account, set the initial price, and deposit your liquidity. You receive LP tokens representing your share. These are standard Solana transactions — verifiable on Solscan.
 
 <Warning>
-**Liquidity is at risk.** Adding liquidity exposes you to impermanent loss — the value of your position may change relative to holding the tokens separately. This is a DeFi mechanic, not a FORGE behavior. Understand it before committing large amounts.
+**Liquidity is at risk.** Adding liquidity exposes you to impermanent loss — the value of your position may change relative to holding the tokens separately. This is a DeFi mechanic, not a Solana Token behavior. Understand it before committing large amounts.
 </Warning>
 
 <CTA tool="pool" />

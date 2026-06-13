@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# FORGE — repeatable production deploy (run ON the VPS, from the repo root).
+# Solana Token — repeatable production deploy (run ON the VPS, from the repo root).
 #
 #   ./scripts/deploy.sh            # install → validate env → build → (re)start
 #   ./scripts/deploy.sh --migrate  # also apply DB migrations (safe to repeat)
@@ -77,12 +77,12 @@ green "✓ Build complete"
 
 # ── 6. (Re)start under the available process manager ────────────────────────
 if command -v pm2 >/dev/null; then
-  if pm2 describe forge >/dev/null 2>&1; then info "Restarting (pm2)"; pm2 restart forge --update-env;
-  else info "Starting (pm2)"; pm2 start "pnpm start" --name forge; pm2 save; fi
-elif systemctl list-unit-files 2>/dev/null | grep -q '^forge\.service'; then
-  info "Restarting (systemd)"; sudo systemctl restart forge
+  if pm2 describe solana-token >/dev/null 2>&1; then info "Restarting (pm2)"; pm2 restart solana-token --update-env;
+  else info "Starting (pm2)"; pm2 start "pnpm start" --name solana-token; pm2 save; fi
+elif systemctl list-unit-files 2>/dev/null | grep -q '^solana-token\.service'; then
+  info "Restarting (systemd)"; sudo systemctl restart solana-token
 else
-  red "No process manager found (pm2 or systemd 'forge' unit)."
+  red "No process manager found (pm2 or systemd 'solana-token' unit)."
   red "Start manually with: pnpm start   (see docs/deployment-mainnet.md §4.6)"; exit 1
 fi
 

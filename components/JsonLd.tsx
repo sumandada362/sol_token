@@ -1,15 +1,18 @@
 import type { FaqItem } from "@/lib/content";
 
 export function JsonLdSoftwareApplication() {
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
   const data = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "FORGE",
+    name: "Solana Token",
     applicationCategory: "FinanceApplication",
     operatingSystem: "Web",
     description:
       "No-code Solana token toolkit. Create SPL tokens, add liquidity, manage authorities, and analyze tokens — all from your browser wallet.",
-    url: "https://forge.solana.tools",
+    url: base,
+    logo: `${base}/coin_gold.png`,
+    image: `${base}/coin_gold.png`,
     offers: {
       "@type": "Offer",
       price: "0.1",

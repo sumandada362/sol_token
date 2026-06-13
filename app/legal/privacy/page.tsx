@@ -3,15 +3,15 @@ import Link from "next/link";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — FORGE",
-  description: "How FORGE collects, uses, and protects your information.",
+  title: "Privacy Policy — Solana Token",
+  description: "How Solana Token collects, uses, and protects your information.",
 };
 
 const sections = [
   {
     id: "intro",
     title: "1. Introduction & Scope",
-    body: `This Privacy Policy describes how FORGE ("we", "us") collects and uses information when you access the FORGE website and application. By using the Service, you agree to the practices described here.`,
+    body: `This Privacy Policy describes how Solana Token ("we", "us") collects and uses information when you access the Solana Token website and application. By using the Service, you agree to the practices described here.`,
   },
   {
     id: "what-we-collect",

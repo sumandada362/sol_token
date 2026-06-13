@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Minimal in-memory Redis (RESP2) for local dev/QA on machines without Redis.
- * Implements exactly the commands FORGE uses: GET, SET (EX), DEL, EXPIRE,
+ * Implements exactly the commands Solana Token uses: GET, SET (EX), DEL, EXPIRE,
  * ZADD, ZCARD, ZREMRANGEBYSCORE, PING — enough for lib/db/redis.ts and
  * lib/rateLimit.ts to behave like production.
  *

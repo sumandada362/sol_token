@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllSlugs } from "@/lib/content";
 
-const BASE = "https://forge.solana.tools";
+const BASE = "https://solanatoken.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date().toISOString();

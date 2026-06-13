@@ -1,4 +1,4 @@
-# FORGE — Regression Checklist
+# Solana Token — Regression Checklist
 
 Scripted ~30-minute pass. Run on devnet before every production deploy.
 Re-run the ★ critical rows on mainnet with own funds before a major release.

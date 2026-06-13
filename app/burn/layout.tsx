@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { JsonLdBreadcrumb, JsonLdHowTo } from "@/components/JsonLd";
 
-const BASE = "https://forge.solana.tools";
-const TITLE = "Burn Solana Tokens — Reduce Token Supply — FORGE";
+const BASE = "https://solanatoken.app";
+const TITLE = "Burn Solana Tokens — Reduce Token Supply — Solana Token";
 const DESCRIPTION =
   "Permanently burn SPL or Token-2022 tokens from your wallet to reduce total supply. Free — only Solana gas. Irreversible and verifiable on-chain.";
 const OG_URL = `${BASE}/og?title=${encodeURIComponent("Burn Tokens")}&sub=${encodeURIComponent(
@@ -49,7 +49,7 @@ export default function BurnLayout({ children }: { children: React.ReactNode }) 
         name="How to burn Solana tokens"
         description="Permanently remove tokens from circulation to reduce total supply."
         steps={[
-          { name: "Open the tool", text: "Go to forge.solana.tools/burn and connect the wallet that holds the tokens." },
+          { name: "Open the tool", text: "Go to solanatoken.app/burn and connect the wallet that holds the tokens." },
           { name: "Select your token", text: "Pick the token from your wallet list or paste its mint address." },
           { name: "Enter the amount", text: "Type the number of tokens to burn, or use Max to burn your full balance." },
           { name: "Sign the transaction", text: "Approve in your wallet. The tokens are destroyed and total supply drops permanently." },

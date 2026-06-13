@@ -11,7 +11,7 @@ faq:
   - q: "Can I restore mint authority after revoking it?"
     a: "No. Revoking mint authority is permanent. There is no way to restore it. Make sure your total supply distribution is complete before revoking."
   - q: "How much does it cost to revoke mint authority?"
-    a: "0.05 SOL FORGE fee per authority. Revoking both mint and freeze costs 0.10 SOL total, plus gas."
+    a: "0.05 SOL Solana Token fee per authority. Revoking both mint and freeze costs 0.10 SOL total, plus gas."
   - q: "Do I have to revoke both at the same time?"
     a: "No. Each authority is independent. You can revoke one and keep the other, or revoke them at different times."
   - q: "Will revoking authority affect my token's tradability?"
@@ -81,36 +81,36 @@ Revoke as soon as possible for most community or meme tokens. Unless you have a 
 **Revoking is permanent.** You cannot restore either authority after revoking. Make sure all supply distribution and any authority-dependent operations are complete.
 </Warning>
 
-## How to revoke mint authority on FORGE
+## How to revoke mint authority on Solana Token
 
-### Step 1 — Go to FORGE → Tools → Revoke Mint
+### Step 1 — Go to Solana Token → Tools → Revoke Mint
 
-Navigate to [forge.solana.tools/tools/revoke-mint](/tools/revoke-mint).
+Navigate to [solanatoken.app/tools/revoke-mint](/tools/revoke-mint).
 
 ### Step 2 — Connect your wallet
 
-Connect the wallet that holds the current mint authority. FORGE will verify this automatically.
+Connect the wallet that holds the current mint authority. Solana Token will verify this automatically.
 
 ### Step 3 — Select your token
 
-Paste your mint address or choose from the dropdown. FORGE displays the current authority status.
+Paste your mint address or choose from the dropdown. Solana Token displays the current authority status.
 
 ### Step 4 — Confirm and sign
 
 Check the irreversibility confirmation box. Click **Revoke mint authority**. Approve in your wallet.
 
-Cost: **0.05 SOL** FORGE fee + gas.
+Cost: **0.05 SOL** Solana Token fee + gas.
 
-## How to revoke freeze authority on FORGE
+## How to revoke freeze authority on Solana Token
 
 The process is identical:
 
-1. Go to [forge.solana.tools/tools/revoke-freeze](/tools/revoke-freeze)
+1. Go to [solanatoken.app/tools/revoke-freeze](/tools/revoke-freeze)
 2. Connect your authority wallet
 3. Select your token
 4. Confirm and sign
 
-Cost: **0.05 SOL** FORGE fee + gas.
+Cost: **0.05 SOL** Solana Token fee + gas.
 
 You can also do both during token creation (in Step 4 of the Create Token flow) — which saves you two separate transactions later.
 
@@ -118,7 +118,7 @@ You can also do both during token creation (in Step 4 of the Create Token flow) 
 
 Update authority controls whether you can change on-chain metadata. Revoking it makes your token **immutable** — the name, symbol, and logo URI will never change.
 
-This is free (no FORGE fee, just gas). Use [forge.solana.tools/tools/make-immutable](/tools/make-immutable).
+This is free (no Solana Token fee, just gas). Use [solanatoken.app/tools/make-immutable](/tools/make-immutable).
 
 ## After revoking: verify on-chain
 
@@ -127,7 +127,7 @@ After the transaction confirms, check your token on Solscan:
 2. Click the token name → see the "Token Info" tab
 3. Look for "Mint Authority" and "Freeze Authority" fields — they should show `null` or "Revoked"
 
-You can also use the FORGE Analytics page for your token — the authority badges will update green within a few minutes.
+You can also use the Solana Token Analytics page for your token — the authority badges will update green within a few minutes.
 
 ---
 

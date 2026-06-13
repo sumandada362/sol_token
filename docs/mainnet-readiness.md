@@ -1,4 +1,4 @@
-# FORGE — Mainnet Testing Readiness Checklist
+# Solana Token — Mainnet Testing Readiness Checklist
 
 Status as of 2026-06-13: **testnet phase passed** — full SPL×Token-2022
 cross-product, 45/45 (see

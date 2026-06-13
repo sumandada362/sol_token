@@ -1,6 +1,6 @@
 ---
 title: "How to Burn Solana Tokens to Reduce Supply"
-description: "How token burning works on Solana, when it makes sense, how to burn tokens and LP positions using FORGE, and what it does and doesn't do for your project."
+description: "How token burning works on Solana, when it makes sense, how to burn tokens and LP positions using Solana Token, and what it does and doesn't do for your project."
 slug: "how-to-burn-solana-tokens"
 date: "2026-06-03"
 updated: "2026-06-01"
@@ -13,14 +13,14 @@ faq:
   - q: "Does burning tokens guarantee a price increase?"
     a: "No. Burning reduces supply, which can support price if demand is constant — but it does not guarantee a price increase. Many factors influence token price. Do not burn primarily for price manipulation expectations."
   - q: "What does it cost to burn tokens?"
-    a: "Burning tokens on FORGE is free (no platform fee). You pay only Solana network gas, typically less than 0.001 SOL."
+    a: "Burning tokens on Solana Token is free (no platform fee). You pay only Solana network gas, typically less than 0.001 SOL."
   - q: "What is LP burning?"
     a: "LP (liquidity provider) tokens represent your share of a DEX pool. Burning LP tokens permanently removes your ability to withdraw liquidity, which is a strong signal that the liquidity cannot be rug-pulled."
   - q: "Do I need to hold any special authority to burn tokens?"
     a: "No. Any wallet can burn tokens it holds. Burning your own tokens does not require mint authority or any other special permission."
 ---
 
-Token burns are one of the most discussed mechanics in Solana projects. This guide explains what burning actually does on-chain, the difference between burning tokens and burning LP tokens, and how to do each with FORGE.
+Token burns are one of the most discussed mechanics in Solana projects. This guide explains what burning actually does on-chain, the difference between burning tokens and burning LP tokens, and how to do each with Solana Token.
 
 ## What burning does on-chain
 
@@ -55,11 +55,11 @@ The tokens are not sent to a dead wallet — they are destroyed. The total suppl
 
 **When it doesn't make sense:** Burning small amounts of tokens for a temporary price boost is transparent and rarely effective. Burning creates lasting value only when it's meaningful (a large percentage of supply) and part of a consistent, publicly communicated policy.
 
-## How to burn tokens with FORGE
+## How to burn tokens with Solana Token
 
-### Step 1 — Go to FORGE → Burn
+### Step 1 — Go to Solana Token → Burn
 
-Navigate to [forge.solana.tools/burn](/burn).
+Navigate to [solanatoken.app/burn](/burn).
 
 ### Step 2 — Select your token
 
@@ -77,7 +77,7 @@ Type the number of tokens to burn. Click **Max** to burn your entire balance. Th
 **This action is permanent.** Check the confirmation box that acknowledges burning is irreversible. Verify the amount one final time. Click **Burn tokens** and approve in your wallet.
 </Warning>
 
-Cost: Free (no FORGE fee). Gas: ~0.0001 SOL.
+Cost: Free (no Solana Token fee). Gas: ~0.0001 SOL.
 
 ---
 
@@ -88,7 +88,7 @@ Burning LP tokens is a separate but related action. LP tokens represent your sha
 **Why burn LP tokens?**
 It signals to buyers that the liquidity is permanently locked — the creator cannot do a "rug pull" (removing all liquidity and crashing the price). Many DEX scanners specifically check for burned LP tokens.
 
-### Step 1 — Go to FORGE → Tools → Burn LP
+### Step 1 — Go to Solana Token → Tools → Burn LP
 
 Navigate to the Burn LP tool in the Tools menu.
 

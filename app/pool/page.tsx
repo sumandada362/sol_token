@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 
-const BASE = "https://forge.solana.tools";
+const BASE = "https://solanatoken.app";
 
 export const metadata: Metadata = {
-  title: "Create Liquidity Pool on Solana — Coming Soon — FORGE",
+  title: "Create Liquidity Pool on Solana — Coming Soon — Solana Token",
   description:
     "One-flow liquidity pool creation across Raydium, Orca, Meteora, and more is in development. Create your token now and add liquidity the moment pools go live.",
   alternates: { canonical: `${BASE}/pool` },
   openGraph: {
-    title: "Create Liquidity Pool on Solana — Coming Soon — FORGE",
+    title: "Create Liquidity Pool on Solana — Coming Soon — Solana Token",
     description: "One-flow pool creation across the major Solana DEXs is in development.",
     url: `${BASE}/pool`,
   },
@@ -53,7 +53,7 @@ export default function PoolPage() {
             ))}
           </div>
           <p className="cost-summary-note" style={{ marginTop: "1rem" }}>
-            Planned pricing: flat 0.1 SOL FORGE fee per pool. DEX setup costs (~0.4–0.6 SOL) go directly to the DEX protocol — never to FORGE.
+            Planned pricing: flat 0.1 SOL Solana Token fee per pool. DEX setup costs (~0.4–0.6 SOL) go directly to the DEX protocol — never to Solana Token.
           </p>
         </div>
 

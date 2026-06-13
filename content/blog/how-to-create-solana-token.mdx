@@ -1,6 +1,6 @@
 ---
 title: "How to Create a Solana Token in 4 Steps Without Coding"
-description: "A complete guide to deploying your own SPL token on Solana mainnet using FORGE — no coding, no CLI, no Anchor. Just a wallet and a few clicks."
+description: "A complete guide to deploying your own SPL token on Solana mainnet using Solana Token — no coding, no CLI, no Anchor. Just a wallet and a few clicks."
 slug: "how-to-create-solana-token"
 date: "2026-05-20"
 updated: "2026-06-01"
@@ -10,9 +10,9 @@ readTime: "8 min read"
 featured: true
 faq:
   - q: "How much does it cost to create a Solana token?"
-    a: "With FORGE, the base cost is 0.1 SOL for the platform fee plus approximately 0.002 SOL in Solana network rent. If you revoke mint and freeze authority (recommended), add 0.10 SOL. Total for a fully trust-optimized token: around 0.21 SOL."
+    a: "With Solana Token, the base cost is 0.1 SOL for the platform fee plus approximately 0.002 SOL in Solana network rent. If you revoke mint and freeze authority (recommended), add 0.10 SOL. Total for a fully trust-optimized token: around 0.21 SOL."
   - q: "Do I need to know how to code?"
-    a: "No. FORGE handles all on-chain interactions. You fill in a form, upload a logo, and sign a transaction — no Rust, TypeScript, or CLI required."
+    a: "No. Solana Token handles all on-chain interactions. You fill in a form, upload a logo, and sign a transaction — no Rust, TypeScript, or CLI required."
   - q: "Can I create a Token-2022 token instead of standard SPL?"
     a: "Yes. Choose Token-2022 in the token standard selector if you need extensions like transfer fees. For most meme tokens or community tokens, standard SPL is the right choice."
   - q: "Is my token symbol permanent?"
@@ -25,7 +25,7 @@ Creating a Solana token used to require writing Rust or using a command-line too
 
 ## What you need before you start
 
-Before opening FORGE, get three things ready:
+Before opening Solana Token, get three things ready:
 
 **1. A Solana wallet with SOL**
 Phantom, Solflare, or Backpack work. Make sure you're on mainnet (not testnet). Budget:
@@ -42,13 +42,13 @@ Phantom, Solflare, or Backpack work. Make sure you're on mainnet (not testnet). 
 - Decimals (use 9 for most tokens; 6 for stablecoins)
 
 **3. A logo file**
-Square image, PNG or SVG. At least 200×200px. FORGE pins it to IPFS automatically.
+Square image, PNG or SVG. At least 200×200px. Solana Token pins it to IPFS automatically.
 
 ---
 
-## Step 1 — Connect your wallet and open FORGE Create
+## Step 1 — Connect your wallet and open Solana Token Create
 
-Go to [FORGE → Create Token](/create-token). Click **Connect Wallet** in the top right. Select your wallet (Phantom, Solflare, or Backpack) and approve the connection.
+Go to [Solana Token → Create Token](/create-token). Click **Connect Wallet** in the top right. Select your wallet (Phantom, Solflare, or Backpack) and approve the connection.
 
 Confirm you see your wallet address and that the network indicator says **Mainnet**. If it says Devnet, switch in your wallet settings. (Devnet works fine for testing — devnet tokens are free but not real.)
 
@@ -72,7 +72,7 @@ The symbol is permanent. Once deployed, it cannot be changed on-chain. If you're
 
 ### Branding
 
-Upload your logo. FORGE accepts PNG and SVG (square, 1:1 ratio). It uploads to IPFS automatically and generates the metadata JSON URI for you.
+Upload your logo. Solana Token accepts PNG and SVG (square, 1:1 ratio). It uploads to IPFS automatically and generates the metadata JSON URI for you.
 
 Add an optional description (1–2 sentences). Add social links if you have them: website, X/Twitter, Telegram. These appear on Solscan and explorers.
 
@@ -96,7 +96,7 @@ Same for freeze authority — active freeze authority means the creator could lo
 
 **Make Immutable** (revoking update authority) is free. If you don't plan to update your metadata, enable it.
 
-The cost summary updates live as you toggle each option. You can also revoke authorities later from FORGE Tools — but doing it at creation saves one extra transaction and SOL.
+The cost summary updates live as you toggle each option. You can also revoke authorities later from Solana Token Tools — but doing it at creation saves one extra transaction and SOL.
 
 <Warning>
 **You cannot un-revoke an authority.** Once revoked, it is permanent. Make sure your supply is final and your metadata is correct before revoking.
@@ -114,7 +114,7 @@ Before you sign, review:
 
 Click **Create token**. Your wallet will prompt you to approve the transaction. Review the transaction details in the wallet popup and approve.
 
-The transaction typically confirms in 1–5 seconds. On success, FORGE redirects you to your token's page showing the mint address.
+The transaction typically confirms in 1–5 seconds. On success, Solana Token redirects you to your token's page showing the mint address.
 
 ---
 
@@ -126,10 +126,10 @@ After creation, your token exists on-chain. Here's what to do:
 Your mint address is the unique identifier for your token. Save it — you'll need it for everything else (adding liquidity, multisender, security checks).
 
 ### Add liquidity
-Without a trading pool, your token cannot be bought or sold on a DEX. Head to [FORGE → Pool](/pool) to create a Raydium pool. You'll need SOL plus the tokens you want to pair.
+Without a trading pool, your token cannot be bought or sold on a DEX. Head to [Solana Token → Pool](/pool) to create a Raydium pool. You'll need SOL plus the tokens you want to pair.
 
 ### Share the token page
-Your FORGE token page at `/token/[mint-address]` shows live authority status, holder concentration, and risk flags. Share it with your community.
+Your Solana Token token page at `/token/[mint-address]` shows live authority status, holder concentration, and risk flags. Share it with your community.
 
 ### Verify on Solscan
 Search your mint address on solscan.io to verify everything looks correct: supply, decimals, metadata, and revoked authorities.

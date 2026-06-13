@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import ToolsGrid from "./ToolsGrid";
 
 export const metadata: Metadata = {
-  title: "Token Tools — FORGE",
+  title: "Token Tools — Solana Token",
   description: "All Solana token management tools: multisender, mint, metadata, authority revocation, OpenBook market creation, and free converters.",
 };
 
@@ -157,12 +157,12 @@ const feeNotes: Record<string, string> = {
   "/tools/mint-tokens":      "Requires active mint authority on the token; inflates supply",
   "/burn":                   "Free — only Solana gas (~0.000005 SOL); permanently reduces total supply",
   "/tools/update-metadata":  "Requires update authority; metadata storage rent extra",
-  "/tools/revoke-mint":      "0.05 SOL FORGE fee + network gas (~0.000005 SOL)",
-  "/tools/revoke-freeze":    "0.05 SOL FORGE fee + network gas (~0.000005 SOL)",
-  "/tools/revoke-update":    "0.05 SOL FORGE fee + network gas; transfers authority to the system program",
+  "/tools/revoke-mint":      "0.05 SOL Solana Token fee + network gas (~0.000005 SOL)",
+  "/tools/revoke-freeze":    "0.05 SOL Solana Token fee + network gas (~0.000005 SOL)",
+  "/tools/revoke-update":    "0.05 SOL Solana Token fee + network gas; transfers authority to the system program",
   "/tools/freeze-account":   "0.01 SOL per address frozen; requires active freeze authority",
   "/tools/unfreeze-account": "0.01 SOL per address unfrozen; requires active freeze authority",
-  "/tools/make-immutable":   "Only Solana gas (~0.000005 SOL); no FORGE fee",
+  "/tools/make-immutable":   "Only Solana gas (~0.000005 SOL); no Solana Token fee",
   "/pool":                   "Coming soon — + 0.4–0.6 SOL DEX setup cost paid directly to the DEX",
   "/pool/add":               "Coming soon — token/SOL deposit becomes your LP position, not a fee",
   "/pool/remove":            "Coming soon — withdraws your share from the pool",
@@ -207,13 +207,13 @@ export default function ToolsPage() {
           <div className="tools-section-head">
             <h2 className="tools-section-title">Complete fee structure</h2>
             <p className="tools-section-sub">
-              All FORGE fees are flat and per-action. DEX setup costs and network rent go directly to the DEX / Solana — FORGE never receives them.
+              All Solana Token fees are flat and per-action. DEX setup costs and network rent go directly to the DEX / Solana — Solana Token never receives them.
             </p>
           </div>
           <div className="pricing-fee-table">
             <div className="pricing-fee-head">
               <span>Action</span>
-              <span>FORGE fee</span>
+              <span>Solana Token fee</span>
               <span>Notes</span>
             </div>
             {/* Core actions */}
@@ -257,7 +257,7 @@ export default function ToolsPage() {
               </summary>
               <div className="lp-faq-answer">
                 <strong>Create token:</strong> 0.1 SOL base (metadata, socials, token page) + 0.05 SOL each to revoke mint/freeze at creation + 0.1 SOL custom creator info (optional). Make immutable at creation is free.<br />
-                <strong>Create pool (per DEX):</strong> 0.1 SOL FORGE fee + 0.4–0.6 SOL DEX setup (paid to the DEX).<br />
+                <strong>Create pool (per DEX):</strong> 0.1 SOL Solana Token fee + 0.4–0.6 SOL DEX setup (paid to the DEX).<br />
                 <strong>Add / Remove liquidity:</strong> 0.05 SOL each.<br />
                 <strong>Multisender:</strong> 0.02 SOL flat per transaction.<br />
                 <strong>Mint tokens:</strong> 0.05 SOL.<br />
@@ -265,7 +265,7 @@ export default function ToolsPage() {
                 <strong>Revoke mint / freeze / update authority:</strong> 0.05 SOL each.<br />
                 <strong>Freeze account / Unfreeze account:</strong> 0.01 SOL per address.<br />
                 <strong>Burn / Burn LP tokens / Make immutable:</strong> Free.<br />
-                Network rent and DEX setup costs are always shown upfront and are separate from FORGE fees.
+                Network rent and DEX setup costs are always shown upfront and are separate from Solana Token fees.
               </div>
             </details>
             <details className="lp-faq-item">
@@ -276,7 +276,7 @@ export default function ToolsPage() {
               <div className="lp-faq-answer">
                 When you create a liquidity pool, the DEX protocol (Raydium, Orca, Meteora, etc.) charges a one-time setup fee
                 to initialize the pool accounts on-chain. This ranges from 0.4–0.6 SOL depending on the DEX and goes entirely
-                to the DEX protocol — FORGE receives none of it. FORGE charges a separate flat 0.1 SOL per pool for the creation service.
+                to the DEX protocol — Solana Token receives none of it. Solana Token charges a separate flat 0.1 SOL per pool for the creation service.
                 Both costs are shown upfront in the cost summary before you sign.
               </div>
             </details>
@@ -286,10 +286,10 @@ export default function ToolsPage() {
                 <span className="lp-faq-icon" aria-hidden>+</span>
               </summary>
               <div className="lp-faq-answer">
-                Burn, Burn LP tokens, Make Immutable, and both converter tools have zero FORGE platform fee.
+                Burn, Burn LP tokens, Make Immutable, and both converter tools have zero Solana Token platform fee.
                 Revoke Mint, Revoke Freeze, and Revoke Update each cost 0.05 SOL.
                 Freeze Account and Unfreeze Account each cost 0.01 SOL per address.
-                All transactions also incur the standard Solana network fee (~0.000005 SOL), which goes directly to validators — not to FORGE.
+                All transactions also incur the standard Solana network fee (~0.000005 SOL), which goes directly to validators — not to Solana Token.
               </div>
             </details>
             <details className="lp-faq-item">
@@ -310,9 +310,9 @@ export default function ToolsPage() {
                 <span className="lp-faq-icon" aria-hidden>+</span>
               </summary>
               <div className="lp-faq-answer">
-                Creating an OpenBook order-book market requires a SOL deposit (~2.85 SOL) to the OpenBook v2 protocol itself (not to FORGE).
+                Creating an OpenBook order-book market requires a SOL deposit (~2.85 SOL) to the OpenBook v2 protocol itself (not to Solana Token).
                 This deposit covers the on-chain storage for your market accounts and is set by the protocol, not by us.
-                FORGE charges 0.05 SOL on top for the creation service.
+                Solana Token charges 0.05 SOL on top for the creation service.
               </div>
             </details>
             <details className="lp-faq-item">
@@ -321,8 +321,8 @@ export default function ToolsPage() {
                 <span className="lp-faq-icon" aria-hidden>+</span>
               </summary>
               <div className="lp-faq-answer">
-                No. FORGE platform fees are only deducted on a confirmed, successful transaction.
-                If your transaction fails or is rejected by the Solana runtime, you are not charged a FORGE fee.
+                No. Solana Token platform fees are only deducted on a confirmed, successful transaction.
+                If your transaction fails or is rejected by the Solana runtime, you are not charged a Solana Token fee.
                 You may still lose the small Solana gas fee (~0.000005 SOL) consumed by the attempt.
               </div>
             </details>
@@ -332,9 +332,9 @@ export default function ToolsPage() {
                 <span className="lp-faq-icon" aria-hidden>+</span>
               </summary>
               <div className="lp-faq-answer">
-                No. Network rent — the SOL deposited to store account data on-chain — is separate from FORGE fees and goes directly to the Solana network.
+                No. Network rent — the SOL deposited to store account data on-chain — is separate from Solana Token fees and goes directly to the Solana network.
                 For Multisender, each new recipient token account costs ~0.002 SOL in rent. Existing accounts cost nothing extra.
-                The fee table shows FORGE&apos;s portion only.
+                The fee table shows Solana Token&apos;s portion only.
               </div>
             </details>
             <details className="lp-faq-item">
@@ -343,7 +343,7 @@ export default function ToolsPage() {
                 <span className="lp-faq-icon" aria-hidden>+</span>
               </summary>
               <div className="lp-faq-answer">
-                FORGE fees are set in the on-chain program. Any change requires a program upgrade and will be announced
+                Solana Token fees are set in the on-chain program. Any change requires a program upgrade and will be announced
                 at least 14 days in advance via our X (Twitter) and Telegram channels before taking effect.
               </div>
             </details>
@@ -354,7 +354,7 @@ export default function ToolsPage() {
               </summary>
               <div className="lp-faq-answer">
                 For most tool operations, 0.1–0.2 SOL is plenty. To create a token and launch on one DEX, budget around 0.7 SOL
-                (0.1 base creation + 0.1 FORGE pool fee + ~0.5 DEX setup + small rent). Add 0.05 SOL per authority you revoke at creation and 0.1 SOL for custom creator info if needed.
+                (0.1 base creation + 0.1 Solana Token pool fee + ~0.5 DEX setup + small rent). Add 0.05 SOL per authority you revoke at creation and 0.1 SOL for custom creator info if needed.
                 We recommend keeping at least 1 SOL available to cover everything comfortably.
               </div>
             </details>

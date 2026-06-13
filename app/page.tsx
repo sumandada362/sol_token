@@ -18,7 +18,7 @@ export default function Home() {
             <span className="brand-blend">Solana Token</span> in Minutes
           </div>
           <p className="tagline">
-            <strong>FORGE</strong> is the fastest and safest way to create and launch
+            <strong>Solana Token</strong> is the fastest and safest way to create and launch
             tokens on Solana Network. No Coding, No Complexity
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function Home() {
         {/* ── Why choose us ── */}
         <section className="lp-section">
           <div className="lp-section-head lp-section-head--center" data-reveal>
-            <p className="lp-eyebrow">Why FORGE</p>
+            <p className="lp-eyebrow">Why Solana Token</p>
             <h2 className="lp-heading">Built for builders</h2>
           </div>
           <div className="lp-pillars" data-stagger>
@@ -288,7 +288,7 @@ export default function Home() {
             <p className="lp-eyebrow">By the numbers</p>
             <h2 className="lp-heading">Trusted by builders across Solana</h2>
             <p className="lp-body lp-body--center">
-              From first-time creators to established projects, FORGE keeps token
+              From first-time creators to established projects, Solana Token keeps token
               launches fast, transparent, and safe.
             </p>
             <div className="lp-stat-grid" data-stagger>
@@ -318,7 +318,7 @@ export default function Home() {
         <section className="lp-section">
           <div className="lp-section-head lp-section-head--center" data-reveal>
             <h2 className="lp-heading">What people say</h2>
-            <p className="lp-body">Builders trust FORGE to launch their vision.</p>
+            <p className="lp-body">Builders trust Solana Token to launch their vision.</p>
           </div>
           <div className="lp-testimonials" data-stagger>
             <Testimonial
@@ -343,7 +343,7 @@ export default function Home() {
         <section className="lp-section">
           <div className="lp-section-head lp-section-head--center" data-reveal>
             <h2 className="lp-heading">Questions</h2>
-            <p className="lp-body">Everything you need to know about FORGE.</p>
+            <p className="lp-body">Everything you need to know about Solana Token.</p>
           </div>
           <div className="lp-faq" data-stagger>
             <Faq q="Is my token safe?">
@@ -379,7 +379,7 @@ export default function Home() {
 const demoTokens = [
   { mint: "ABC1", name: "Solana Inu", symbol: "SINU", holders: "1,240", liquidity: "12.4 SOL" },
   { mint: "ABC2", name: "Moon Coin", symbol: "MOON", holders: "876", liquidity: "8.2 SOL" },
-  { mint: "ABC3", name: "Forge Token", symbol: "FRGE", holders: "3,201", liquidity: "45.0 SOL" },
+  { mint: "ABC3", name: "Nova Token", symbol: "NOVA", holders: "3,201", liquidity: "45.0 SOL" },
   { mint: "ABC4", name: "Wave Protocol", symbol: "WAVE", holders: "540", liquidity: "6.1 SOL" },
 ];
 

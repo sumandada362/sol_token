@@ -1,4 +1,4 @@
-# FORGE — Testnet Phase: Audit, Live Test & Mainnet-Readiness Report
+# Solana Token — Testnet Phase: Audit, Live Test & Mainnet-Readiness Report
 
 **Date:** 2026-06-13 · **Scope:** entire `token/` app on **Solana testnet** · **Server:** production build (`pnpm build` + `pnpm start`), in-memory Redis stand-in, no Postgres (degraded-mode paths exercised deliberately)
 

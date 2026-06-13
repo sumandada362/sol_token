@@ -5,15 +5,15 @@ import Footer from "@/components/Footer";
 import { getAllArticles } from "@/lib/content";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 
-const BASE = "https://forge.solana.tools";
+const BASE = "https://solanatoken.app";
 
 export const metadata: Metadata = {
-  title: "Blog — FORGE",
+  title: "Blog — Solana Token",
   description:
-    "Guides and tutorials for creating Solana tokens, adding liquidity, managing authorities, and using FORGE tools.",
+    "Guides and tutorials for creating Solana tokens, adding liquidity, managing authorities, and using Solana Token tools.",
   alternates: { canonical: `${BASE}/blog` },
   openGraph: {
-    title: "Blog — FORGE",
+    title: "Blog — Solana Token",
     description: "Guides and tutorials for Solana token creators.",
     url: `${BASE}/blog`,
   },

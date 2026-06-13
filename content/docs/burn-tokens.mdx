@@ -12,7 +12,7 @@ faq:
   - q: "Does burning tokens increase the price?"
     a: "Burning reduces supply, which can support price if demand stays constant — but it does not guarantee a price increase. Many factors affect token price. Do not burn solely for price manipulation expectations."
   - q: "What is the cost to burn tokens?"
-    a: "Burning tokens on FORGE is free (no platform fee). You pay only Solana network gas (~0.0001–0.001 SOL)."
+    a: "Burning tokens on Solana Token is free (no platform fee). You pay only Solana network gas (~0.0001–0.001 SOL)."
   - q: "Do I need to hold mint authority to burn tokens?"
     a: "No. Any wallet can burn tokens it holds. Burn authority is separate from mint authority."
   - q: "Can I burn LP tokens?"
@@ -21,16 +21,16 @@ faq:
 
 ## What this tool does
 
-FORGE Burn lets you send tokens to the Solana burn address, permanently removing them from circulating supply. This is an on-chain operation — the tokens cease to exist.
+Solana Token Burn lets you send tokens to the Solana burn address, permanently removing them from circulating supply. This is an on-chain operation — the tokens cease to exist.
 
 ## What it costs
 
-Burning tokens is **free** on FORGE. You pay only Solana network gas, which is typically less than 0.001 SOL.
+Burning tokens is **free** on Solana Token. You pay only Solana network gas, which is typically less than 0.001 SOL.
 
 ## Before you start
 
 - Tokens you want to burn in your wallet
-- Your wallet connected to FORGE
+- Your wallet connected to Solana Token
 - Certainty — burning is irreversible
 
 <Warning>
@@ -39,13 +39,13 @@ Burning tokens is **free** on FORGE. You pay only Solana network gas, which is t
 
 ## Step-by-step
 
-### Step 1 — Go to FORGE → Burn
+### Step 1 — Go to Solana Token → Burn
 
 Navigate to the Burn tool from the main navigation.
 
 ### Step 2 — Select token
 
-Choose the token you want to burn from the dropdown. FORGE shows your current balance for that token.
+Choose the token you want to burn from the dropdown. Solana Token shows your current balance for that token.
 
 ### Step 3 — Enter amount
 
@@ -65,6 +65,6 @@ The transaction calls the SPL Token program's `burn` instruction, which reduces 
 
 ## Burning LP tokens
 
-Burning LP (liquidity pool) tokens is a separate action that signals locked liquidity — it means the liquidity cannot be removed, which reduces rug pull risk. Use **FORGE Tools → Burn LP** for this. It works the same way but operates on LP mint addresses instead of your token.
+Burning LP (liquidity pool) tokens is a separate action that signals locked liquidity — it means the liquidity cannot be removed, which reduces rug pull risk. Use **Solana Token Tools → Burn LP** for this. It works the same way but operates on LP mint addresses instead of your token.
 
 <CTA tool="burn" />

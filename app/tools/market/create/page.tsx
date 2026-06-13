@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 
-const BASE = "https://forge.solana.tools";
+const BASE = "https://solanatoken.app";
 
 export const metadata: Metadata = {
-  title: "Create OpenBook Market on Solana — Coming Soon — FORGE",
+  title: "Create OpenBook Market on Solana — Coming Soon — Solana Token",
   description:
     "OpenBook v2 order-book market creation for your Solana token is in development. Configure base/quote pair, tick size, and minimum order size in one flow.",
   alternates: { canonical: `${BASE}/tools/market/create` },
@@ -36,7 +36,7 @@ export default function MarketCreatePage() {
             <li>One transaction, signed from your browser wallet</li>
           </ul>
           <p className="cost-summary-note" style={{ marginTop: "1rem" }}>
-            Planned pricing: 0.05 SOL FORGE fee + ~2.85 SOL protocol deposit paid directly to OpenBook v2 for on-chain market accounts.
+            Planned pricing: 0.05 SOL Solana Token fee + ~2.85 SOL protocol deposit paid directly to OpenBook v2 for on-chain market accounts.
           </p>
         </div>
 

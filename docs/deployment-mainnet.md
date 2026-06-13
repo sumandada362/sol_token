@@ -1,6 +1,6 @@
-# FORGE — Mainnet Deployment & VPS Launch Guide
+# Solana Token — Mainnet Deployment & VPS Launch Guide
 
-End-to-end guide to take FORGE from the testnet-passed state to a live
+End-to-end guide to take Solana Token from the testnet-passed state to a live
 `mainnet-beta` deployment on a VPS. Covers every external service (what it's
 for, where to get it, which tier), the exact VPS setup, env configuration,
 TLS, and a go-live checklist.
@@ -38,7 +38,7 @@ TLS, and a go-live checklist.
 
 ## 1. External services — what to get, where, which tier
 
-| Service | Why FORGE needs it | Required? | Where | Recommended tier |
+| Service | Why Solana Token needs it | Required? | Where | Recommended tier |
 |---|---|---|---|---|
 | **Solana RPC** | All chain reads/writes (server + browser) | **Yes** | Helius, QuickNode, Triton, Alchemy | See §1.1 |
 | **Helius DAS** | Holder counts on token pages (`getTokenAccounts`) | Optional* | helius.dev (same account as RPC) | Same key as RPC |
@@ -57,7 +57,7 @@ TLS, and a go-live checklist.
 aggressively rate-limited, has no SLA, and Solana Labs explicitly says it's for
 development only. Under any real traffic, token creation and multisends will fail.
 
-**Recommended: Helius** — FORGE already has first-class Helius support (the
+**Recommended: Helius** — Solana Token already has first-class Helius support (the
 holder-count DAS calls and cluster-aware URLs in `lib/data/holders.ts` assume
 Helius; the CSP already allows `*.helius-rpc.com`). One account covers both the
 RPC and the DAS holder counts.
@@ -196,8 +196,8 @@ for reference / debugging.
 ```bash
 sudo mkdir -p /var/www && sudo chown deploy:deploy /var/www
 cd /var/www
-git clone <your-repo-url> forge
-cd forge
+git clone <your-repo-url> solana-token
+cd solana-token
 pnpm install --frozen-lockfile
 ```
 
@@ -227,24 +227,24 @@ rebuild.**
 **Option A — PM2** (simplest):
 ```bash
 sudo npm install -g pm2
-pm2 start "pnpm start" --name forge --cwd /var/www/forge
+pm2 start "pnpm start" --name solana-token --cwd /var/www/solana-token
 pm2 save
 pm2 startup        # run the command it prints, to start on boot
-pm2 logs forge     # tail logs
+pm2 logs solana-token     # tail logs
 ```
 
-**Option B — systemd** (no extra global dep). Create `/etc/systemd/system/forge.service`:
+**Option B — systemd** (no extra global dep). Create `/etc/systemd/system/solana-token.service`:
 ```ini
 [Unit]
-Description=FORGE Next.js
+Description=Solana Token Next.js
 After=network.target
 
 [Service]
 Type=simple
 User=deploy
-WorkingDirectory=/var/www/forge
+WorkingDirectory=/var/www/solana-token
 # Load env from the file (or list Environment= lines here instead)
-EnvironmentFile=/var/www/forge/.env.local
+EnvironmentFile=/var/www/solana-token/.env.local
 ExecStart=/usr/bin/pnpm start
 Restart=on-failure
 RestartSec=5
@@ -256,9 +256,9 @@ WantedBy=multi-user.target
 ```
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now forge
-sudo systemctl status forge
-journalctl -u forge -f
+sudo systemctl enable --now solana-token
+sudo systemctl status solana-token
+journalctl -u solana-token -f
 ```
 
 The app now listens on `127.0.0.1:3333` (set via `next start -p 3333` in
@@ -273,7 +273,7 @@ it in both `package.json` and the nginx config below.
 ### 4.7 Self-host Postgres + Redis on the VPS
 
 `scripts/vps-bootstrap.sh` does all of this automatically (installs both, creates
-the `forge` role+db, sets a Redis password, and writes `DATABASE_URL` /
+the `solana_token` role+db, sets a Redis password, and writes `DATABASE_URL` /
 `REDIS_URL` into `.env.local`). The manual equivalent, for reference or if you're
 not using the script:
 
@@ -283,9 +283,9 @@ sudo apt-get install -y postgresql postgresql-client
 sudo systemctl enable --now postgresql
 
 PGPASS="$(openssl rand -hex 16)"
-sudo -u postgres psql -c "CREATE ROLE forge LOGIN PASSWORD '$PGPASS';"
-sudo -u postgres createdb -O forge forge
-echo "DATABASE_URL=postgresql://forge:$PGPASS@localhost:5432/forge"   # paste into .env.local
+sudo -u postgres psql -c "CREATE ROLE solana_token LOGIN PASSWORD '$PGPASS';"
+sudo -u postgres createdb -O solana_token solana_token
+echo "DATABASE_URL=postgresql://solana_token:$PGPASS@localhost:5432/solana_token"   # paste into .env.local
 ```
 Postgres listens on `localhost` only by default (do not change `listen_addresses`).
 
@@ -327,7 +327,7 @@ psql "$DATABASE_URL" -f db/002_phase2.sql
 sudo apt-get install -y nginx
 ```
 
-Create `/etc/nginx/sites-available/forge`:
+Create `/etc/nginx/sites-available/solana-token`:
 ```nginx
 server {
     listen 80;
@@ -340,7 +340,7 @@ server {
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        # FORGE's rate limiter keys on X-Forwarded-For — keep the chain accurate
+        # Solana Token's rate limiter keys on X-Forwarded-For — keep the chain accurate
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
@@ -348,7 +348,7 @@ server {
 }
 ```
 ```bash
-sudo ln -s /etc/nginx/sites-available/forge /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/solana-token /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 ```
@@ -367,7 +367,7 @@ sudo certbot --nginx -d your-domain.com -d www.your-domain.com
 
 > **Cloudflare?** If you proxy through Cloudflare, set SSL mode to **Full
 > (strict)**, and note that the client IP arrives in `CF-Connecting-IP`; nginx's
-> `X-Forwarded-For` will still carry it first in the chain, which FORGE's
+> `X-Forwarded-For` will still carry it first in the chain, which Solana Token's
 > limiter reads. Keep "Always Use HTTPS" on.
 
 ---
@@ -432,11 +432,11 @@ fees aren't being journaled.
 ## 7. Updating / redeploying
 
 ```bash
-cd /var/www/forge
+cd /var/www/solana-token
 git pull
 pnpm install --frozen-lockfile
 pnpm build
-pm2 restart forge        # or: sudo systemctl restart forge
+pm2 restart solana-token        # or: sudo systemctl restart solana-token
 ```
 Zero-downtime isn't configured here; the restart blips for ~1s. For true
 zero-downtime, run two PM2 instances behind nginx upstream, or use `pm2 reload`.
@@ -445,7 +445,7 @@ zero-downtime, run two PM2 instances behind nginx upstream, or use `pm2 reload`.
 
 ## 8. Monitoring & incident response
 
-- **Logs:** `pm2 logs forge` / `journalctl -u forge -f`. Watch for `[confirm] datastore write failed` (DB down → fees unjournaled) and `[guardrail]` (misconfig).
+- **Logs:** `pm2 logs solana-token` / `journalctl -u solana-token -f`. Watch for `[confirm] datastore write failed` (DB down → fees unjournaled) and `[guardrail]` (misconfig).
 - **Alert on `recorded:false`** in confirm responses — that's the signal real fees aren't being recorded.
 - **Runbooks** already exist for the four most likely incidents:
   - [runbooks/bad-deploy.md](runbooks/bad-deploy.md)

@@ -1,4 +1,4 @@
-# FORGE — Full App Testnet Testing Guide
+# Solana Token — Full App Testnet Testing Guide
 
 Complete manual + scripted test plan for running the entire app against **Solana testnet**.
 Estimated time for a full pass: **2–3 hours**. For the shorter pre-deploy devnet pass, see

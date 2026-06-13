@@ -10,7 +10,7 @@ import { CTA } from "@/components/mdx/CTA";
 import { Disclaimer } from "@/components/mdx/Disclaimer";
 import { JsonLdFaqPage, JsonLdHowTo, JsonLdBreadcrumb } from "@/components/JsonLd";
 
-const BASE = "https://forge.solana.tools";
+const BASE = "https://solanatoken.app";
 
 const mdxComponents = { Fee, Warning, CTA, Disclaimer };
 
@@ -29,7 +29,7 @@ export async function generateMetadata({
   const { frontmatter: fm } = article;
   const ogUrl = `${BASE}/og?title=${encodeURIComponent(fm.title)}&sub=${encodeURIComponent(fm.description)}`;
   return {
-    title: `${fm.title} — FORGE Blog`,
+    title: `${fm.title} — Solana Token Blog`,
     description: fm.description,
     alternates: { canonical: `${BASE}/blog/${fm.slug}` },
     openGraph: {

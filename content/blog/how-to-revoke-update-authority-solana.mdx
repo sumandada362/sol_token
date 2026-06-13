@@ -11,7 +11,7 @@ faq:
   - q: "Can I restore update authority after revoking it?"
     a: "No. The authority is transferred to the Solana system program, which has no private key and can never sign. The revocation is permanent."
   - q: "How much does it cost to revoke update authority?"
-    a: "0.05 SOL FORGE fee plus Solana gas (~0.000005 SOL). If you only need the metadata locked, Make Immutable is a free alternative."
+    a: "0.05 SOL Solana Token fee plus Solana gas (~0.000005 SOL). If you only need the metadata locked, Make Immutable is a free alternative."
   - q: "Does revoking update authority affect trading?"
     a: "No. Transfers, swaps, and liquidity are unaffected. Only the ability to change the token's name, symbol, and metadata URI is removed."
   - q: "Should I revoke update authority before or after fixing my logo?"
@@ -48,7 +48,7 @@ Combined with revoked mint and freeze authorities, this gives your token the hig
 
 ## Revoke Update vs. Make Immutable
 
-Solana metadata can be locked two ways, and FORGE offers both:
+Solana metadata can be locked two ways, and Solana Token offers both:
 
 | | Revoke Update (0.05 SOL) | Make Immutable (free) |
 |---|---|---|
@@ -72,25 +72,25 @@ If anything still needs fixing, use the Update Metadata tool first — after rev
 **Revoking is permanent.** The system program can never sign, so the authority can never be recovered. Double-check your metadata before signing.
 </Warning>
 
-## How to revoke update authority on FORGE
+## How to revoke update authority on Solana Token
 
 ### Step 1 — Open the tool
 
-Navigate to [forge.solana.tools/tools/revoke-update](/tools/revoke-update).
+Navigate to [solanatoken.app/tools/revoke-update](/tools/revoke-update).
 
 ### Step 2 — Connect your wallet
 
-Connect the wallet that holds the current update authority. FORGE verifies this on-chain automatically.
+Connect the wallet that holds the current update authority. Solana Token verifies this on-chain automatically.
 
 ### Step 3 — Enter your mint address
 
-Paste your token's mint address. FORGE confirms your wallet is the authority and that the metadata isn't already locked.
+Paste your token's mint address. Solana Token confirms your wallet is the authority and that the metadata isn't already locked.
 
 ### Step 4 — Confirm and sign
 
 Check the irreversibility confirmation box, click **Revoke Update Authority**, and approve in your wallet.
 
-Cost: **0.05 SOL** FORGE fee + gas.
+Cost: **0.05 SOL** Solana Token fee + gas.
 
 ## Verify on-chain
 

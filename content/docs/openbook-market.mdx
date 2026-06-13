@@ -12,24 +12,24 @@ faq:
   - q: "What are min order size and tick size?"
     a: "Min order size is the smallest tradeable amount of your token. Tick size is the smallest price increment. Typical values: min order 1 token, tick 0.0001 SOL. These cannot be changed after market creation."
   - q: "Is the 2.85 SOL a fee or a deposit?"
-    a: "It is a rent deposit paid to the OpenBook program to store the market's on-chain account data. It is not a FORGE fee. Theoretically it can be reclaimed if the market is ever closed, though market closure is complex and rarely done in practice."
+    a: "It is a rent deposit paid to the OpenBook program to store the market's on-chain account data. It is not a Solana Token fee. Theoretically it can be reclaimed if the market is ever closed, though market closure is complex and rarely done in practice."
   - q: "Can I reuse a market for multiple pool types?"
     a: "Yes. Once created, an OpenBook market ID can be referenced by any Raydium Legacy AMM pool. You only need to create it once per trading pair."
 ---
 
 ## What this tool does
 
-FORGE Market Create sets up an OpenBook v2 order-book market for your token on Solana. This creates a trading pair (your token vs SOL or USDC) and enables limit order trading — and satisfies the prerequisite for Raydium Legacy AMM pools.
+Solana Token Market Create sets up an OpenBook v2 order-book market for your token on Solana. This creates a trading pair (your token vs SOL or USDC) and enables limit order trading — and satisfies the prerequisite for Raydium Legacy AMM pools.
 
 ## What it costs
 
 | Item | Cost |
 |------|------|
-| FORGE platform fee | 0.05 SOL |
+| Solana Token platform fee | 0.05 SOL |
 | OpenBook rent deposit (pass-through) | ~2.85 SOL |
 | Solana gas | ~0.001 SOL |
 
-The ~2.85 SOL is a rent deposit paid directly to the OpenBook program — it is not a FORGE fee. Total: approximately **2.9 SOL**. Costs can change — verify in the app.
+The ~2.85 SOL is a rent deposit paid directly to the OpenBook program — it is not a Solana Token fee. Total: approximately **2.9 SOL**. Costs can change — verify in the app.
 
 ## Before you start
 
@@ -43,13 +43,13 @@ The ~2.85 SOL is a rent deposit paid directly to the OpenBook program — it is 
 
 ## Step-by-step
 
-### Step 1 — Go to FORGE → Tools → Create Market
+### Step 1 — Go to Solana Token → Tools → Create Market
 
 Navigate to the Market Create tool.
 
 ### Step 2 — Enter your token mint address
 
-Paste your token's mint address. FORGE will auto-fill the token name and symbol.
+Paste your token's mint address. Solana Token will auto-fill the token name and symbol.
 
 ### Step 3 — Choose base and quote currency
 
@@ -66,7 +66,7 @@ These parameters are permanent — they cannot be changed after market creation.
 
 ### Step 5 — Review cost and sign
 
-The cost summary shows the FORGE fee plus the OpenBook rent deposit. Click **Create market** and approve in your wallet.
+The cost summary shows the Solana Token fee plus the OpenBook rent deposit. Click **Create market** and approve in your wallet.
 
 ### Step 6 — Save your market ID
 

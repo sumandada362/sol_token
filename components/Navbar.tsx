@@ -42,7 +42,14 @@ export default function Navbar() {
   return (
     <nav id="navbar">
       <Link href="/" className="nav-logo">
-        FORGE
+        <img
+          src="/coin_gold.png"
+          alt="Solana Token"
+          width={28}
+          height={28}
+          style={{ display: "inline-block", verticalAlign: "middle", marginRight: 8, borderRadius: "50%" }}
+        />
+        Solana Token
       </Link>
 
       <ul className="nav-links">

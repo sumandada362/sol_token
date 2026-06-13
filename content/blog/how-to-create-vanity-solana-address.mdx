@@ -1,6 +1,6 @@
 ---
 title: "How to Create a Custom (Vanity) Solana Token Address"
-description: "What a vanity token mint address is, how grind-based address generation works on Solana, the time and cost tradeoffs, and how to enable it in FORGE."
+description: "What a vanity token mint address is, how grind-based address generation works on Solana, the time and cost tradeoffs, and how to enable it in Solana Token."
 slug: "how-to-create-vanity-solana-address"
 date: "2026-06-12"
 updated: "2026-06-01"
@@ -9,18 +9,18 @@ tool: create
 readTime: "6 min read"
 faq:
   - q: "What is a vanity address?"
-    a: "A vanity address is a Solana public key that starts (or ends) with a specific string you choose. For example, a mint address starting with 'FORGE' instead of a random sequence of characters."
+    a: "A vanity address is a Solana public key that starts (or ends) with a specific string you choose. For example, a mint address starting with 'Solana Token' instead of a random sequence of characters."
   - q: "How long does it take to generate a vanity address?"
     a: "It depends on the prefix length and characters. A 4-character prefix typically takes seconds to minutes. A 6-character prefix can take hours. Each additional character makes it roughly 58x harder."
   - q: "Does a vanity address cost more?"
-    a: "FORGE charges no additional fee for vanity address generation. The token creation cost is the same (0.1 SOL base fee). The only cost is time — the generation happens locally in your browser."
+    a: "Solana Token charges no additional fee for vanity address generation. The token creation cost is the same (0.1 SOL base fee). The only cost is time — the generation happens locally in your browser."
   - q: "Is a vanity address more secure or trusted?"
     a: "Not inherently. A vanity address is purely cosmetic — it doesn't affect the token's security, authorities, or any on-chain properties. It's a branding choice."
   - q: "Can I choose any prefix?"
     a: "Any string using the base58 character set (1-9, A-Z, a-z, excluding 0, O, I, l). Some characters are not valid in base58 and cannot appear in a Solana address."
 ---
 
-Most Solana token mint addresses look like: `7xKqAbcDefGhiJkLmnOpQrStUvWxYz1234567890ab`. A vanity address lets you choose a prefix so it looks like: `FORGEAbcDefGhiJkLmnOpQrStUvWxYz1234567890ab`.
+Most Solana token mint addresses look like: `7xKqAbcDefGhiJkLmnOpQrStUvWxYz1234567890ab`. A vanity address lets you choose a prefix so it looks like: `Solana TokenAbcDefGhiJkLmnOpQrStUvWxYz1234567890ab`.
 
 This is a cosmetic feature — it doesn't affect security or token mechanics — but it can make your token's address instantly recognizable to your community.
 
@@ -52,17 +52,17 @@ Solana addresses use **base58 encoding**, which excludes characters that look vi
 
 Valid characters: `1-9 A-H J-N P-Z a-k m-z`
 
-So you can't have an address starting with "FULL" or "LION" because of the `l` and `I`. You can have "FORGE", "MOON", "BULL", etc.
+So you can't have an address starting with "FULL" or "LION" because of the `l` and `I`. You can have "Solana Token", "MOON", "BULL", etc.
 
 ## Case sensitivity
 
-Solana addresses are case-sensitive. "forge" and "FORGE" are different — and some character combinations in mixed case may be harder to grind than others.
+Solana addresses are case-sensitive. "moon" and "MOON" are different — and some character combinations in mixed case may be harder to grind than others.
 
-## How to create a vanity token address with FORGE
+## How to create a vanity token address with Solana Token
 
-### Step 1 — Open FORGE Create Token
+### Step 1 — Open Solana Token Create Token
 
-Go to [forge.solana.tools/create-token](/create-token).
+Go to [solanatoken.app/create-token](/create-token).
 
 ### Step 2 — Fill in your token details
 
@@ -74,7 +74,7 @@ In the Advanced section, check **Vanity address**. A text input appears for your
 
 ### Step 4 — Enter your prefix
 
-Type the prefix you want (e.g., "FORGE"). Keep it to 4–5 characters unless you're prepared to wait a long time.
+Type the prefix you want (e.g., "Solana Token"). Keep it to 4–5 characters unless you're prepared to wait a long time.
 
 The UI shows an estimated generation time for your chosen prefix.
 

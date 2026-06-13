@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * End-to-end feature test — exercises every FORGE feature through the real
+ * End-to-end feature test — exercises every Solana Token feature through the real
  * HTTP API with real signed transactions, on whichever cluster .env.local's
  * SOLANA_RPC_URL points at (devnet or testnet).
  *
@@ -168,7 +168,7 @@ const PNG_1PX = Buffer.from(
 );
 
 // ── test run ────────────────────────────────────────────────────────────────
-console.log(`\nFORGE ${NETWORK} E2E — ${BASE}`);
+console.log(`\nSolana Token ${NETWORK} E2E — ${BASE}`);
 console.log(`payer: ${payer}`);
 console.log(`rpc:   ${RPC_URL.replace(/api-key=.*/, "api-key=***")}\n`);
 
@@ -184,7 +184,7 @@ await step("POST /api/upload — PNG + metadata to Pinata", async () => {
   const form = new FormData();
   const blob = new Blob([PNG_1PX], { type: "image/png" });
   form.append("file", blob, "logo.png");
-  form.append("name", "Forge Test Alpha");
+  form.append("name", "Solana Token Test Alpha");
   form.append("symbol", "FTA");
   form.append("description", "E2E test token - spaces and-hyphens preserved");
   form.append("website", "https://example.com");
@@ -212,7 +212,7 @@ await step("Metadata JSON preserves spaces in name", async () => {
     if (!json) await new Promise((r) => setTimeout(r, 5000));
   }
   assert(json, "metadata JSON unreachable on all gateways");
-  assert(json.name === "Forge Test Alpha", `name corrupted: "${json.name}"`);
+  assert(json.name === "Solana Token Test Alpha", `name corrupted: "${json.name}"`);
   assert(json.description?.includes("spaces and-hyphens"), `description corrupted: "${json.description}"`);
   return `name="${json.name}"`;
 });
@@ -227,7 +227,7 @@ await step("POST /api/tx/create-token (SPL) → sign → on-chain", async () => 
     method: "POST",
     body: JSON.stringify({
       payer, mintPublicKey: mintA.publicKey.toBase58(),
-      name: "Forge Test Alpha", symbol: "FTA",
+      name: "Solana Token Test Alpha", symbol: "FTA",
       supply: "1000000", decimals: 6,
       metadataUri, standard: "spl",
       revokeMint: false, revokeFreeze: false, revokeUpdate: false, customCreator: false,
@@ -241,7 +241,7 @@ await step("POST /api/tx/create-token (SPL) → sign → on-chain", async () => 
 
 await step("POST /api/confirm createToken (fee verified server-side)", async () => {
   const j = await confirmAction(createdMints.A_sig, "createToken", {
-    mint: createdMints.A, name: "Forge Test Alpha", symbol: "FTA", metadataUri, standard: "spl",
+    mint: createdMints.A, name: "Solana Token Test Alpha", symbol: "FTA", metadataUri, standard: "spl",
   });
   return `recorded=${j.recorded}`;
 });
@@ -249,7 +249,7 @@ await step("POST /api/confirm createToken (fee verified server-side)", async () 
 await step("GET /api/check-authority — name, symbol, authorities", async () => {
   const r = await checkAuthority(createdMints.A);
   assert(r.status === 200, `→ ${r.status}`);
-  assert(r.json.name === "Forge Test Alpha", `name="${r.json.name}"`);
+  assert(r.json.name === "Solana Token Test Alpha", `name="${r.json.name}"`);
   assert(r.json.mintAuthority === payer, "mintAuthority mismatch");
   assert(r.json.freezeAuthority === payer, "freezeAuthority mismatch");
   assert(r.json.isMutable === true, "should be mutable");
@@ -304,7 +304,7 @@ await step("POST /api/tx/multisend — 3 recipients, decimal amounts", async () 
 await step("POST /api/tx/update-metadata — rename", async () => {
   const r = await api("/api/tx/update-metadata", {
     method: "POST",
-    body: JSON.stringify({ payer, mint: createdMints.A, name: "Forge Test Alpha v2", symbol: "FTA", uri: "" }),
+    body: JSON.stringify({ payer, mint: createdMints.A, name: "Solana Token Test Alpha v2", symbol: "FTA", uri: "" }),
   });
   assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
   const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);
@@ -342,7 +342,7 @@ await step("POST /api/tx/create-token (token2022) → on-chain", async () => {
     method: "POST",
     body: JSON.stringify({
       payer, mintPublicKey: mintB.publicKey.toBase58(),
-      name: "Forge Test T22", symbol: "FT22",
+      name: "Solana Token Test T22", symbol: "FT22",
       supply: "500000", decimals: 9,
       metadataUri: "", standard: "token2022",
       revokeMint: false, revokeFreeze: false, revokeUpdate: false, customCreator: false,
@@ -351,7 +351,7 @@ await step("POST /api/tx/create-token (token2022) → on-chain", async () => {
   assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
   const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight, [mintB]);
   createdMints.B_sig = sig;
-  await confirmAction(sig, "createToken", { mint: createdMints.B, name: "Forge Test T22", symbol: "FT22", standard: "token2022" });
+  await confirmAction(sig, "createToken", { mint: createdMints.B, name: "Solana Token Test T22", symbol: "FT22", standard: "token2022" });
   return sig.slice(0, 16) + "…";
 });
 
@@ -479,7 +479,7 @@ await step("create-token w/ revokeMint+revokeFreeze+customCreator", async () => 
     method: "POST",
     body: JSON.stringify({
       payer, mintPublicKey: mintC.publicKey.toBase58(),
-      name: "Forge Test Gamma", symbol: "FTG",
+      name: "Solana Token Test Gamma", symbol: "FTG",
       supply: "21000000", decimals: 9,
       metadataUri: "", standard: "spl",
       revokeMint: true, revokeFreeze: true, revokeUpdate: false, customCreator: true,
@@ -487,7 +487,7 @@ await step("create-token w/ revokeMint+revokeFreeze+customCreator", async () => 
   });
   assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
   const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight, [mintC]);
-  await confirmAction(sig, "createToken", { mint: createdMints.C, name: "Forge Test Gamma", symbol: "FTG" });
+  await confirmAction(sig, "createToken", { mint: createdMints.C, name: "Solana Token Test Gamma", symbol: "FTG" });
   return sig.slice(0, 16) + "…";
 });
 
@@ -515,7 +515,7 @@ await step("SPL-D: create (all authorities intact)", async () => {
     method: "POST",
     body: JSON.stringify({
       payer, mintPublicKey: mintD.publicKey.toBase58(),
-      name: "Forge Test Delta", symbol: "FTD",
+      name: "Solana Token Test Delta", symbol: "FTD",
       supply: "1000000", decimals: 6,
       metadataUri: "", standard: "spl",
       revokeMint: false, revokeFreeze: false, revokeUpdate: false, customCreator: false,
@@ -523,7 +523,7 @@ await step("SPL-D: create (all authorities intact)", async () => {
   });
   assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
   const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight, [mintD]);
-  await confirmAction(sig, "createToken", { mint: createdMints.D, name: "Forge Test Delta", symbol: "FTD", standard: "spl" });
+  await confirmAction(sig, "createToken", { mint: createdMints.D, name: "Solana Token Test Delta", symbol: "FTD", standard: "spl" });
   return sig.slice(0, 16) + "…";
 });
 
@@ -611,7 +611,7 @@ await step("T22-E: create (token2022, authorities intact)", async () => {
     method: "POST",
     body: JSON.stringify({
       payer, mintPublicKey: mintE.publicKey.toBase58(),
-      name: "Forge Test Epsilon", symbol: "FTE",
+      name: "Solana Token Test Epsilon", symbol: "FTE",
       supply: "500000", decimals: 9,
       metadataUri: "", standard: "token2022",
       revokeMint: false, revokeFreeze: false, revokeUpdate: false, customCreator: false,
@@ -619,14 +619,14 @@ await step("T22-E: create (token2022, authorities intact)", async () => {
   });
   assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
   const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight, [mintE]);
-  await confirmAction(sig, "createToken", { mint: createdMints.E, name: "Forge Test Epsilon", symbol: "FTE", standard: "token2022" });
+  await confirmAction(sig, "createToken", { mint: createdMints.E, name: "Solana Token Test Epsilon", symbol: "FTE", standard: "token2022" });
   return sig.slice(0, 16) + "…";
 });
 
 await step("T22-E: update-metadata (Token-2022 path)", async () => {
   const r = await api("/api/tx/update-metadata", {
     method: "POST",
-    body: JSON.stringify({ payer, mint: createdMints.E, name: "Forge Test Epsilon v2", symbol: "FTE", uri: "" }),
+    body: JSON.stringify({ payer, mint: createdMints.E, name: "Solana Token Test Epsilon v2", symbol: "FTE", uri: "" }),
   });
   assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
   const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);

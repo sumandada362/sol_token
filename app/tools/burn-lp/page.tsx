@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 
-const BASE = "https://forge.solana.tools";
+const BASE = "https://solanatoken.app";
 
 export const metadata: Metadata = {
-  title: "Burn LP Tokens on Solana — Coming Soon — FORGE",
+  title: "Burn LP Tokens on Solana — Coming Soon — Solana Token",
   description:
     "Permanently burn your LP position tokens to lock liquidity. This tool is in development and ships together with pool support for Raydium, Orca, and Meteora.",
   alternates: { canonical: `${BASE}/tools/burn-lp` },

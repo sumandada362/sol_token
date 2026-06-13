@@ -11,16 +11,16 @@ faq:
   - q: "What are LP tokens?"
     a: "LP (liquidity provider) tokens represent your share of a Raydium pool. They are standard SPL tokens. When you add liquidity, you receive LP tokens proportional to your contribution. When you remove liquidity, you burn your LP tokens and receive back your underlying assets."
   - q: "What is impermanent loss?"
-    a: "When the price ratio of assets in the pool changes, your LP position's value can be less than if you had just held the assets separately. This difference is called impermanent loss. It's standard in AMM pools and is not unique to Raydium or FORGE."
+    a: "When the price ratio of assets in the pool changes, your LP position's value can be less than if you had just held the assets separately. This difference is called impermanent loss. It's standard in AMM pools and is not unique to Raydium or Solana Token."
   - q: "Can I partially remove liquidity?"
     a: "Yes. Remove 25%, 50%, or any custom percentage of your LP position."
   - q: "If I burned my LP tokens, can I remove liquidity?"
     a: "No. Burning LP tokens permanently surrenders your right to withdraw liquidity. This is intentional — it signals that the liquidity is locked forever."
-  - q: "Does adding or removing liquidity cost FORGE fees?"
-    a: "Each costs a flat 0.05 SOL FORGE fee plus Solana network gas (~0.001 SOL). Creating a new pool costs 0.1 SOL plus the DEX setup cost."
+  - q: "Does adding or removing liquidity cost Solana Token fees?"
+    a: "Each costs a flat 0.05 SOL Solana Token fee plus Solana network gas (~0.001 SOL). Creating a new pool costs 0.1 SOL plus the DEX setup cost."
 ---
 
-Once you've created a Raydium pool, you'll often need to add more liquidity as your project grows, or eventually remove it. This guide covers how to do both using FORGE, plus what to understand about LP tokens before you act.
+Once you've created a Raydium pool, you'll often need to add more liquidity as your project grows, or eventually remove it. This guide covers how to do both using Solana Token, plus what to understand about LP tokens before you act.
 
 ## Understanding LP tokens first
 
@@ -38,13 +38,13 @@ This is useful when:
 - You have accumulated more tokens and want to put them to work
 - You want to reduce price impact for larger trades
 
-### Step 1 — Go to FORGE → Pool → Add
+### Step 1 — Go to Solana Token → Pool → Add
 
 Navigate to the Pool section and select **Add liquidity**.
 
 ### Step 2 — Find your pool
 
-Enter your token mint address. FORGE will detect your existing pool(s) and show the current price and pool depth.
+Enter your token mint address. Solana Token will detect your existing pool(s) and show the current price and pool depth.
 
 ### Step 3 — Enter your deposit amount
 
@@ -52,19 +52,19 @@ You can enter either the SOL amount or the token amount — the other side auto-
 
 ### Step 4 — Sign
 
-FORGE charges a flat 0.05 SOL plus Solana gas (~0.001 SOL). Approve the transaction and receive additional LP tokens.
+Solana Token charges a flat 0.05 SOL plus Solana gas (~0.001 SOL). Approve the transaction and receive additional LP tokens.
 
 ## How to remove liquidity
 
 Removing liquidity closes or reduces your position, returning the underlying tokens and SOL.
 
-### Step 1 — Go to FORGE → Pool → Remove
+### Step 1 — Go to Solana Token → Pool → Remove
 
 Navigate to Pool → Remove.
 
 ### Step 2 — Select your token and pool
 
-Choose your token and the pool you want to remove from. FORGE shows your current LP position and the current value of your share.
+Choose your token and the pool you want to remove from. Solana Token shows your current LP position and the current value of your share.
 
 ### Step 3 — Choose percentage to remove
 

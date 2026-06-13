@@ -6,7 +6,16 @@ export default function Footer() {
       <div className="site-footer-inner">
         <div className="site-footer-top">
           <div className="site-footer-brand">
-            <Link href="/" className="site-footer-logo">FORGE</Link>
+            <Link href="/" className="site-footer-logo">
+              <img
+                src="/coin_gold.png"
+                alt="Solana Token"
+                width={24}
+                height={24}
+                style={{ display: "inline-block", verticalAlign: "middle", marginRight: 8, borderRadius: "50%" }}
+              />
+              Solana Token
+            </Link>
             <p className="site-footer-tagline">
               Non-custodial. We never hold your keys.<br />
               Tokens are risky — not financial advice.
@@ -69,7 +78,7 @@ export default function Footer() {
         <div className="site-footer-divider" />
 
         <div className="site-footer-bottom">
-          <p className="site-footer-copy">© 2026 FORGE. All rights reserved.</p>
+          <p className="site-footer-copy">© 2026 Solana Token. All rights reserved.</p>
           <p className="site-footer-disclaimer">
             Non-custodial. We never hold your keys. Tokens are risky — not financial advice.
           </p>

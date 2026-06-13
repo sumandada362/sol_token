@@ -4,8 +4,8 @@ import type { NextRequest } from "next/server";
 export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const title = searchParams.get("title") ?? "FORGE — Solana Token Toolkit";
+  const { searchParams, origin, host } = new URL(request.url);
+  const title = searchParams.get("title") ?? "Create & Launch Solana Tokens";
   const sub = searchParams.get("sub") ?? "Create, manage, and analyze Solana tokens";
 
   return new ImageResponse(
@@ -45,24 +45,16 @@ export async function GET(request: NextRequest) {
             gap: 12,
           }}
         >
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              background: "#f97316",
-              borderRadius: 8,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 18,
-              fontWeight: 700,
-              color: "#fff",
-            }}
-          >
-            F
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${origin}/coin_gold.png`}
+            width={40}
+            height={40}
+            style={{ borderRadius: 8 }}
+            alt="Solana Token"
+          />
           <span style={{ color: "#fff", fontSize: 20, fontWeight: 600, letterSpacing: -0.5 }}>
-            FORGE
+            Solana Token
           </span>
         </div>
 
@@ -91,7 +83,7 @@ export async function GET(request: NextRequest) {
             color: "#525252",
           }}
         >
-          forge.solana.tools
+          {host}
         </div>
       </div>
     ),

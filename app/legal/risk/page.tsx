@@ -3,8 +3,8 @@ import Link from "next/link";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Risk Disclaimer — FORGE",
-  description: "Important risk information for using FORGE to create and trade Solana tokens.",
+  title: "Risk Disclaimer — Solana Token",
+  description: "Important risk information for using Solana Token to create and trade Solana tokens.",
 };
 
 const sections = [
@@ -16,7 +16,7 @@ const sections = [
   {
     id: "no-guarantees",
     title: "2. No Guarantees",
-    body: `FORGE does not guarantee any token's value, liquidity, trading success, or safety. Creating a token through FORGE does not make that token valuable, legitimate, or tradeable. Token value is determined entirely by market demand, which can be zero.`,
+    body: `Solana Token does not guarantee any token's value, liquidity, trading success, or safety. Creating a token through Solana Token does not make that token valuable, legitimate, or tradeable. Token value is determined entirely by market demand, which can be zero.`,
   },
   {
     id: "volatility",
@@ -31,32 +31,32 @@ const sections = [
   {
     id: "smart-contract",
     title: "5. Smart Contract & Protocol Risk",
-    body: `Third-party DEXs (Raydium, Orca, Meteora, PumpSwap, Invariant, FluxBeam) and the Solana network operate on smart contracts that may contain bugs, exploits, or be changed or shut down without notice. FORGE does not control these protocols and is not responsible for any losses resulting from their operation or failure.`,
+    body: `Third-party DEXs (Raydium, Orca, Meteora, PumpSwap, Invariant, FluxBeam) and the Solana network operate on smart contracts that may contain bugs, exploits, or be changed or shut down without notice. Solana Token does not control these protocols and is not responsible for any losses resulting from their operation or failure.`,
   },
   {
     id: "scams",
     title: "6. Scams & Due Diligence",
-    body: `The majority of tokens created on any platform are scams, rug pulls, or projects that fail. FORGE's security checker (authority badges, concentration analysis) provides informational signals only — it is not a guarantee of safety or legitimacy. Always do your own research before buying, holding, or providing liquidity for any token.`,
+    body: `The majority of tokens created on any platform are scams, rug pulls, or projects that fail. Solana Token's security checker (authority badges, concentration analysis) provides informational signals only — it is not a guarantee of safety or legitimacy. Always do your own research before buying, holding, or providing liquidity for any token.`,
   },
   {
     id: "no-advice",
     title: "7. No Advice",
-    body: `Nothing on FORGE — including token data, analytics, security indicators, or any written content — constitutes financial, investment, legal, tax, or professional advice of any kind. Consult qualified professionals before making any financial decision.`,
+    body: `Nothing on Solana Token — including token data, analytics, security indicators, or any written content — constitutes financial, investment, legal, tax, or professional advice of any kind. Consult qualified professionals before making any financial decision.`,
   },
   {
     id: "regulatory",
     title: "8. Regulatory Risk",
-    body: `Laws governing tokens, cryptocurrencies, and digital assets vary by jurisdiction and are rapidly evolving. Tokens may be classified as securities or regulated instruments in your jurisdiction. You are solely responsible for ensuring your use of FORGE and any tokens you create or trade comply with all applicable laws. FORGE makes no representation as to the legal status of any token in any jurisdiction.`,
+    body: `Laws governing tokens, cryptocurrencies, and digital assets vary by jurisdiction and are rapidly evolving. Tokens may be classified as securities or regulated instruments in your jurisdiction. You are solely responsible for ensuring your use of Solana Token and any tokens you create or trade comply with all applicable laws. Solana Token makes no representation as to the legal status of any token in any jurisdiction.`,
   },
   {
     id: "your-responsibility",
     title: "9. Your Responsibility",
-    body: `You alone control your wallet, your private keys, and your decisions. FORGE is a non-custodial tool — we cannot access your funds, reverse transactions, or assist you if you lose access to your wallet. You bear full responsibility for all actions taken through your wallet.`,
+    body: `You alone control your wallet, your private keys, and your decisions. Solana Token is a non-custodial tool — we cannot access your funds, reverse transactions, or assist you if you lose access to your wallet. You bear full responsibility for all actions taken through your wallet.`,
   },
   {
     id: "acknowledgment",
     title: "10. Acknowledgment",
-    body: `By using FORGE, you acknowledge that you have read, understood, and accepted all of the risks described in this disclaimer. You confirm that you are using the Service voluntarily, with full awareness of the risks involved.`,
+    body: `By using Solana Token, you acknowledge that you have read, understood, and accepted all of the risks described in this disclaimer. You confirm that you are using the Service voluntarily, with full awareness of the risks involved.`,
   },
 ];
 
@@ -76,7 +76,7 @@ export default function RiskPage() {
 
         <article className="legal-content" data-reveal>
           <div className="legal-risk-notice">
-            ⚠ This disclaimer contains important risk information. Please read it carefully before using FORGE.
+            ⚠ This disclaimer contains important risk information. Please read it carefully before using Solana Token.
           </div>
           <div className="legal-attorney-notice">
             ⚖️ Template only — not legal advice. Requires attorney review before publishing.

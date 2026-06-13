@@ -8,7 +8,7 @@ const ALLOWED_ORIGINS = new Set(
     // legitimate Origin-fallback requests (older browsers without Fetch Metadata).
     process.env.NEXT_PUBLIC_SITE_URL,
     process.env.NEXT_PUBLIC_APP_URL,
-    "https://forge.solana.tools",
+    "https://solanatoken.app",
     // Allow localhost during dev
     "http://localhost:3000",
     "http://127.0.0.1:3000",

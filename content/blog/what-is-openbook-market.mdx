@@ -11,7 +11,7 @@ faq:
   - q: "Do I need an OpenBook market to trade my token?"
     a: "No. You can create a Raydium CPMM pool without an OpenBook market. CPMM is the standard choice for new tokens and does not require an order book."
   - q: "What does OpenBook actually cost?"
-    a: "About 2.9 SOL total: ~2.85 SOL is a rent deposit paid to the OpenBook program (not a fee, theoretically reclaimable), plus 0.05 SOL FORGE fee and gas."
+    a: "About 2.9 SOL total: ~2.85 SOL is a rent deposit paid to the OpenBook program (not a fee, theoretically reclaimable), plus 0.05 SOL Solana Token fee and gas."
   - q: "Is the 2.85 SOL a fee or a deposit?"
     a: "A rent deposit. It's paid to the OpenBook on-chain program to fund the storage of your market's accounts. In theory it can be reclaimed if you close the market — but market closure is complex and rarely done in practice."
   - q: "Can I use an OpenBook market with Raydium CPMM?"
@@ -67,7 +67,7 @@ Some older DEX integrations or aggregators may only recognize tokens with OpenBo
 
 | Item | Cost |
 |------|------|
-| FORGE fee | 0.05 SOL |
+| Solana Token fee | 0.05 SOL |
 | OpenBook rent deposit (pass-through) | ~2.85 SOL |
 | Solana gas | ~0.001 SOL |
 | **Total** | **~2.9 SOL** |
@@ -76,13 +76,13 @@ The ~2.85 SOL goes directly to the OpenBook on-chain program as a rent deposit t
 
 ## How to create an OpenBook market (if you need one)
 
-### Step 1 — Go to FORGE → Tools → Create Market
+### Step 1 — Go to Solana Token → Tools → Create Market
 
-Navigate to [forge.solana.tools/tools/market/create](/tools/market/create).
+Navigate to [solanatoken.app/tools/market/create](/tools/market/create).
 
 ### Step 2 — Enter your token mint address
 
-Paste your token's mint address. FORGE fills in the name and symbol.
+Paste your token's mint address. Solana Token fills in the name and symbol.
 
 ### Step 3 — Set market parameters
 

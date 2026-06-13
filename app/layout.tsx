@@ -6,10 +6,31 @@ import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
 import { WalletProvider } from "@/lib/wallet/WalletProvider";
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
+
 export const metadata: Metadata = {
-  title: "Vajra — Create & Launch Solana Tokens",
+  metadataBase: new URL(SITE_URL),
+  title: "Solana Token — Create & Launch Solana Tokens",
   description:
-    "FORGE is the fastest and safest way to create and launch tokens on Solana Network. No Coding, No Complexity.",
+    "Solana Token is the fastest and safest way to create and launch tokens on Solana. No coding, no complexity.",
+  // Favicon + apple-touch icon come from the file conventions app/icon.png and
+  // app/apple-icon.png (coin_gold.png) — Next emits the <link> tags automatically.
+  openGraph: {
+    title: "Solana Token — Create & Launch Solana Tokens",
+    description:
+      "The fastest and safest way to create and launch tokens on Solana. No coding, no complexity.",
+    url: SITE_URL,
+    siteName: "Solana Token",
+    images: [{ url: "/coin_gold.png", width: 1024, height: 1024, alt: "Solana Token" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Solana Token — Create & Launch Solana Tokens",
+    description:
+      "The fastest and safest way to create and launch tokens on Solana. No coding, no complexity.",
+    images: ["/coin_gold.png"],
+  },
 };
 
 export const viewport: Viewport = {

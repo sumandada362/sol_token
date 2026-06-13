@@ -13,7 +13,7 @@ faq:
   - q: "Does immutability affect trading?"
     a: "No. Making a token immutable only locks the metadata. It has no effect on transferability, trading, minting (that's a separate authority), or any other token function."
   - q: "How much does it cost to make a token immutable?"
-    a: "Nothing. Revoking update authority (making immutable) is free on FORGE. You only pay Solana network gas, which is less than 0.001 SOL."
+    a: "Nothing. Revoking update authority (making immutable) is free on Solana Token. You only pay Solana network gas, which is less than 0.001 SOL."
   - q: "Can I make my token immutable at creation?"
     a: "Yes. Enable 'Make Immutable' in Step 5 of the Create Token flow. It's free and saves a separate transaction later."
   - q: "If I make my token immutable, can I still change the off-chain metadata?"
@@ -55,21 +55,21 @@ If your metadata (name, symbol, logo, description) is finalized, make it immutab
 
 If you already made metadata changes and you're now happy with it, revoke update authority to lock it in.
 
-## How to make a token immutable with FORGE
+## How to make a token immutable with Solana Token
 
 ### Option 1: At creation
 
-In Step 5 of the FORGE Create Token flow, enable **Make Immutable**. This is free and included in the single creation transaction.
+In Step 5 of the Solana Token Create Token flow, enable **Make Immutable**. This is free and included in the single creation transaction.
 
 ### Option 2: After creation
 
-### Step 1 — Go to FORGE → Tools → Make Immutable
+### Step 1 — Go to Solana Token → Tools → Make Immutable
 
 Navigate to the Make Immutable tool.
 
 ### Step 2 — Connect your wallet
 
-Connect the wallet that currently holds update authority. FORGE verifies this automatically.
+Connect the wallet that currently holds update authority. Solana Token verifies this automatically.
 
 ### Step 3 — Select your token
 

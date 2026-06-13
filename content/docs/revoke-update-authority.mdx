@@ -14,7 +14,7 @@ faq:
   - q: "How is this different from Make Immutable?"
     a: "Make Immutable flips the metadata's isMutable flag to false, locking it while your wallet technically remains listed as authority. Revoke Update transfers the authority itself to the system program, so your wallet is no longer associated with the token at all. Both permanently prevent metadata changes."
   - q: "How much does it cost?"
-    a: "0.05 SOL FORGE fee plus the standard Solana network fee (~0.000005 SOL). Make Immutable is a free alternative."
+    a: "0.05 SOL Solana Token fee plus the standard Solana network fee (~0.000005 SOL). Make Immutable is a free alternative."
   - q: "Will DEX scanners show my token as safer?"
     a: "Yes. Scanners like Rugcheck and DEXScreener flag tokens whose metadata can still be changed. After revoking, your token shows as immutable / metadata-locked, which is a positive trust signal."
 ---
@@ -39,7 +39,7 @@ After the transfer:
 
 ## Revoke Update vs. Make Immutable
 
-FORGE offers two ways to lock metadata permanently:
+Solana Token offers two ways to lock metadata permanently:
 
 | | Revoke Update | Make Immutable |
 |---|---|---|
@@ -56,12 +56,12 @@ Both achieve the same practical outcome — metadata can never change. Choose **
 
 ## How to revoke update authority
 
-1. Open **FORGE → Tools → Revoke Update**
+1. Open **Solana Token → Tools → Revoke Update**
 2. Connect the wallet that currently holds the update authority
-3. Paste your token's mint address — FORGE verifies the authority on-chain
+3. Paste your token's mint address — Solana Token verifies the authority on-chain
 4. Check the irreversibility confirmation box and sign the transaction
 
-Cost: **0.05 SOL** FORGE fee + Solana gas (~0.000005 SOL).
+Cost: **0.05 SOL** Solana Token fee + Solana gas (~0.000005 SOL).
 
 ## Verify on-chain
 

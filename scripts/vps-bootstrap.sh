@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# FORGE — one-time VPS provisioning for Ubuntu 22.04 / 24.04.
+# Solana Token — one-time VPS provisioning for Ubuntu 22.04 / 24.04.
 # Run ONCE as a sudo-capable user, from the repo root, AFTER:
 #   1. cloning the repo, and
 #   2. creating .env.local from .env.mainnet.example (filled with real values).
@@ -64,18 +64,18 @@ setenv_if_needed() {  # key, value
   fi
 }
 
-info "Configuring PostgreSQL (role + db: forge)"
+info "Configuring PostgreSQL (role + db: solana_token)"
 sudo systemctl enable --now postgresql >/dev/null 2>&1 || true
 if ! grep -qE '^DATABASE_URL=postgresql://[^:]+:[^@]+@(localhost|127\.0\.0\.1)' .env.local; then
   PGPASS="$(openssl rand -hex 16)"
-  if sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='forge'" | grep -q 1; then
-    sudo -u postgres psql -c "ALTER ROLE forge LOGIN PASSWORD '$PGPASS';" >/dev/null
+  if sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='solana_token'" | grep -q 1; then
+    sudo -u postgres psql -c "ALTER ROLE solana_token LOGIN PASSWORD '$PGPASS';" >/dev/null
   else
-    sudo -u postgres psql -c "CREATE ROLE forge LOGIN PASSWORD '$PGPASS';" >/dev/null
+    sudo -u postgres psql -c "CREATE ROLE solana_token LOGIN PASSWORD '$PGPASS';" >/dev/null
   fi
-  sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='forge'" | grep -q 1 \
-    || sudo -u postgres createdb -O forge forge
-  setenv_if_needed DATABASE_URL "postgresql://forge:$PGPASS@localhost:5432/forge"
+  sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='solana_token'" | grep -q 1 \
+    || sudo -u postgres createdb -O solana_token solana_token
+  setenv_if_needed DATABASE_URL "postgresql://solana_token:$PGPASS@localhost:5432/solana_token"
 else
   info "  DATABASE_URL already points at a local db — leaving Postgres creds as-is"
 fi
@@ -99,7 +99,7 @@ fi
 # ── nginx reverse proxy ─────────────────────────────────────────────────────
 info "Installing + configuring nginx"
 sudo apt-get install -y nginx >/dev/null
-sudo tee /etc/nginx/sites-available/forge >/dev/null <<NGINX
+sudo tee /etc/nginx/sites-available/solana-token >/dev/null <<NGINX
 server {
     listen 80;
     server_name $DOMAIN www.$DOMAIN;
@@ -116,7 +116,7 @@ server {
     }
 }
 NGINX
-sudo ln -sf /etc/nginx/sites-available/forge /etc/nginx/sites-enabled/forge
+sudo ln -sf /etc/nginx/sites-available/solana-token /etc/nginx/sites-enabled/solana-token
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 

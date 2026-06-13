@@ -19,6 +19,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://forge.solana.tools/sitemap.xml",
+    sitemap: "https://solanatoken.app/sitemap.xml",
   };
 }

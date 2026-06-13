@@ -162,7 +162,7 @@ async function main() {
 
   const connection = new Connection(RPC_URL, "confirmed");
 
-  console.log(`\n=== Forge Balance Refresher (${NETWORK}) ===\n`);
+  console.log(`\n=== Solana Token Balance Refresher (${NETWORK}) ===\n`);
   console.log(`  File       : ${IN_FILE}`);
   console.log(`  Wallets    : ${targets.length}${ONLY_ADDR ? " (filtered)" : ""}`);
   if (!CHECK_ONLY) {

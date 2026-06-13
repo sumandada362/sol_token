@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ mint: str
   const data = await fetchTokenData(mint);
   const name = data?.name ?? `Token ${mint.slice(0, 8)}…`;
   return {
-    title: `${name} — FORGE`,
+    title: `${name} — Solana Token`,
     description: `Security, holders, and analytics for Solana token ${mint}.`,
   };
 }

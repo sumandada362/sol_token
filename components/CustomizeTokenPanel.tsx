@@ -11,7 +11,7 @@ const ERASE_MS = 38;
 const HOLD_MS  = 1600;
 const PAUSE_MS = 300;
 
-export const PREFILL_KEY = "forge_create_prefill";
+export const PREFILL_KEY = "solana_token_create_prefill";
 
 export default function CustomizeTokenPanel() {
   const router = useRouter();

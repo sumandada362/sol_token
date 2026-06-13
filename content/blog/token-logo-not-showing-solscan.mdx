@@ -10,8 +10,8 @@ readTime: "6 min read"
 faq:
   - q: "How long after fixing the metadata until the logo shows?"
     a: "The on-chain change confirms within seconds. Solscan's cache typically refreshes within 5–30 minutes. DEXScreener can take 30–60 minutes. Wallets vary — Phantom usually refreshes quickly, Solflare may take longer."
-  - q: "My logo shows in FORGE but not on Solscan. Why?"
-    a: "FORGE reads the IPFS URI directly. Solscan may still have the old version cached, or the metadata JSON it's reading doesn't include the 'image' field correctly. Wait for cache refresh or check the metadata JSON manually."
+  - q: "My logo shows in Solana Token but not on Solscan. Why?"
+    a: "Solana Token reads the IPFS URI directly. Solscan may still have the old version cached, or the metadata JSON it's reading doesn't include the 'image' field correctly. Wait for cache refresh or check the metadata JSON manually."
   - q: "Can I fix the logo if I already made my token immutable?"
     a: "No. Making a token immutable revokes update authority, which means the on-chain metadata URI cannot be changed. The logo displayed is permanently locked to whatever the current URI points to."
   - q: "What image format works best?"
@@ -24,11 +24,11 @@ Token logo not showing on Solscan is one of the most common issues after a token
 
 ### 1. No metadata at all
 
-The most basic case: the token was created without metadata. If you deployed the token without FORGE or without attaching a Metaplex metadata account, there's nothing to display.
+The most basic case: the token was created without metadata. If you deployed the token without Solana Token or without attaching a Metaplex metadata account, there's nothing to display.
 
 **Check:** Go to solscan.io, search your mint address, and look for a Metadata tab. If there's no metadata tab, you have no on-chain metadata.
 
-**Fix:** Use FORGE → Update Metadata to create or attach metadata for the first time.
+**Fix:** Use Solana Token → Update Metadata to create or attach metadata for the first time.
 
 ---
 
@@ -38,7 +38,7 @@ The on-chain metadata includes a `uri` field that points to a JSON file containi
 
 **Check:** On Solscan → your token → Metadata tab → look at the URI field. It should be an IPFS URL (starting with `https://ipfs.io/ipfs/` or similar) or an Arweave link.
 
-**Fix:** Update the metadata URI via FORGE Update Metadata.
+**Fix:** Update the metadata URI via Solana Token Update Metadata.
 
 ---
 
@@ -51,7 +51,7 @@ The metadata JSON file was uploaded but the URL no longer works. This happens wh
 
 **Check:** Copy the URI from Solscan and paste it directly into your browser. You should see a JSON response. If you get a 404 or timeout, the link is broken.
 
-**Fix:** Re-upload your metadata using FORGE Update Metadata. FORGE pins to IPFS using a content-addressed hash — it will work as long as the IPFS network has it.
+**Fix:** Re-upload your metadata using Solana Token Update Metadata. Solana Token pins to IPFS using a content-addressed hash — it will work as long as the IPFS network has it.
 
 ---
 
@@ -73,7 +73,7 @@ The URI loads but the JSON doesn't include an `image` field with the logo URL. E
 
 If the `image` key is missing, misspelled, or has an empty value, the logo won't show.
 
-**Fix:** Re-upload with FORGE Update Metadata with a valid logo attached. FORGE generates the JSON correctly.
+**Fix:** Re-upload with Solana Token Update Metadata with a valid logo attached. Solana Token generates the JSON correctly.
 
 ---
 
@@ -87,19 +87,19 @@ Solscan (and DEXScreener, Birdeye, and most explorers) cache token metadata. If 
 
 ---
 
-## How to fix logo issues with FORGE
+## How to fix logo issues with Solana Token
 
 ### Step 1 — Open Update Metadata
 
-Go to [forge.solana.tools/tools/update-metadata](/tools/update-metadata).
+Go to [solanatoken.app/tools/update-metadata](/tools/update-metadata).
 
 ### Step 2 — Select your token
 
-Paste your mint address. FORGE shows the current metadata state.
+Paste your mint address. Solana Token shows the current metadata state.
 
 ### Step 3 — Upload your logo
 
-Click the logo upload field. Select a PNG (square, 1:1 ratio, at least 200×200px). FORGE pins the image to IPFS.
+Click the logo upload field. Select a PNG (square, 1:1 ratio, at least 200×200px). Solana Token pins the image to IPFS.
 
 ### Step 4 — Fill in other metadata fields
 
@@ -107,7 +107,7 @@ Make sure the name, symbol, and description are correct while you're here. Add s
 
 ### Step 5 — Sign the transaction
 
-Cost: **0.05 SOL** FORGE fee + gas (~0.001 SOL).
+Cost: **0.05 SOL** Solana Token fee + gas (~0.001 SOL).
 
 After the transaction confirms, wait 15–30 minutes and check Solscan again. The logo should appear.
 

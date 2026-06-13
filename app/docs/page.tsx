@@ -4,16 +4,16 @@ import Footer from "@/components/Footer";
 import { getAllArticles } from "@/lib/content";
 import { JsonLdBreadcrumb, JsonLdSoftwareApplication } from "@/components/JsonLd";
 
-const BASE = "https://forge.solana.tools";
+const BASE = "https://solanatoken.app";
 
 export const metadata: Metadata = {
-  title: "Docs — FORGE",
+  title: "Docs — Solana Token",
   description:
-    "Learn how to create tokens, add liquidity, manage authorities, and use every FORGE tool on Solana.",
+    "Learn how to create tokens, add liquidity, manage authorities, and use every Solana Token tool on Solana.",
   alternates: { canonical: `${BASE}/docs` },
   openGraph: {
-    title: "Docs — FORGE",
-    description: "Complete documentation for the FORGE Solana token toolkit.",
+    title: "Docs — Solana Token",
+    description: "Complete documentation for the Solana Token Solana token toolkit.",
     url: `${BASE}/docs`,
   },
 };
@@ -48,7 +48,7 @@ export default function DocsPage() {
       <div className="page-wrap">
         <div className="page-header page-header--center" data-reveal>
           <h1 className="page-title">Documentation</h1>
-          <p className="page-sub">Everything you need to know about FORGE.</p>
+          <p className="page-sub">Everything you need to know about Solana Token.</p>
         </div>
 
         <div className="docs-grid" data-stagger>

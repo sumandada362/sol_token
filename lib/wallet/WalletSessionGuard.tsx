@@ -20,7 +20,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
  * its own site-trust list; users revoke that inside Phantom/Solflare settings.
  */
 
-const SESSION_KEY = "forge_wallet_session";
+const SESSION_KEY = "solana_token_wallet_session";
 // Default localStorage key used by @solana/wallet-adapter-react for autoConnect
 const ADAPTER_KEY = "walletName";
 export const SESSION_TTL_MS = 21 * 24 * 60 * 60 * 1000; // 21 days
