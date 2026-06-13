@@ -46,3 +46,7 @@ next-env.d.ts
 /scripts/*.json
 /scripts/*.txt
 /scripts/wallet-addresses.txt
+
+# local junk — never commit
+/.git - Copy/
+/reference/
