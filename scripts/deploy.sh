@@ -65,8 +65,6 @@ if $RUN_MIGRATE; then
   DB="$(getenv DATABASE_URL)"
   psql "$DB" -f db/schema.sql
   psql "$DB" -f db/002_phase2.sql
-  # NOTE: db/migrations/002_multisend_journal.sql is intentionally NOT applied
-  # (conflicting, unused multisend_batches definition — see docs/deployment-mainnet.md §3)
   green "✓ Migrations applied"
 fi
 
@@ -83,7 +81,7 @@ elif systemctl list-unit-files 2>/dev/null | grep -q '^solana-token\.service'; t
   info "Restarting (systemd)"; sudo systemctl restart solana-token
 else
   red "No process manager found (pm2 or systemd 'solana-token' unit)."
-  red "Start manually with: pnpm start   (see docs/deployment-mainnet.md §4.6)"; exit 1
+  red "Start manually with: pnpm start   (see deploy.md Part 8)"; exit 1
 fi
 
 green "\n✓ Deploy complete. Verify: curl -sI $(getenv NEXT_PUBLIC_APP_URL) | grep -i content-security"

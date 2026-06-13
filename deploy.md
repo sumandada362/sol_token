@@ -176,8 +176,7 @@ psql "postgresql://solana_token:CHANGE_ME_DB_PASS@localhost:5432/solana_token" -
 From the project folder (after Part 6 clone), apply the schema:
 ```bash
 psql "$DATABASE_URL" -f db/schema.sql       # tokens, fee_events
-psql "$DATABASE_URL" -f db/002_phase2.sql   # token_cache (+ unused table, harmless)
-# Do NOT run db/migrations/002_multisend_journal.sql — it conflicts and is unused.
+psql "$DATABASE_URL" -f db/002_phase2.sql   # token_cache
 psql "$DATABASE_URL" -c "\dt"               # verify: tokens, fee_events, token_cache
 ```
 
@@ -416,5 +415,6 @@ Logs: `pm2 logs solana-token` · DB: `sudo journalctl -u postgresql` · Redis: `
 | Restart app | `pm2 restart solana-token` |
 | Update | `git pull && ./scripts/deploy.sh` |
 
-For background, the security model, and incident runbooks, see
-[docs/deployment-mainnet.md](docs/deployment-mainnet.md) and [docs/runbooks/](docs/runbooks/).
+For incident response (bad deploy, RPC outage, fee‑wallet compromise, webhook
+outage), see [docs/runbooks/](docs/runbooks/). For SEO/launch guidance, see
+[docs/seo.md](docs/seo.md).
