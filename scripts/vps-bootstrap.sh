@@ -69,12 +69,19 @@ free_port(){ local p="$1"; while port_in_use "$p"; do p=$((p+1)); done; echo "$p
 
 # ── STEP 2 — Base tooling (install only if missing) ──
 info "Step 2/6 — base tooling (Node, pnpm, pm2)"
-if ! have node || [ "$(node -v | sed 's/v//;s/\..*//')" -lt 18 ]; then
-  info "  installing Node 20"; curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -; sudo apt-get install -y nodejs
+# Next 16 + React 19 want Node 20+. Ubuntu's apt Node (e.g. 18.x) also lacks
+# corepack, so require 20 and install from NodeSource if older/missing.
+if ! have node || [ "$(node -v | sed 's/v//;s/\..*//')" -lt 20 ]; then
+  info "  installing Node 20 (current: $(have node && node -v || echo none))"
+  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+  sudo apt-get install -y nodejs
 else info "  Node present ($(node -v))"; fi
-have git  || sudo apt-get install -y git
-have pnpm || sudo corepack enable
-have pm2  || sudo npm install -g pm2
+have git || sudo apt-get install -y git
+# pnpm via corepack if available, otherwise install it directly with npm
+if ! have pnpm; then
+  if have corepack; then sudo corepack enable; else sudo npm install -g pnpm; fi
+fi
+have pm2 || sudo npm install -g pm2
 if have ufw; then
   info "  firewall: SSH/80/443 only (Postgres+Redis stay private on localhost)"
   sudo ufw allow OpenSSH >/dev/null; sudo ufw allow 80 >/dev/null; sudo ufw allow 443 >/dev/null; sudo ufw --force enable >/dev/null
