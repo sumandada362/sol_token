@@ -61,6 +61,8 @@ setenv_if_needed(){ # key value
     green "  set $key in $ENV_FILE"
   else info "  $key already configured — leaving as-is"; fi
 }
+# True if a value is empty or still a template placeholder → we should provision it.
+is_placeholder(){ [ -z "$1" ] || echo "$1" | grep -Eq 'STRONG_PASSWORD|CHANGE_ME|user:password@host|YOUR_'; }
 port_in_use(){
   if have ss; then ss -ltnH "sport = :$1" 2>/dev/null | grep -q .;
   else (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null && { exec 3>&- || true; return 0; } || return 1; fi
@@ -93,7 +95,7 @@ if ! have psql && ! dpkg -s postgresql >/dev/null 2>&1; then
   info "  installing PostgreSQL"; sudo apt-get install -y postgresql postgresql-client
 else info "  already installed — existing databases will not be touched"; fi
 sudo systemctl is-active --quiet postgresql || sudo systemctl enable --now postgresql
-if ! grep -qE '^DATABASE_URL=postgresql://[^:]+:[^@]+@(localhost|127\.0\.0\.1)' "$ENV_FILE"; then
+if is_placeholder "$(getenv DATABASE_URL)"; then
   info "  creating isolated role+db 'solana_token'"
   PGPASS="$(openssl rand -hex 16)"
   if sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='solana_token'" | grep -q 1; then
@@ -116,7 +118,7 @@ had_redis=no; { have redis-server || dpkg -s redis-server >/dev/null 2>&1; } && 
 # If we just installed Redis on a box that had none, the default instance is
 # unused — disable it (we run our own). If Redis pre-existed for other apps, leave it.
 [ "$had_redis" = no ] && sudo systemctl disable --now redis-server 2>/dev/null || true
-if ! grep -qE '^REDIS_URL=redis://default:[^@]+@(localhost|127\.0\.0\.1)' "$ENV_FILE"; then
+if is_placeholder "$(getenv REDIS_URL)"; then
   RPORT="$(free_port 6380)"; RPASS="$(openssl rand -hex 16)"
   info "  configuring dedicated Redis on 127.0.0.1:$RPORT"
   sudo install -d -o redis -g redis /var/lib/redis-solana-token
