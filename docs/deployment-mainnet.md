@@ -16,16 +16,18 @@ TLS, and a go-live checklist.
 ```
                           ┌──────────────────────────────────────────┐
   Browser (user's wallet) │  VPS (Ubuntu)                            │
-   ├─ wallet adapter ─────┼─► Next.js (next start, :3000)            │
+   ├─ wallet adapter ─────┼─► Next.js (next start, :3333)            │
    │   uses NEXT_PUBLIC_RPC_URL      │  server reads SOLANA_RPC_URL   │
    │                                 │                               │
-   └─ HTTPS via nginx ────┼─► nginx (:443, TLS) ─► Next.js          │
-                          └───────┬─────────┬─────────┬────────────┘
-                                  │         │         │
-              ┌───────────────────┘         │         └──────────────┐
-              ▼                             ▼                        ▼
-        Solana RPC                   Postgres + Redis          External APIs
-     (Helius / QuickNode)        (Supabase/Neon + Upstash)   (Birdeye, Pinata, Helius DAS)
+   └─ HTTPS via nginx ────┼─► nginx (:443, TLS) ─► :3333 (Next.js)  │
+                          │                                          │
+                          │   Postgres + Redis on 127.0.0.1 (same VPS)│
+                          └───────┬──────────────────────┬──────────┘
+                                  │                       │
+              ┌───────────────────┘                       └──────────┐
+              ▼                                                       ▼
+        Solana RPC                                            External APIs
+     (Helius / QuickNode)                              (Birdeye, Pinata, Helius DAS)
 ```
 
 - **The browser talks to Solana directly** (wallet signing, sending txs) using `NEXT_PUBLIC_RPC_URL`.
@@ -42,9 +44,9 @@ TLS, and a go-live checklist.
 | **Helius DAS** | Holder counts on token pages (`getTokenAccounts`) | Optional* | helius.dev (same account as RPC) | Same key as RPC |
 | **Birdeye** | Price / volume / liquidity / market cap | Optional* | birdeye.so → "Data Services" | Standard (free) to start |
 | **Pinata (IPFS)** | Token logo + metadata JSON uploads | **Yes** (for logos) | pinata.cloud | Free 1 GB → Picnic if volume |
-| **Postgres** | Fee accounting + token records + page cache | **Yes** on mainnet | Supabase, Neon, or RDS | Free tier fine to start |
-| **Redis** | Rate limiting + caching | **Yes** on mainnet | Upstash or Redis Cloud | Upstash free tier |
-| **VPS** | Hosts the Next.js app + nginx | **Yes** | Hetzner, DigitalOcean, Vultr | 2 vCPU / 4 GB RAM |
+| **Postgres** | Fee accounting + token records + page cache | **Yes** on mainnet | **self-hosted on the VPS** (or Supabase/Neon/RDS) | localhost — see §4.7 |
+| **Redis** | Rate limiting + caching | **Yes** on mainnet | **self-hosted on the VPS** (or Upstash) | localhost — see §4.7 |
+| **VPS** | Hosts app + nginx + Postgres + Redis | **Yes** | Hetzner, DigitalOcean, Vultr | 2+ vCPU / 4 GB RAM (3 cores / 4 GB / 75 GB is comfortable for all four on one box) |
 | **Domain + DNS** | Public HTTPS origin | **Yes** | Namecheap/Cloudflare/etc. | + Cloudflare proxy (optional) |
 
 \* *Optional = the app degrades gracefully without it (holder count / market stats render as "—"), exactly as on testnet. Functionally fine, but on mainnet you'll want them for real data.*
@@ -84,8 +86,15 @@ The app degrades without them, but on mainnet that means **real fees go
 unjournaled** (`recorded:false`) and **rate limiting fails open**. Both are
 launch blockers.
 
-- **Postgres** — easiest managed options with free tiers: **Supabase** or **Neon** (the schema files even reference them). You only need the connection string → `DATABASE_URL`.
-- **Redis** — **Upstash** (serverless Redis, generous free tier, single connection string → `REDIS_URL`) is the lowest-friction. Redis Cloud also works. Or self-host on the VPS (§4.7).
+**This deployment self-hosts both on the same VPS** (§4.7) — fine on 3 cores /
+4 GB / 75 GB. They bind to `127.0.0.1` only and are never exposed to the
+internet (the firewall opens just SSH/80/443). `scripts/vps-bootstrap.sh`
+installs and configures them and writes `DATABASE_URL` / `REDIS_URL` into
+`.env.local` for you.
+
+> Managed alternatives if you'd rather not self-host: **Supabase**/**Neon**
+> (Postgres) and **Upstash** (Redis) all have free tiers — just paste their
+> connection strings into `.env.local` and skip §4.7.
 
 ---
 
@@ -252,23 +261,65 @@ sudo systemctl status forge
 journalctl -u forge -f
 ```
 
-The app now listens on `127.0.0.1:3000`. nginx will expose it over HTTPS.
+The app now listens on `127.0.0.1:3333` (set via `next start -p 3333` in
+`package.json`). nginx will expose it over HTTPS. If you change the port, change
+it in both `package.json` and the nginx config below.
 
 > ⚠️ **Never set `NODE_TLS_REJECT_UNAUTHORIZED=0` in production.** That was a
 > local dev workaround for a TLS-intercepting proxy on the build machine only.
 > On a real VPS, outbound HTTPS works normally and disabling verification is a
 > security hole.
 
-### 4.7 (Optional) Self-host Redis / Postgres on the VPS
+### 4.7 Self-host Postgres + Redis on the VPS
 
-Only if you didn't use Upstash/Supabase. Quick Redis:
+`scripts/vps-bootstrap.sh` does all of this automatically (installs both, creates
+the `forge` role+db, sets a Redis password, and writes `DATABASE_URL` /
+`REDIS_URL` into `.env.local`). The manual equivalent, for reference or if you're
+not using the script:
+
+**PostgreSQL:**
+```bash
+sudo apt-get install -y postgresql postgresql-client
+sudo systemctl enable --now postgresql
+
+PGPASS="$(openssl rand -hex 16)"
+sudo -u postgres psql -c "CREATE ROLE forge LOGIN PASSWORD '$PGPASS';"
+sudo -u postgres createdb -O forge forge
+echo "DATABASE_URL=postgresql://forge:$PGPASS@localhost:5432/forge"   # paste into .env.local
+```
+Postgres listens on `localhost` only by default (do not change `listen_addresses`).
+
+**Redis:**
 ```bash
 sudo apt-get install -y redis-server
-sudo sed -i 's/^# requirepass .*/requirepass YOUR_STRONG_PASSWORD/' /etc/redis/redis.conf
+REDISPASS="$(openssl rand -hex 16)"
+sudo sed -i "s|^\s*#\?\s*requirepass .*|requirepass $REDISPASS|" /etc/redis/redis.conf
+sudo systemctl enable --now redis-server
 sudo systemctl restart redis-server
-# then REDIS_URL=redis://default:YOUR_STRONG_PASSWORD@127.0.0.1:6379
+echo "REDIS_URL=redis://default:$REDISPASS@localhost:6379"            # paste into .env.local
 ```
-Managed services are recommended over self-hosting for backups/HA.
+Redis also binds to `127.0.0.1` by default. **Keep 5432 and 6379 off the public
+firewall** (the bootstrap script only opens SSH/80/443) — there is never a reason
+to expose them; the app reaches them over localhost.
+
+**Sizing on 3 cores / 4 GB / 75 GB:** comfortable for all four services. Optional
+tuning: cap Redis memory so it can't starve Postgres/Node —
+```bash
+echo -e "maxmemory 256mb\nmaxmemory-policy allkeys-lru" | sudo tee -a /etc/redis/redis.conf >/dev/null
+sudo systemctl restart redis-server
+```
+Postgres defaults are fine at this scale; leave `PG_POOL_MAX=10`. Add a 2 GB swap
+file as a safety margin if you run heavy multisends:
+```bash
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+Then apply the schema (or let `./scripts/deploy.sh --migrate` do it):
+```bash
+psql "$DATABASE_URL" -f db/schema.sql
+psql "$DATABASE_URL" -f db/002_phase2.sql
+```
 
 ### 4.8 nginx reverse proxy + TLS
 
@@ -283,7 +334,7 @@ server {
     server_name your-domain.com www.your-domain.com;
 
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:3333;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -409,14 +460,13 @@ zero-downtime, run two PM2 instances behind nginx upstream, or use `pm2 reload`.
 
 | Item | Est. / mo |
 |---|---|
-| VPS (2 vCPU / 4 GB) | $12–24 |
+| VPS (3 cores / 4 GB / 75 GB — runs app + Postgres + Redis) | $12–24 |
+| Postgres + Redis | $0 (self-hosted on the VPS) |
 | Solana RPC (Helius starter) | $0 (free tier) → $49 |
-| Postgres (Supabase/Neon free) | $0 → $25 |
-| Redis (Upstash free) | $0 → $10 |
 | Birdeye | $0 (Standard) → paid at scale |
 | Pinata | $0 (1 GB) → $20 |
 | Domain | ~$1 (amortized) |
-| **Total to start** | **~$15–30/mo**, scaling with traffic |
+| **Total to start** | **~$13–25/mo**, scaling with traffic |
 
 ---
 
@@ -425,8 +475,9 @@ zero-downtime, run two PM2 instances behind nginx upstream, or use `pm2 reload`.
 - [ ] Helius key rotated; separate origin-restricted browser key created
 - [ ] `FEE_WALLET_ADDRESS` is a hardware-wallet public key (not the testnet wallet)
 - [ ] `WEBHOOK_AUTH_SECRET` + `CRON_SECRET` freshly generated
-- [ ] Postgres provisioned; `schema.sql` + `002_phase2.sql` applied (NOT the conflicting migration)
-- [ ] Redis provisioned and reachable (`REDIS_URL` works)
+- [ ] Postgres self-hosted on the VPS; `schema.sql` + `002_phase2.sql` applied (NOT the conflicting migration)
+- [ ] Redis self-hosted with a password set; `REDIS_URL` works
+- [ ] Postgres (5432) + Redis (6379) NOT exposed on the public firewall — localhost only
 - [ ] `.env.local` complete; `NEXT_PUBLIC_SOLANA_NETWORK=mainnet-beta`
 - [ ] `pnpm build` run **with the mainnet env loaded** (CSP baked correctly)
 - [ ] App running under PM2/systemd, restarts on boot, `NODE_TLS_REJECT_UNAUTHORIZED` **unset**

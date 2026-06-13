@@ -33,14 +33,67 @@ if ! command -v node >/dev/null || [[ "$(node -v | cut -dv -f2 | cut -d. -f1)" -
   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
   sudo apt-get install -y nodejs
 fi
-sudo apt-get install -y git postgresql-client >/dev/null
+sudo apt-get install -y git postgresql postgresql-client redis-server openssl >/dev/null
 sudo corepack enable
 command -v pm2 >/dev/null || sudo npm install -g pm2
 
 # ── Firewall ────────────────────────────────────────────────────────────────
 if command -v ufw >/dev/null; then
   info "Configuring firewall"
+  # Only SSH + HTTP(S). Postgres (5432) and Redis (6379) stay on localhost —
+  # never expose them publicly; the app reaches them via 127.0.0.1.
   sudo ufw allow OpenSSH; sudo ufw allow 80; sudo ufw allow 443; sudo ufw --force enable
+fi
+
+# ── Self-hosted Postgres + Redis (localhost only) ───────────────────────────
+# Fills DATABASE_URL / REDIS_URL in .env.local only if they're still empty or a
+# placeholder, so re-running won't clobber working credentials.
+setenv_if_needed() {  # key, value
+  local key="$1" val="$2" cur
+  cur="$(grep -E "^$key=" .env.local | head -1 | cut -d= -f2- || true)"
+  if [[ -z "$cur" || "$cur" =~ (user:password@host|STRONG_PASSWORD|YOUR_) ]]; then
+    if grep -qE "^$key=" .env.local; then
+      # use | as sed delimiter; escape any | in the value (none expected in URLs)
+      sudo true; sed -i "s|^$key=.*|$key=$val|" .env.local
+    else
+      echo "$key=$val" >> .env.local
+    fi
+    green "  set $key in .env.local"
+  else
+    info "  $key already configured — leaving as-is"
+  fi
+}
+
+info "Configuring PostgreSQL (role + db: forge)"
+sudo systemctl enable --now postgresql >/dev/null 2>&1 || true
+if ! grep -qE '^DATABASE_URL=postgresql://[^:]+:[^@]+@(localhost|127\.0\.0\.1)' .env.local; then
+  PGPASS="$(openssl rand -hex 16)"
+  if sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='forge'" | grep -q 1; then
+    sudo -u postgres psql -c "ALTER ROLE forge LOGIN PASSWORD '$PGPASS';" >/dev/null
+  else
+    sudo -u postgres psql -c "CREATE ROLE forge LOGIN PASSWORD '$PGPASS';" >/dev/null
+  fi
+  sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='forge'" | grep -q 1 \
+    || sudo -u postgres createdb -O forge forge
+  setenv_if_needed DATABASE_URL "postgresql://forge:$PGPASS@localhost:5432/forge"
+else
+  info "  DATABASE_URL already points at a local db — leaving Postgres creds as-is"
+fi
+
+info "Configuring Redis (localhost + password)"
+if ! grep -qE '^REDIS_URL=redis://default:[^@]+@(localhost|127\.0\.0\.1)' .env.local; then
+  REDISPASS="$(openssl rand -hex 16)"
+  # Set requirepass (handles both the commented default and an existing value)
+  if grep -qE '^\s*#?\s*requirepass ' /etc/redis/redis.conf; then
+    sudo sed -i "s|^\s*#\?\s*requirepass .*|requirepass $REDISPASS|" /etc/redis/redis.conf
+  else
+    echo "requirepass $REDISPASS" | sudo tee -a /etc/redis/redis.conf >/dev/null
+  fi
+  sudo systemctl enable redis-server >/dev/null 2>&1 || true
+  sudo systemctl restart redis-server
+  setenv_if_needed REDIS_URL "redis://default:$REDISPASS@localhost:6379"
+else
+  info "  REDIS_URL already points at local redis — leaving Redis creds as-is"
 fi
 
 # ── nginx reverse proxy ─────────────────────────────────────────────────────
@@ -51,7 +104,7 @@ server {
     listen 80;
     server_name $DOMAIN www.$DOMAIN;
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:3333;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -71,7 +124,7 @@ sudo nginx -t && sudo systemctl reload nginx
 info "Deploying the app (install → validate → migrate → build → start)"
 ./scripts/deploy.sh --migrate
 
-green "\n✓ Server provisioned and app running on http://127.0.0.1:3000 behind nginx."
+green "\n✓ Server provisioned and app running on http://127.0.0.1:3333 behind nginx."
 echo
 echo "FINAL STEP — enable HTTPS once your DNS A-record for $DOMAIN points here:"
 echo "    sudo apt-get install -y certbot python3-certbot-nginx"

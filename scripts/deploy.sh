@@ -27,7 +27,7 @@ info()  { printf "\033[36m▶ %s\033[0m\n" "$*"; }
 getenv() { grep -E "^$1=" "$ENV_FILE" | head -1 | cut -d= -f2- | sed 's/[[:space:]]*$//'; }
 
 # ── 2. Validate — fail on empty or known placeholder values ─────────────────
-PLACEHOLDER_RE='YOUR_|your-domain|your-rpc-provider|PUBLIC_TIER_KEY|user:password@host|YOUR_RANDOM'
+PLACEHOLDER_RE='YOUR_|your-domain|your-rpc-provider|PUBLIC_TIER_KEY|user:password@host|YOUR_RANDOM|STRONG_PASSWORD'
 REQUIRED=(SOLANA_RPC_URL NEXT_PUBLIC_RPC_URL NEXT_PUBLIC_SOLANA_NETWORK NEXT_PUBLIC_APP_URL FEE_WALLET_ADDRESS PINATA_JWT DATABASE_URL REDIS_URL WEBHOOK_AUTH_SECRET CRON_SECRET)
 errs=0
 for key in "${REQUIRED[@]}"; do
