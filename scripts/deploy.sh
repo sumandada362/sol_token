@@ -13,6 +13,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Use the pnpm version pinned in package.json (packageManager) and let corepack
+# download it without an interactive prompt.
+export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+
 ENV_FILE=".env.local"
 RUN_MIGRATE=false
 [[ "${1:-}" == "--migrate" ]] && RUN_MIGRATE=true
