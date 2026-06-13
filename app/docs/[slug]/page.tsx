@@ -10,7 +10,7 @@ import { CTA } from "@/components/mdx/CTA";
 import { Disclaimer } from "@/components/mdx/Disclaimer";
 import { JsonLdFaqPage, JsonLdBreadcrumb } from "@/components/JsonLd";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
 
 const mdxComponents = { Fee, Warning, CTA, Disclaimer };
 

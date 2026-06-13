@@ -96,13 +96,30 @@ else
   info "  REDIS_URL already points at local redis — leaving Redis creds as-is"
 fi
 
-# ── nginx reverse proxy ─────────────────────────────────────────────────────
+# ── nginx reverse proxy (name-based vhost — safe alongside other sites) ──────
 info "Installing + configuring nginx"
 sudo apt-get install -y nginx >/dev/null
+
+# Only add a www. alias for apex domains (example.com). For a subdomain
+# (e.g. solanatoken.dravyo.com) there's usually no www record and certbot would
+# fail trying to validate it.
+if [[ "$(echo "$DOMAIN" | awk -F. '{print NF}')" -gt 2 ]]; then
+  SERVER_NAMES="$DOMAIN"
+  CERTBOT_ARGS="-d $DOMAIN"
+else
+  SERVER_NAMES="$DOMAIN www.$DOMAIN"
+  CERTBOT_ARGS="-d $DOMAIN -d www.$DOMAIN"
+fi
+
+# A uniquely-named server block with NO 'default_server' — nginx routes only
+# requests for $SERVER_NAMES here, so co-hosted apps on other domains are
+# unaffected. We deliberately do NOT touch the default site or any other vhost,
+# and we reload (not restart) so other sites keep serving.
 sudo tee /etc/nginx/sites-available/solana-token >/dev/null <<NGINX
 server {
     listen 80;
-    server_name $DOMAIN www.$DOMAIN;
+    listen [::]:80;
+    server_name $SERVER_NAMES;
     location / {
         proxy_pass http://127.0.0.1:3333;
         proxy_http_version 1.1;
@@ -117,7 +134,6 @@ server {
 }
 NGINX
 sudo ln -sf /etc/nginx/sites-available/solana-token /etc/nginx/sites-enabled/solana-token
-sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 
 # ── Build + start the app (validates env, builds, pm2) ──────────────────────
@@ -128,6 +144,6 @@ green "\n✓ Server provisioned and app running on http://127.0.0.1:3333 behind 
 echo
 echo "FINAL STEP — enable HTTPS once your DNS A-record for $DOMAIN points here:"
 echo "    sudo apt-get install -y certbot python3-certbot-nginx"
-echo "    sudo certbot --nginx -d $DOMAIN -d www.$DOMAIN"
+echo "    sudo certbot --nginx $CERTBOT_ARGS"
 echo
 echo "Then verify:  curl -sI https://$DOMAIN | grep -i strict-transport"

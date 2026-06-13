@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import { getAllArticles } from "@/lib/content";
 import { JsonLdBreadcrumb, JsonLdSoftwareApplication } from "@/components/JsonLd";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
 
 export const metadata: Metadata = {
   title: "Docs — Solana Token",

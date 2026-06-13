@@ -5,7 +5,7 @@ import type { Metadata } from "next";
  * follow the real deployment domain (set NEXT_PUBLIC_APP_URL); the fallback is
  * only used when the env var is absent.
  */
-export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app").replace(/\/$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com").replace(/\/$/, "");
 export const SITE_NAME = "Solana Token";
 export const SITE_TAGLINE = "Create & Launch Solana Tokens";
 export const DEFAULT_DESCRIPTION =

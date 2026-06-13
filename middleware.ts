@@ -8,8 +8,10 @@ const ALLOWED_ORIGINS = new Set(
     // legitimate Origin-fallback requests (older browsers without Fetch Metadata).
     process.env.NEXT_PUBLIC_SITE_URL,
     process.env.NEXT_PUBLIC_APP_URL,
-    "https://solanatoken.app",
-    // Allow localhost during dev
+    "https://solanatoken.dravyo.com",
+    // Allow localhost during dev (app runs on :3333; :3000 kept for `next dev`)
+    "http://localhost:3333",
+    "http://127.0.0.1:3333",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
   ].filter((o): o is string => Boolean(o))

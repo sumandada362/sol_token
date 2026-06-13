@@ -7,7 +7,7 @@ import MotionProvider from "@/components/MotionProvider";
 import { WalletProvider } from "@/lib/wallet/WalletProvider";
 import { JsonLdOrganization, JsonLdWebSite } from "@/components/JsonLd";
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

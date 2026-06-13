@@ -1,6 +1,6 @@
 import type { FaqItem } from "@/lib/content";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
 
 /** Organization — used site-wide so Google links the brand, logo, and socials. */
 export function JsonLdOrganization() {
@@ -34,7 +34,7 @@ export function JsonLdWebSite() {
 }
 
 export function JsonLdSoftwareApplication() {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
   const data = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",

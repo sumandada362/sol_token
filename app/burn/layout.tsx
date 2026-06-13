@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { JsonLdBreadcrumb, JsonLdHowTo } from "@/components/JsonLd";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
 const TITLE = "Burn Solana Tokens — Reduce Token Supply — Solana Token";
 const DESCRIPTION =
   "Permanently burn SPL or Token-2022 tokens from your wallet to reduce total supply. Free — only Solana gas. Irreversible and verifiable on-chain.";
@@ -49,7 +49,7 @@ export default function BurnLayout({ children }: { children: React.ReactNode }) 
         name="How to burn Solana tokens"
         description="Permanently remove tokens from circulation to reduce total supply."
         steps={[
-          { name: "Open the tool", text: "Go to solanatoken.app/burn and connect the wallet that holds the tokens." },
+          { name: "Open the tool", text: "Go to solanatoken.dravyo.com/burn and connect the wallet that holds the tokens." },
           { name: "Select your token", text: "Pick the token from your wallet list or paste its mint address." },
           { name: "Enter the amount", text: "Type the number of tokens to burn, or use Max to burn your full balance." },
           { name: "Sign the transaction", text: "Approve in your wallet. The tokens are destroyed and total supply drops permanently." },

@@ -139,7 +139,7 @@ psql "$DATABASE_URL" -c "\dt"   # expect: tokens, fee_events, token_cache (+ mul
 
 ## 4. VPS setup (Ubuntu 22.04 / 24.04)
 
-Assumes a fresh VPS and a domain `your-domain.com` with an **A record** pointing
+Assumes a fresh VPS and a domain `solanatoken.dravyo.com` with an **A record** pointing
 at the VPS IP. Run as root unless noted.
 
 ### 4.1 Create a deploy user + firewall
@@ -176,7 +176,7 @@ If you want the whole server set up in one go, after cloning and filling
 ```bash
 ./scripts/vps-bootstrap.sh      # Node+pnpm+pm2, firewall, nginx, build, start
 # then the one TLS command it prints, once DNS points at the box:
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+sudo certbot --nginx -d solanatoken.dravyo.com
 ```
 
 For every later code update, the repeatable deploy is one command:
@@ -331,7 +331,7 @@ Create `/etc/nginx/sites-available/solana-token`:
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com www.your-domain.com;
+    server_name solanatoken.dravyo.com;
 
     location / {
         proxy_pass http://127.0.0.1:3333;
@@ -349,7 +349,7 @@ server {
 ```
 ```bash
 sudo ln -s /etc/nginx/sites-available/solana-token /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
+# Do NOT remove the default site or other vhosts — name-based routing keeps co-hosted apps isolated
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -357,7 +357,7 @@ Get a free Let's Encrypt certificate (this rewrites the server block for 443 +
 auto-renew):
 ```bash
 sudo apt-get install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+sudo certbot --nginx -d solanatoken.dravyo.com
 ```
 
 > The app already emits HSTS, X-Frame-Options, CSP, etc. (see `next.config.ts`).
@@ -384,7 +384,7 @@ From [.env.mainnet.example](../.env.mainnet.example):
 | `CSP_CONNECT_SRC_EXTRA` | extra connect-src hosts if RPC isn't a known provider | baked at build |
 | `HELIUS_API_KEY` | Helius key (holder counts via DAS) | No |
 | `BIRDEYE_API_KEY` | Birdeye key (price/market) — empty disables gracefully | No |
-| `NEXT_PUBLIC_APP_URL` | `https://your-domain.com` | Yes |
+| `NEXT_PUBLIC_APP_URL` | `https://solanatoken.dravyo.com` | Yes |
 | `FEE_WALLET_ADDRESS` | **public key** of hardware fee wallet | No |
 | `PINATA_JWT` | Pinata JWT for logo/metadata uploads | No |
 | `DATABASE_URL` | managed Postgres connection string | No |
@@ -404,16 +404,16 @@ misconfiguration — fix the env, don't bypass it.
 
 ```bash
 # 1. Security headers + TLS
-curl -sI https://your-domain.com | grep -iE "strict-transport|x-frame|content-security|x-content-type"
+curl -sI https://solanatoken.dravyo.com | grep -iE "strict-transport|x-frame|content-security|x-content-type"
 #   expect: HSTS, X-Frame-Options: DENY, CSP present, nosniff
 
 # 2. Every route renders (run from your laptop or the VPS)
-BASE_URL=https://your-domain.com node scripts/smoke-pages.mjs
+BASE_URL=https://solanatoken.dravyo.com node scripts/smoke-pages.mjs
 #   note: the TESTNET banner assertion won't apply — on mainnet there is no banner
 
 # 3. Rate limiting is live (needs Redis): 21 rapid builds → a 429
 for i in $(seq 1 21); do \
-  curl -s -o /dev/null -w "%{http_code}\n" -X POST https://your-domain.com/api/tx/create-token \
+  curl -s -o /dev/null -w "%{http_code}\n" -X POST https://solanatoken.dravyo.com/api/tx/create-token \
   -H 'content-type: application/json' -H 'sec-fetch-site: same-origin' --data '{}'; done | tail -3
 ```
 
@@ -452,7 +452,7 @@ zero-downtime, run two PM2 instances behind nginx upstream, or use `pm2 reload`.
   - [runbooks/rpc-outage.md](runbooks/rpc-outage.md)
   - [runbooks/fee-wallet-compromised.md](runbooks/fee-wallet-compromised.md)
   - [runbooks/webhook-outage.md](runbooks/webhook-outage.md)
-- **Uptime:** point an external monitor (UptimeRobot/BetterStack) at `https://your-domain.com/` and `/api/tokens/wallet/<any>` (should be 200).
+- **Uptime:** point an external monitor (UptimeRobot/BetterStack) at `https://solanatoken.dravyo.com/` and `/api/tokens/wallet/<any>` (should be 200).
 
 ---
 
