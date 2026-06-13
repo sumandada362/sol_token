@@ -11,8 +11,8 @@ import {
   TOKEN_2022_PROGRAM_ID,
   getMintLen,
 } from "@solana/spl-token";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { mplTokenMetadata, createV1, TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
+import { createV1, TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
+import { getUmi } from "./umi";
 import {
   publicKey as umiPublicKey,
   createNoopSigner,
@@ -66,7 +66,7 @@ export async function buildCreateTokenTx(input: CreateTokenInput): Promise<Trans
   tx.add(createMintToInstruction(mint, ata, payer, supply, [], tokenProgramId));
 
   // 5. Metaplex metadata — pass mint as publicKey (non-signer) so createV1 only makes metadata
-  const umi = createUmi(process.env.SOLANA_RPC_URL!).use(mplTokenMetadata());
+  const umi = getUmi();
   const payerSigner = createNoopSigner(umiPublicKey(input.payer));
   umi.use(signerIdentity(payerSigner));
 

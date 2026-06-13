@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getConnection } from "@/lib/solana/connection";
 import { PublicKey } from "@solana/web3.js";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { mplTokenMetadata, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token-metadata";
+import { fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token-metadata";
 import { publicKey as umiPublicKey } from "@metaplex-foundation/umi";
+import { getUmi } from "@/lib/solana/umi";
 import { isSafeExternalUrl } from "@/lib/safeUrl";
 
 export interface AuthorityInfo {
@@ -41,10 +41,7 @@ export async function GET(req: NextRequest) {
 
     const [mintInfo, metadata] = await Promise.all([
       conn.getParsedAccountInfo(mintPk, "confirmed"),
-      (async () => {
-        const umi = createUmi(process.env.SOLANA_RPC_URL!).use(mplTokenMetadata());
-        return fetchMetadataFromSeeds(umi, { mint: umiPublicKey(mint) });
-      })(),
+      fetchMetadataFromSeeds(getUmi(), { mint: umiPublicKey(mint) }),
     ]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -128,6 +128,7 @@ export default function MultisenderPage() {
 
   async function handleSend() {
     if (!response || !wallet.publicKey || !wallet.sendTransaction) return;
+    const payerBase58 = wallet.publicKey.toBase58();
     setPhase("sending");
     setError("");
 
@@ -156,6 +157,19 @@ export default function MultisenderPage() {
         );
         saveJournal(response.uploadHash, updatedJournal);
         setJournal([...updatedJournal]);
+
+        // Journal the batch fee server-side (best-effort — the transfer
+        // already succeeded on-chain; never block the send loop on this).
+        fetch("/api/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            signature: sig,
+            action: "multisend",
+            wallet: payerBase58,
+            mint: mintInput,
+          }),
+        }).catch(() => { /* fee journaling is best-effort */ });
         setCurrentBatch(batch.index + 1);
       } catch (e) {
         updatedJournal = updatedJournal.map((j) =>

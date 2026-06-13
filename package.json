@@ -7,12 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "devnet:wallets": "node scripts/devnet-wallets.mjs",
-    "devnet:refresh": "node scripts/devnet-refresh.mjs",
-    "devnet:check": "node scripts/devnet-refresh.mjs --check",
+    "wallets:generate": "node scripts/generate-wallets.mjs",
+    "wallets:refresh": "node scripts/refresh-wallets.mjs",
+    "wallets:check": "node scripts/refresh-wallets.mjs --check",
     "dev:redis": "node scripts/dev-redis.mjs",
     "test:adversarial": "pnpm dlx tsx scripts/test-adversarial.mts",
-    "test:e2e": "node scripts/test-devnet-e2e.mjs"
+    "test:e2e": "node scripts/test-e2e.mjs",
+    "test:smoke": "node scripts/smoke-pages.mjs"
   },
   "dependencies": {
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",

@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 /**
- * Devnet wallet balance refresher — reads an existing wallet JSON file,
- * checks each wallet's on-chain balance, and tops up wallets that are
- * below the minimum threshold.
+ * Wallet balance refresher — reads an existing wallet JSON file, checks each
+ * wallet's on-chain balance, and tops up wallets that are below the minimum
+ * threshold. The network and default wallet file are inferred from --rpc.
  *
  * Usage:
- *   node scripts/devnet-refresh.mjs [options]
+ *   node scripts/refresh-wallets.mjs [options]
  *
  * Options:
- *   --in    FILE   Wallet JSON file to refresh  (default: scripts/devnet-wallets.json)
+ *   --in    FILE   Wallet JSON file to refresh  (default: scripts/<network>-wallets.json)
  *   --min   N      Top-up if balance below N SOL (default: 0.5)
  *   --top   N      Airdrop until wallet has N SOL (default: 2)
  *   --check        Only show balances, no airdrop
  *   --wallet ADDR  Refresh only this specific wallet address
- *   --rpc   URL    Devnet RPC URL
+ *   --rpc   URL    RPC URL (default: devnet)
  *   --help         Show this message
  */
 
@@ -28,7 +28,7 @@ const _req      = createRequire(import.meta.url);
 
 // Patch globalThis.fetch BEFORE @solana/web3.js is imported.
 // web3.js v1.98 captures fetchImpl = globalThis.fetch at module-init time.
-// Node 22 on Windows fails TLS verification on devnet — safe to bypass here.
+// Node 22 on Windows fails TLS verification on public Solana RPCs — safe to bypass here.
 const _nf    = _req("node-fetch");
 const _agent = new https.Agent({ rejectUnauthorized: false });
 const _fetch = (url, opts = {}) => _nf(url, { ...opts, agent: _agent });
@@ -52,25 +52,40 @@ const has = (f) => process.argv.includes(f);
 
 if (has("--help") || has("-h")) {
   console.log(`
-  node scripts/devnet-refresh.mjs [options]
+  node scripts/refresh-wallets.mjs [options]
 
-  --in    FILE   Wallet JSON file  (default: scripts/devnet-wallets.json)
+  --in    FILE   Wallet JSON file  (default: scripts/<network>-wallets.json)
   --min   N      Top-up threshold  (default: 0.5 SOL)
   --top   N      Target balance    (default: 2 SOL)
   --check        Check balances only, no airdrop
   --wallet ADDR  Only refresh this address
-  --rpc   URL    Devnet RPC URL
+  --rpc   URL    RPC URL (default: devnet)
   --help         Show this help
 `);
   process.exit(0);
 }
 
-const IN_FILE    = argVal("--in",  join(__dirname, "devnet-wallets.json"));
 const MIN_SOL    = parseFloat(argVal("--min", "0.5"));
 const TOP_SOL    = parseFloat(argVal("--top", "2"));
 const CHECK_ONLY = has("--check");
 const ONLY_ADDR  = argVal("--wallet", null);
-const RPC_URL    = argVal("--rpc", "https://api.devnet.solana.com");
+
+// Default RPC: --rpc flag > SOLANA_RPC_URL in .env.local > devnet.
+// Keeps `pnpm wallets:check` / `wallets:refresh` on the same cluster as the app.
+function envRpcUrl() {
+  try {
+    const env = readFileSync(join(__dirname, "..", ".env.local"), "utf8");
+    const m = env.match(/^SOLANA_RPC_URL=(.+)$/m);
+    return m ? m[1].trim() : null;
+  } catch { return null; }
+}
+const RPC_URL = argVal("--rpc", envRpcUrl() ?? "https://api.devnet.solana.com");
+
+// Network label inferred from the RPC URL — picks the default wallet file.
+const NETWORK = RPC_URL.includes("testnet") ? "testnet"
+  : RPC_URL.includes("mainnet") ? "mainnet-beta"
+  : "devnet";
+const IN_FILE = argVal("--in", join(__dirname, `${NETWORK}-wallets.json`));
 
 const MAX_SOL_REQ = 5;
 
@@ -125,7 +140,7 @@ function statusIcon(sol, min) {
 async function main() {
   if (!existsSync(IN_FILE)) {
     console.error(`\nFile not found: ${IN_FILE}`);
-    console.error(`Run "pnpm devnet:wallets" first to create wallets.\n`);
+    console.error(`Run "pnpm wallets:generate" first to create wallets.\n`);
     process.exit(1);
   }
 
@@ -147,7 +162,7 @@ async function main() {
 
   const connection = new Connection(RPC_URL, "confirmed");
 
-  console.log("\n=== Forge Devnet Balance Refresher ===\n");
+  console.log(`\n=== Forge Balance Refresher (${NETWORK}) ===\n`);
   console.log(`  File       : ${IN_FILE}`);
   console.log(`  Wallets    : ${targets.length}${ONLY_ADDR ? " (filtered)" : ""}`);
   if (!CHECK_ONLY) {

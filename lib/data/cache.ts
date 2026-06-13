@@ -3,8 +3,8 @@ import { cacheGet, cacheSet, CACHE_KEYS } from "@/lib/db/redis";
 import { isSafeExternalUrl } from "@/lib/safeUrl";
 import { getConnection } from "@/lib/solana/connection";
 import { PublicKey } from "@solana/web3.js";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { mplTokenMetadata, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token-metadata";
+import { fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token-metadata";
+import { getUmi } from "@/lib/solana/umi";
 import { publicKey as umiPublicKey } from "@metaplex-foundation/umi";
 import { getTopHolders, getTotalHolderCount, getMintSupply } from "./holders";
 import { getTokenOverview, hasLiquidityPool } from "./market";
@@ -176,8 +176,7 @@ interface MetaplexMeta {
 
 async function fetchMetaplexMetadata(mint: string): Promise<MetaplexMeta> {
   try {
-    const umi = createUmi(process.env.SOLANA_RPC_URL!).use(mplTokenMetadata());
-    const metadata = await fetchMetadataFromSeeds(umi, { mint: umiPublicKey(mint) });
+    const metadata = await fetchMetadataFromSeeds(getUmi(), { mint: umiPublicKey(mint) });
 
     let image: string | null = null;
     if (metadata.uri && isSafeExternalUrl(metadata.uri)) {

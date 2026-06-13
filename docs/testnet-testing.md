@@ -50,11 +50,15 @@ You need at least **3 funded testnet wallets**:
 | W3 — fresh recipient | Multisend target with **no ATA** (tests ATA creation) | 0 SOL (never used) |
 
 Generate them with the wallet script pointed at testnet (airdrop will be slow or fail —
-use `--no-airdrop` and fund manually if needed):
+use `--no-airdrop` and fund manually if needed). Use **6** wallets so the e2e script
+(which reads wallet indices 1–6) works from the same file:
 
 ```bash
-node scripts/devnet-wallets.mjs --count 5 --rpc https://api.testnet.solana.com --out scripts/testnet-wallets
+node scripts/generate-wallets.mjs --count 6 --rpc https://api.testnet.solana.com --no-airdrop
 ```
+
+The output lands in `scripts/testnet-wallets.json` + `.txt` automatically — the
+network (and default output name) is inferred from `--rpc`.
 
 Funding options, in order of reliability:
 1. https://faucet.solana.com — select **Testnet**, paste address
@@ -260,18 +264,17 @@ Requires a token that still has freeze authority (TNT).
 pnpm test:adversarial
 
 # Full e2e through the HTTP API with real signed transactions.
-# Reads SOLANA_RPC_URL from .env.local, so it follows your testnet config.
-# It loads wallets from scripts/devnet-wallets.json — point it at funded
-# TESTNET wallets first (copy scripts/testnet-wallets.json over it, or fund
-# wallet-1/3/4/5 from that file on testnet). Airdrop-dependent steps may be
-# slow due to testnet faucet limits.
+# Reads SOLANA_RPC_URL from .env.local, so it follows your testnet config and
+# automatically loads scripts/testnet-wallets.json (override with the
+# E2E_WALLETS_FILE env var). Fund wallet-1 (the payer) before running —
+# testnet faucet limits make airdrop-dependent steps slow.
 pnpm test:e2e
 ```
 
 | # | Check | Expected |
 |---|---|---|
 | 13.1 | `pnpm test:adversarial` | Exit 0, all tests pass |
-| 13.2 | `pnpm test:e2e` against testnet | All steps pass; results in `scripts/devnet-e2e-results.json` |
+| 13.2 | `pnpm test:e2e` against testnet | All steps pass; results in `scripts/testnet-e2e-results.json` |
 | 13.3 | `curl -I http://localhost:3000/` | `X-Frame-Options: DENY` and `Content-Security-Policy` present (`Strict-Transport-Security` on the deployed HTTPS domain) |
 | 13.4 | Hammer one tx endpoint > rate limit (with Redis running) | 429 responses kick in |
 
@@ -306,5 +309,5 @@ and no section has an unexplained failure.
 
 | Pass # | Date | Tester | Browser / wallet | Commit | Notes |
 |---|---|---|---|---|---|
-| Testnet #1 | | | | | |
-| Testnet #2 | | | | | |
+| Testnet #1 | 2026-06-13 | Claude (scripted) | HTTP API + signed Keypairs (no browser) | 23c314c + testnet fixes | **e2e 45/45 — full SPL×Token-2022 cross-product** (every tool on both standards) · adversarial 12/12 · smoke 36/36 · fees exact (+3.9100 SOL). Fixed: Umi finalized-commitment staleness, multisend fee journaling, wallet-script network detection, CSRF origin allowlist, immutable-state guards. See [AUDIT-REPORT-TESTNET-2026-06-13.md](AUDIT-REPORT-TESTNET-2026-06-13.md) §1b for the coverage matrix |
+| Testnet #2 | | | | | (manual browser-wallet pass — see §5 T1–T12 UI rows not covered by scripts) |

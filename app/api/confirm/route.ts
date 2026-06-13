@@ -6,6 +6,7 @@ import { getConnection } from "@/lib/solana/connection";
 import { query } from "@/lib/db/postgres";
 import { cacheSet, cacheDel, CACHE_KEYS } from "@/lib/db/redis";
 import { FEES } from "@/lib/solana/fees";
+import { MULTISEND_FEE_PER_TX } from "@/lib/solana/buildMultisend";
 import { rateLimit, rateLimitByKey, RATE_LIMITS } from "@/lib/rateLimit";
 import { apiError } from "@/lib/api/errors";
 
@@ -22,6 +23,7 @@ const schema = z.object({
     "burn",
     "freezeAccounts",
     "unfreezeAccounts",
+    "multisend",
   ]),
   mint: z.string().optional(),
   wallet: z.string(),
@@ -41,6 +43,8 @@ const MIN_FEE_LAMPORTS: Partial<Record<string, number>> = {
   revokeMint: Math.floor(FEES.revokeMint * LAMPORTS_PER_SOL),
   revokeFreeze: Math.floor(FEES.revokeFreeze * LAMPORTS_PER_SOL),
   revokeUpdate: Math.floor(FEES.revokeUpdate * LAMPORTS_PER_SOL),
+  // Multisend confirms once per batch tx; each batch carries the flat per-tx fee
+  multisend: Math.floor(MULTISEND_FEE_PER_TX * LAMPORTS_PER_SOL),
   // makeImmutable and burn are free — no fee check needed
 };
 

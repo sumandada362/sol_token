@@ -32,6 +32,13 @@ export function apiError(err: unknown, context?: string): NextResponse {
     );
   }
 
+  // State errors from our build functions — the action is permanently
+  // unavailable for this token (metadata already immutable). Own messages
+  // only; safe to surface verbatim.
+  if (raw.includes("metadata is immutable") || raw.includes("already immutable")) {
+    return NextResponse.json({ error: raw }, { status: 403 });
+  }
+
   // Everything else: generic 500 — never expose internals
   return NextResponse.json(
     { error: "An error occurred. Please try again." },

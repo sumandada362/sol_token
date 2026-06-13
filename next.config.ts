@@ -12,7 +12,25 @@ const IPFS_SOURCES = [
   "https://nftstorage.link",
 ].join(" ");
 
-// Solana RPC + ws endpoints
+// Solana RPC + ws endpoints. The browser wallet adapter connects straight to
+// NEXT_PUBLIC_RPC_URL, so that origin MUST be in connect-src or the browser
+// blocks every RPC call (silent wallet failures). We allow the well-known
+// providers, plus whatever NEXT_PUBLIC_RPC_URL is set to at build time, plus an
+// optional space-separated CSP_CONNECT_SRC_EXTRA for any other host (a separate
+// websocket endpoint, a second gateway, analytics, etc.).
+//
+// NOTE: these are read at BUILD time — run `pnpm build` with your production env
+// loaded so the right origin is baked into the served CSP header.
+function rpcOriginVariants(url: string | undefined): string[] {
+  if (!url) return [];
+  try {
+    const { host } = new URL(url);
+    return [`https://${host}`, `wss://${host}`];
+  } catch {
+    return [];
+  }
+}
+
 const RPC_SOURCES = [
   "https://*.solana.com",
   "https://*.helius-rpc.com",
@@ -21,6 +39,8 @@ const RPC_SOURCES = [
   "wss://*.solana.com",
   "wss://*.helius-rpc.com",
   "wss://*.rpcpool.com",
+  ...rpcOriginVariants(process.env.NEXT_PUBLIC_RPC_URL),
+  ...(process.env.CSP_CONNECT_SRC_EXTRA?.split(/\s+/).filter(Boolean) ?? []),
 ].join(" ");
 
 // Next.js injects inline hydration scripts — 'unsafe-inline' is required unless

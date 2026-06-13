@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 /**
- * Devnet end-to-end feature test — exercises every FORGE feature through the
- * real HTTP API with real signed transactions on devnet.
+ * End-to-end feature test — exercises every FORGE feature through the real
+ * HTTP API with real signed transactions, on whichever cluster .env.local's
+ * SOLANA_RPC_URL points at (devnet or testnet).
  *
- *   node scripts/test-devnet-e2e.mjs
+ *   node scripts/test-e2e.mjs
  *
- * Uses wallet-1 from scripts/devnet-wallets.json as the payer.
- * Writes results to scripts/devnet-e2e-results.json for the audit report.
+ * Uses wallet-1 from scripts/<network>-wallets.json as the payer
+ * (override with E2E_WALLETS_FILE).
+ * Writes results to scripts/<network>-e2e-results.json for the audit report.
  */
 
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import https from "https";
@@ -18,7 +20,7 @@ import { createRequire } from "module";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 
-// Windows/Node TLS workaround for devnet RPC (same as devnet-wallets.mjs) —
+// Windows/Node TLS workaround for public Solana RPCs (same as generate-wallets.mjs) —
 // patch fetch BEFORE web3.js captures it. localhost keeps the native fetch
 // (undici) so FormData/Blob bodies work; only external HTTPS gets node-fetch
 // with TLS verification relaxed.
@@ -42,8 +44,21 @@ function readEnv(key) {
 }
 const RPC_URL = readEnv("SOLANA_RPC_URL") ?? "https://api.devnet.solana.com";
 const FEE_WALLET = readEnv("FEE_WALLET_ADDRESS");
+const NETWORK = RPC_URL.includes("testnet") ? "testnet" : "devnet";
 
-const wallets = JSON.parse(readFileSync(join(__dirname, "devnet-wallets.json"), "utf8"));
+// Wallet file: E2E_WALLETS_FILE env wins; otherwise pick the file matching the
+// cluster in SOLANA_RPC_URL, falling back to whichever of the two exists.
+const walletsFile =
+  process.env.E2E_WALLETS_FILE ??
+  [
+    join(__dirname, `${NETWORK}-wallets.json`),
+    join(__dirname, `${NETWORK === "testnet" ? "devnet" : "testnet"}-wallets.json`),
+  ].find(existsSync);
+if (!walletsFile) {
+  console.error("No wallet file found — run scripts/generate-wallets.mjs first.");
+  process.exit(1);
+}
+const wallets = JSON.parse(readFileSync(walletsFile, "utf8"));
 const payerKp = Keypair.fromSecretKey(Uint8Array.from(wallets[0].secretKeyArray));
 const payer = payerKp.publicKey.toBase58();
 const recipient1 = wallets[2].publicKey; // wallet-3 — fresh, tests ATA creation
@@ -73,14 +88,28 @@ async function step(name, fn) {
 
 function assert(cond, msg) { if (!cond) throw new Error(msg); }
 
+/**
+ * API helper with 429 pacing. The per-wallet/IP rate limits are production
+ * anti-abuse controls; this suite legitimately runs faster than a human, so
+ * on 429 it waits out the window (Retry-After) and retries instead of
+ * failing the step — production limits stay strict, the test paces itself.
+ */
 async function api(path, opts = {}) {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json", ...(opts.headers ?? {}) },
-    ...opts,
-  });
-  let json = null;
-  try { json = await res.json(); } catch { /* non-JSON */ }
-  return { status: res.status, json, headers: res.headers };
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`${BASE}${path}`, {
+      headers: { "Content-Type": "application/json", ...(opts.headers ?? {}) },
+      ...opts,
+    });
+    if (res.status === 429 && attempt < 3) {
+      const wait = Math.min(Number(res.headers.get("retry-after")) || 15, 90);
+      log(`[429 — pacing ${wait}s] `);
+      await new Promise((r) => setTimeout(r, wait * 1000 + 1500));
+      continue;
+    }
+    let json = null;
+    try { json = await res.json(); } catch { /* non-JSON */ }
+    return { status: res.status, json, headers: res.headers };
+  }
 }
 
 /**
@@ -111,6 +140,18 @@ async function signAndSend(base64Tx, lastValidBlockHeight, extraSigners = []) {
   return sig;
 }
 
+/**
+ * check-authority with a short 404 retry: public RPC load balancers can route
+ * the server's read to a node a slot behind the one that confirmed our tx.
+ */
+async function checkAuthority(mint, retries = 4) {
+  for (let i = 0; ; i++) {
+    const r = await api(`/api/check-authority?mint=${mint}`);
+    if (r.status !== 404 || i >= retries) return r;
+    await new Promise((res) => setTimeout(res, 3000));
+  }
+}
+
 async function confirmAction(signature, action, extra = {}) {
   const r = await api("/api/confirm", {
     method: "POST",
@@ -127,7 +168,7 @@ const PNG_1PX = Buffer.from(
 );
 
 // ── test run ────────────────────────────────────────────────────────────────
-console.log(`\nFORGE devnet E2E — ${BASE}`);
+console.log(`\nFORGE ${NETWORK} E2E — ${BASE}`);
 console.log(`payer: ${payer}`);
 console.log(`rpc:   ${RPC_URL.replace(/api-key=.*/, "api-key=***")}\n`);
 
@@ -206,7 +247,7 @@ await step("POST /api/confirm createToken (fee verified server-side)", async () 
 });
 
 await step("GET /api/check-authority — name, symbol, authorities", async () => {
-  const r = await api(`/api/check-authority?mint=${createdMints.A}`);
+  const r = await checkAuthority(createdMints.A);
   assert(r.status === 200, `→ ${r.status}`);
   assert(r.json.name === "Forge Test Alpha", `name="${r.json.name}"`);
   assert(r.json.mintAuthority === payer, "mintAuthority mismatch");
@@ -255,7 +296,8 @@ await step("POST /api/tx/multisend — 3 recipients, decimal amounts", async () 
   assert(r.json.batches?.length === 1, `expected 1 batch, got ${r.json.batches?.length}`);
   assert(r.json.quote.ataCreations >= 2, `expected ≥2 ATA creations, got ${r.json.quote.ataCreations}`);
   const b = r.json.batches[0];
-  await signAndSend(b.tx, b.lastValidBlockHeight);
+  const sig = await signAndSend(b.tx, b.lastValidBlockHeight);
+  await confirmAction(sig, "multisend", { mint: createdMints.A });
   return `quote total ${r.json.quote.totalSol} SOL`;
 });
 
@@ -349,7 +391,8 @@ await step("T22: multisend (transferChecked w/ T22 program)", async () => {
   });
   assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
   const b = r.json.batches[0];
-  await signAndSend(b.tx, b.lastValidBlockHeight);
+  const sig = await signAndSend(b.tx, b.lastValidBlockHeight);
+  await confirmAction(sig, "multisend", { mint: createdMints.B });
   return "sent 0.5 FT22";
 });
 
@@ -418,7 +461,7 @@ await step("Negative: T22 mint-more after revoke → 403", async () => {
 });
 
 await step("check-authority on B: all revoked + immutable", async () => {
-  const r = await api(`/api/check-authority?mint=${createdMints.B}`);
+  const r = await checkAuthority(createdMints.B);
   assert(r.status === 200, `→ ${r.status}`);
   assert(r.json.mintAuthority === null, `mintAuthority=${r.json.mintAuthority}`);
   assert(r.json.freezeAuthority === null, `freezeAuthority=${r.json.freezeAuthority}`);
@@ -449,11 +492,166 @@ await step("create-token w/ revokeMint+revokeFreeze+customCreator", async () => 
 });
 
 await step("check-authority on C: mint+freeze null at birth", async () => {
-  const r = await api(`/api/check-authority?mint=${createdMints.C}`);
+  const r = await checkAuthority(createdMints.C);
   assert(r.status === 200, `→ ${r.status}`);
   assert(r.json.mintAuthority === null, `mintAuthority=${r.json.mintAuthority}`);
   assert(r.json.freezeAuthority === null, `freezeAuthority=${r.json.freezeAuthority}`);
   return "revoked at creation";
+});
+
+// ════ 4b. Cross-product gap-fill ════
+// Guarantees EVERY website tool is exercised on BOTH standards. Tokens A/B/C
+// left these cells uncovered:
+//   SPL  standalone: freeze, unfreeze, revoke-freeze, revoke-mint, make-immutable
+//   T22:             update-metadata, revoke-update (updateAuthority → system)
+console.log("\n── Cross-product gap-fill ──");
+
+// Token D — fresh SPL, all authorities intact
+const mintD = Keypair.generate();
+createdMints.D = mintD.publicKey.toBase58();
+
+await step("SPL-D: create (all authorities intact)", async () => {
+  const r = await api("/api/tx/create-token", {
+    method: "POST",
+    body: JSON.stringify({
+      payer, mintPublicKey: mintD.publicKey.toBase58(),
+      name: "Forge Test Delta", symbol: "FTD",
+      supply: "1000000", decimals: 6,
+      metadataUri: "", standard: "spl",
+      revokeMint: false, revokeFreeze: false, revokeUpdate: false, customCreator: false,
+    }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight, [mintD]);
+  await confirmAction(sig, "createToken", { mint: createdMints.D, name: "Forge Test Delta", symbol: "FTD", standard: "spl" });
+  return sig.slice(0, 16) + "…";
+});
+
+await step("SPL-D: mint-more to wallet-4 (freeze target)", async () => {
+  const r = await api("/api/tx/mint-more", {
+    method: "POST",
+    body: JSON.stringify({ payer, mint: createdMints.D, destination: recipient2, amount: "1000000", decimals: 6 }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);
+  await confirmAction(sig, "mintMore", { mint: createdMints.D });
+  return "minted";
+});
+
+await step("SPL-D: freeze wallet-4 (classic SPL program)", async () => {
+  const r = await api("/api/tx/freeze-accounts", {
+    method: "POST",
+    body: JSON.stringify({ payer, mint: createdMints.D, wallets: [recipient2], type: "freeze" }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);
+  await confirmAction(sig, "freezeAccounts", { mint: createdMints.D, count: 1 });
+  return "frozen";
+});
+
+await step("SPL-D: thaw wallet-4", async () => {
+  const r = await api("/api/tx/freeze-accounts", {
+    method: "POST",
+    body: JSON.stringify({ payer, mint: createdMints.D, wallets: [recipient2], type: "thaw" }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);
+  await confirmAction(sig, "unfreezeAccounts", { mint: createdMints.D, count: 1 });
+  return "thawed";
+});
+
+await step("SPL-D: revoke freeze authority (standalone)", async () => {
+  const r = await api("/api/tx/revoke", {
+    method: "POST",
+    body: JSON.stringify({ payer, mint: createdMints.D, type: "freeze" }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);
+  await confirmAction(sig, "revokeFreeze", { mint: createdMints.D });
+  return "freeze revoked";
+});
+
+await step("SPL-D: revoke mint authority (standalone)", async () => {
+  const r = await api("/api/tx/revoke", {
+    method: "POST",
+    body: JSON.stringify({ payer, mint: createdMints.D, type: "mint" }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);
+  await confirmAction(sig, "revokeMint", { mint: createdMints.D });
+  return "mint revoked";
+});
+
+await step("SPL-D: make immutable (free)", async () => {
+  const r = await api("/api/tx/revoke", {
+    method: "POST",
+    body: JSON.stringify({ payer, mint: createdMints.D, type: "update" }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);
+  await confirmAction(sig, "makeImmutable", { mint: createdMints.D });
+  return "immutable";
+});
+
+await step("SPL-D: check-authority — mint+freeze null, immutable", async () => {
+  const r = await checkAuthority(createdMints.D);
+  assert(r.status === 200, `→ ${r.status}`);
+  assert(r.json.mintAuthority === null, `mintAuthority=${r.json.mintAuthority}`);
+  assert(r.json.freezeAuthority === null, `freezeAuthority=${r.json.freezeAuthority}`);
+  assert(r.json.isMutable === false, "should be immutable");
+  return "all locked";
+});
+
+// Token E — fresh Token-2022, exercise metadata ops on the T22 path
+const mintE = Keypair.generate();
+createdMints.E = mintE.publicKey.toBase58();
+
+await step("T22-E: create (token2022, authorities intact)", async () => {
+  const r = await api("/api/tx/create-token", {
+    method: "POST",
+    body: JSON.stringify({
+      payer, mintPublicKey: mintE.publicKey.toBase58(),
+      name: "Forge Test Epsilon", symbol: "FTE",
+      supply: "500000", decimals: 9,
+      metadataUri: "", standard: "token2022",
+      revokeMint: false, revokeFreeze: false, revokeUpdate: false, customCreator: false,
+    }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight, [mintE]);
+  await confirmAction(sig, "createToken", { mint: createdMints.E, name: "Forge Test Epsilon", symbol: "FTE", standard: "token2022" });
+  return sig.slice(0, 16) + "…";
+});
+
+await step("T22-E: update-metadata (Token-2022 path)", async () => {
+  const r = await api("/api/tx/update-metadata", {
+    method: "POST",
+    body: JSON.stringify({ payer, mint: createdMints.E, name: "Forge Test Epsilon v2", symbol: "FTE", uri: "" }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);
+  await confirmAction(sig, "updateMetadata", { mint: createdMints.E });
+  return "renamed";
+});
+
+await step("T22-E: revoke update authority (→ system program)", async () => {
+  const r = await api("/api/tx/revoke", {
+    method: "POST",
+    body: JSON.stringify({ payer, mint: createdMints.E, type: "updateAuthority" }),
+  });
+  assert(r.status === 200, `build → ${r.status} ${JSON.stringify(r.json)}`);
+  const sig = await signAndSend(r.json.tx, r.json.lastValidBlockHeight);
+  await confirmAction(sig, "revokeUpdate", { mint: createdMints.E });
+  return "update authority revoked";
+});
+
+await step("T22-E negative: update-metadata after revoke → 403", async () => {
+  const r = await api("/api/tx/update-metadata", {
+    method: "POST",
+    body: JSON.stringify({ payer, mint: createdMints.E, name: "Nope", symbol: "FTE", uri: "" }),
+  });
+  assert(r.status === 403, `expected 403, got ${r.status} ${JSON.stringify(r.json)}`);
+  return "correctly rejected";
 });
 
 // ════ 5. Read APIs ════
@@ -562,12 +760,12 @@ const failed = results.length - passed;
 console.log(`\n${"─".repeat(64)}`);
 console.log(`  ${passed} passed, ${failed} failed of ${results.length}`);
 console.log(`  payer spent: ${(startBal - endBal).toFixed(4)} SOL | fee wallet received: ${(feeWalletEnd - feeWalletStart).toFixed(4)} SOL`);
-console.log(`  mints: A=${createdMints.A}\n         B=${createdMints.B}\n         C=${createdMints.C}`);
+console.log(`  mints: A=${createdMints.A}\n         B=${createdMints.B}\n         C=${createdMints.C}\n         D=${createdMints.D}\n         E=${createdMints.E}`);
 
 writeFileSync(
-  join(__dirname, "devnet-e2e-results.json"),
-  JSON.stringify({ ranAt: new Date().toISOString(), base: BASE, payer, createdMints, startBal, endBal, feeWalletStart, feeWalletEnd, results }, null, 2)
+  join(__dirname, `${NETWORK}-e2e-results.json`),
+  JSON.stringify({ ranAt: new Date().toISOString(), base: BASE, network: NETWORK, payer, createdMints, startBal, endBal, feeWalletStart, feeWalletEnd, results }, null, 2)
 );
-console.log(`  results → scripts/devnet-e2e-results.json\n`);
+console.log(`  results → scripts/${NETWORK}-e2e-results.json\n`);
 
 process.exit(failed > 0 ? 1 : 0);

@@ -1,19 +1,20 @@
 #!/usr/bin/env node
 /**
- * Devnet wallet generator — creates wallets with mnemonic phrases, private keys,
- * airdrops devnet SOL, and writes both a machine-readable JSON and a human-readable
- * import guide (.txt) you can use to load wallets into Phantom / Solflare / Backpack.
+ * Test-wallet generator — creates wallets with mnemonic phrases, private keys,
+ * optionally airdrops SOL, and writes both a machine-readable JSON and a
+ * human-readable import guide (.txt) for Phantom / Solflare / Backpack.
+ * The network (devnet/testnet) is inferred from --rpc.
  *
  * Usage:
- *   node scripts/devnet-wallets.mjs [options]
+ *   node scripts/generate-wallets.mjs [options]
  *
  * Options:
  *   --count   N     Wallets to generate              (default: 5)
  *   --words   12|24 Mnemonic length                  (default: 24)
  *   --sol     N     SOL to airdrop per wallet         (default: 2)
- *   --out     FILE  Base output path without extension (default: scripts/devnet-wallets)
+ *   --out     FILE  Base output path without extension (default: scripts/<network>-wallets)
  *   --append        Add to existing file instead of overwriting
- *   --rpc     URL   Devnet RPC URL
+ *   --rpc     URL   RPC URL (default: devnet)
  *   --no-airdrop    Skip airdrop, generate keypairs only
  *   --help          Show this message
  */
@@ -34,8 +35,8 @@ const __dirname      = dirname(fileURLToPath(import.meta.url));
 // Patch globalThis.fetch BEFORE @solana/web3.js is imported.
 // web3.js v1.98 captures `fetchImpl = globalThis.fetch` at module-init time,
 // so the static import must come AFTER this polyfill runs.
-// Node 22 on Windows fails with UNABLE_TO_VERIFY_LEAF_SIGNATURE on devnet —
-// bypassing TLS is safe here since this only ever hits devnet.
+// Node 22 on Windows fails with UNABLE_TO_VERIFY_LEAF_SIGNATURE on public
+// Solana RPCs — bypassing TLS is safe here since this never touches mainnet funds.
 const _nf    = require("node-fetch");
 const _agent = new https.Agent({ rejectUnauthorized: false });
 const _fetch = (url, opts = {}) => _nf(url, { ...opts, agent: _agent });
@@ -59,14 +60,14 @@ const has = (f) => process.argv.includes(f);
 
 if (has("--help") || has("-h")) {
   console.log(`
-  node scripts/devnet-wallets.mjs [options]
+  node scripts/generate-wallets.mjs [options]
 
   --count   N       Wallets to create  (default: 5)
   --words   12|24   Mnemonic length    (default: 24)
-  --sol     N       Devnet SOL each    (default: 2)
-  --out     FILE    Base output name   (default: scripts/devnet-wallets)
+  --sol     N       SOL to airdrop each (default: 2)
+  --out     FILE    Base output name   (default: scripts/<network>-wallets)
   --append          Add to existing files
-  --rpc     URL     Devnet RPC endpoint
+  --rpc     URL     RPC endpoint (default: devnet)
   --no-airdrop      Skip airdrop
   --help            Show this help
 `);
@@ -76,11 +77,18 @@ if (has("--help") || has("-h")) {
 const COUNT      = Math.max(1, parseInt(argVal("--count",  "5"), 10));
 const WORDS      = parseInt(argVal("--words", "24"), 10) === 12 ? 128 : 256; // bip39 entropy bits
 const SOL_EACH   = Math.max(0, parseFloat(argVal("--sol", "2")));
-const OUT_BASE   = argVal("--out", join(__dirname, "devnet-wallets"));
 const APPEND     = has("--append");
 const RPC_URL    = argVal("--rpc", "https://api.devnet.solana.com");
 const NO_AIRDROP = has("--no-airdrop");
 
+// Network label inferred from the RPC URL — drives the default output paths,
+// the JSON `network` field, and the warnings in the .txt guide.
+const NETWORK = RPC_URL.includes("testnet") ? "testnet"
+  : RPC_URL.includes("mainnet") ? "mainnet-beta"
+  : "devnet";
+const NETNAME = NETWORK === "mainnet-beta" ? "Mainnet" : NETWORK[0].toUpperCase() + NETWORK.slice(1);
+
+const OUT_BASE   = argVal("--out", join(__dirname, `${NETWORK}-wallets`));
 const OUT_JSON   = OUT_BASE.endsWith(".json") ? OUT_BASE : `${OUT_BASE}.json`;
 const OUT_TXT    = OUT_BASE.replace(/\.json$/, "") + ".txt";
 const MAX_SOL_REQ = 5;
@@ -141,9 +149,9 @@ function buildTxt(wallets, isAppend, existingCount) {
 
   if (!isAppend || existingCount === 0) {
     out += `${divider}\n`;
-    out += ` FORGE DEVNET WALLETS — IMPORT GUIDE\n`;
+    out += ` FORGE ${NETWORK.toUpperCase()} WALLETS — IMPORT GUIDE\n`;
     out += ` Generated : ${new Date().toISOString()}\n`;
-    out += ` Network   : DEVNET  ⚠  Never import these on mainnet\n`;
+    out += ` Network   : ${NETWORK.toUpperCase()}  ⚠  Never import these on mainnet\n`;
     out += `${divider}\n\n`;
   } else {
     out += `\n${"─".repeat(72)}\n`;
@@ -164,7 +172,7 @@ function buildTxt(wallets, isAppend, existingCount) {
     out += ` WALLET ${num} — ${w.label}\n`;
     out += `${"━".repeat(72)}\n\n`;
     out += `${thin}Address      :  ${w.publicKey}\n`;
-    out += `${thin}Balance      :  ${w.balance.toFixed(4)} SOL (devnet)\n`;
+    out += `${thin}Balance      :  ${w.balance.toFixed(4)} SOL (${NETWORK})\n`;
     out += `${thin}Derivation   :  ${w.derivationPath}\n`;
     out += `${thin}Created      :  ${w.createdAt}\n\n`;
 
@@ -204,13 +212,13 @@ function buildTxt(wallets, isAppend, existingCount) {
     out += `    2. Click the avatar icon (top right) > Add / Connect Wallet\n`;
     out += `    3. Choose "Import Secret Recovery Phrase"\n`;
     out += `    4. Enter the seed phrase words above\n`;
-    out += `    5. Switch to Devnet:\n`;
+    out += `    5. Switch to ${NETNAME}:\n`;
     out += `       Settings (gear icon) > Developer Settings > Enable Testnet Mode\n`;
-    out += `       Then pick "Solana Devnet" from the network selector\n\n`;
+    out += `       Then pick "Solana ${NETNAME}" from the network selector\n\n`;
     out += `  Option B — Private Key:\n`;
     out += `    1. Open Phantom > Add / Connect Wallet > Import Private Key\n`;
     out += `    2. Paste the base58 private key from above\n`;
-    out += `    3. Switch to Devnet (same steps as Option A step 5)\n\n`;
+    out += `    3. Switch to ${NETNAME} (same steps as Option A step 5)\n\n`;
 
     out += ` SOLFLARE\n`;
     out += ` ${"─".repeat(40)}\n`;
@@ -218,23 +226,23 @@ function buildTxt(wallets, isAppend, existingCount) {
     out += `    1. Open Solflare > + (add wallet) > Import via Mnemonic\n`;
     out += `    2. Paste the seed phrase\n`;
     out += `    3. Select derivation path: m/44'/501'/0'/0'\n`;
-    out += `    4. Switch to Devnet: Settings > Network > Devnet\n\n`;
+    out += `    4. Switch to ${NETNAME}: Settings > Network > ${NETNAME}\n\n`;
     out += `  Option B — Private Key:\n`;
     out += `    1. Solflare > + > Import via Private Key\n`;
     out += `    2. Paste the base58 key\n`;
-    out += `    3. Switch to Devnet: Settings > Network > Devnet\n\n`;
+    out += `    3. Switch to ${NETNAME}: Settings > Network > ${NETNAME}\n\n`;
 
     out += ` BACKPACK\n`;
     out += ` ${"─".repeat(40)}\n`;
     out += `  1. Open Backpack > + (top left) > Import Wallet\n`;
     out += `  2. Choose "Secret Recovery Phrase"\n`;
     out += `  3. Paste the seed phrase\n`;
-    out += `  4. Switch to Devnet: Settings icon > Solana > Network > Devnet\n\n`;
+    out += `  4. Switch to ${NETNAME}: Settings icon > Solana > Network > ${NETNAME}\n\n`;
 
     out += ` IN JAVASCRIPT TEST SCRIPTS\n`;
     out += ` ${"─".repeat(40)}\n`;
     out += `  import { Keypair } from "@solana/web3.js";\n`;
-    out += `  import wallets from "./scripts/devnet-wallets.json"\n`;
+    out += `  import wallets from "./scripts/${NETWORK}-wallets.json"\n`;
     out += `                        assert { type: "json" };\n\n`;
     out += `  // Load wallet by index\n`;
     out += `  const kp = Keypair.fromSecretKey(\n`;
@@ -255,7 +263,7 @@ function buildTxt(wallets, isAppend, existingCount) {
     out += `  These wallets contain real private keys and seed phrases.\n`;
     out += `  - NEVER commit this file to git (already in .gitignore)\n`;
     out += `  - NEVER share or upload this file\n`;
-    out += `  - ONLY use on devnet — these have no mainnet value\n`;
+    out += `  - ONLY use on ${NETWORK} — these have no mainnet value\n`;
     out += `  - Delete when testing is complete\n`;
     out += `${divider}\n`;
   }
@@ -271,7 +279,7 @@ async function main() {
   const wordCount = WORDS === 128 ? 12 : 24;
   const connection = NO_AIRDROP ? null : new Connection(RPC_URL, "confirmed");
 
-  console.log("\n=== Forge Devnet Wallet Generator ===\n");
+  console.log(`\n=== Forge Wallet Generator (${NETWORK}) ===\n`);
   console.log(`  Wallets    : ${COUNT}`);
   console.log(`  Mnemonic   : ${wordCount} words (BIP39, m/44'/501'/0'/0')`);
   if (!NO_AIRDROP) {
@@ -323,7 +331,7 @@ async function main() {
       secretKeyArray:  Array.from(kp.secretKey),
       balance,
       airdropped,
-      network: "devnet",
+      network: NETWORK,
       createdAt: new Date().toISOString(),
     });
 

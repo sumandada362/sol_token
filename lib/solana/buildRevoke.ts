@@ -1,10 +1,10 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { createSetAuthorityInstruction, AuthorityType, getMint } from "@solana/spl-token";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { mplTokenMetadata, updateV1, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token-metadata";
+import { updateV1, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token-metadata";
 import { publicKey as umiPublicKey, createNoopSigner, signerIdentity } from "@metaplex-foundation/umi";
 import { toWeb3JsInstruction } from "@metaplex-foundation/umi-web3js-adapters";
 import { getConnection } from "./connection";
+import { getUmi } from "./umi";
 import { getMintProgramId } from "./program";
 import { feeIx, FEES } from "./fees";
 import type { RevokeInput } from "./validate";
@@ -40,13 +40,16 @@ export async function buildRevokeTx(input: RevokeInput): Promise<Transaction> {
     if (fee) tx.add(fee);
 
   } else if (input.type === "update") {
-    const umi = createUmi(process.env.SOLANA_RPC_URL!).use(mplTokenMetadata());
+    const umi = getUmi();
     const payerSigner = createNoopSigner(umiPublicKey(input.payer));
     umi.use(signerIdentity(payerSigner));
 
     const metadata = await fetchMetadataFromSeeds(umi, { mint: umiPublicKey(input.mint) });
     if (metadata.updateAuthority !== input.payer) {
       throw new Error("Caller is not the update authority");
+    }
+    if (!metadata.isMutable) {
+      throw new Error("Token metadata is already immutable");
     }
 
     const builder = updateV1(umi, {
@@ -59,7 +62,7 @@ export async function buildRevokeTx(input: RevokeInput): Promise<Transaction> {
     // make-immutable is free — no fee instruction needed
 
   } else if (input.type === "updateAuthority") {
-    const umi = createUmi(process.env.SOLANA_RPC_URL!).use(mplTokenMetadata());
+    const umi = getUmi();
     const payerSigner = createNoopSigner(umiPublicKey(input.payer));
     umi.use(signerIdentity(payerSigner));
 

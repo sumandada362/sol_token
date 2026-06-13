@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const ALLOWED_ORIGINS = new Set([
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://forge.solana.tools",
-  // Allow localhost during dev
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-]);
+const ALLOWED_ORIGINS = new Set(
+  [
+    // NEXT_PUBLIC_APP_URL is what the env templates define; SITE_URL kept for
+    // compatibility. Without these, deploys on any other domain would reject
+    // legitimate Origin-fallback requests (older browsers without Fetch Metadata).
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_APP_URL,
+    "https://forge.solana.tools",
+    // Allow localhost during dev
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+  ].filter((o): o is string => Boolean(o))
+);
 
 // Routes that modify state and must pass the CSRF origin check.
 // Webhook routes are excluded (they have their own secret-header auth).
