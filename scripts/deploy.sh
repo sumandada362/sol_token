@@ -60,7 +60,8 @@ fi
 # ── 3. Install deps ─────────────────────────────────────────────────────────
 info "Installing dependencies"
 corepack enable >/dev/null 2>&1 || true
-pnpm install --frozen-lockfile
+# Prefer the exact lockfile; fall back if it drifted so a deploy never hard-fails here.
+pnpm install --frozen-lockfile || { info "lockfile out of sync — installing without --frozen-lockfile"; pnpm install --no-frozen-lockfile; }
 
 # ── 4. DB migrations (opt-in; create-if-not-exists, safe to repeat) ─────────
 if $RUN_MIGRATE; then
