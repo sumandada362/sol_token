@@ -179,7 +179,7 @@ sudo nginx -t && sudo systemctl reload nginx
 
 # ── STEP 6 — Build + run as a NEW pm2 process (existing pm2 apps untouched) ──
 info "Step 6/6 — build & start (pm2 process 'solana-token')"
-./scripts/deploy.sh --migrate
+bash scripts/deploy.sh --migrate
 # survive reboots (idempotent; does not affect other pm2 apps)
 sudo env PATH="$PATH" pm2 startup systemd -u "$USER" --hp "$HOME" >/dev/null 2>&1 || true
 pm2 save >/dev/null 2>&1 || true
