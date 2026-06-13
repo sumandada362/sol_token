@@ -42,10 +42,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# test wallets (devnet/testnet) — contain private keys and seed phrases, never commit
-/scripts/*.json
-/scripts/*.txt
-/scripts/wallet-addresses.txt
+# scripts: only deploy + smoke tooling belongs in the repo. Dev/test scripts
+# (wallet generators, e2e/adversarial suites, dev-redis, load test) and wallet
+# files (which hold private keys + seed phrases) stay local only.
+/scripts/*
+!/scripts/deploy.sh
+!/scripts/vps-bootstrap.sh
+!/scripts/smoke-pages.mjs
 
 # local junk — never commit
 /.git - Copy/
