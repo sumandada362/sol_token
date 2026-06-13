@@ -1,0 +1,7 @@
+# Shell scripts must use LF — CRLF breaks them on the Linux VPS
+# (bash: $'\r': command not found). Authored on Windows, run on Ubuntu.
+*.sh text eol=lf
+
+# Node ESM scripts: keep LF so the shebang line stays clean if executed directly
+*.mjs text eol=lf
+*.mts text eol=lf
