@@ -1,13 +1,50 @@
 import type React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import CustomizeTokenPanel from "@/components/CustomizeTokenPanel";
 import Footer from "@/components/Footer";
-import { JsonLdSoftwareApplication } from "@/components/JsonLd";
+import { JsonLdSoftwareApplication, JsonLdFaqPage } from "@/components/JsonLd";
+import { abs } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  alternates: { canonical: abs("/") },
+  keywords: [
+    "create solana token",
+    "solana token creator",
+    "spl token maker",
+    "solana multisender",
+    "mint solana tokens",
+    "revoke mint authority solana",
+    "solana token tools",
+    "launch token on solana",
+    "no-code solana token",
+  ],
+};
+
+const homeFaq = [
+  {
+    q: "Is my token safe?",
+    a: "We surface authority status, top-holder concentration, and wallet risk indicators. No guarantees exist in crypto, but we show what matters so you can decide.",
+  },
+  {
+    q: "How do I add liquidity?",
+    a: "Route through Raydium, Orca, Meteora, PumpSwap, Invariant, or FluxBeam. Set your amounts and sign — costs are shown upfront.",
+  },
+  {
+    q: "What are risk flags?",
+    a: "Red flags include active authorities, extreme holder concentration, or suspicious wallet patterns. They're warnings, not verdicts.",
+  },
+  {
+    q: "Can I burn my holdings?",
+    a: "Yes. Use burn to remove tokens from circulation permanently. The transaction is irreversible.",
+  },
+];
 
 export default function Home() {
   return (
     <>
       <JsonLdSoftwareApplication />
+      <JsonLdFaqPage faq={homeFaq} />
       {/* ── Hero ── */}
       <section className="hero">
         {/* 1) hero text + description */}

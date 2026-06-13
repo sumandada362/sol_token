@@ -5,6 +5,7 @@ import DevnetBanner from "@/components/DevnetBanner";
 import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
 import { WalletProvider } from "@/lib/wallet/WalletProvider";
+import { JsonLdOrganization, JsonLdWebSite } from "@/components/JsonLd";
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
 
@@ -46,6 +47,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <JsonLdOrganization />
+        <JsonLdWebSite />
         <WalletProvider>
           {/* z-index: -1 — fixed rotating-disc background (never scrolls) */}
           <BgCanvas />

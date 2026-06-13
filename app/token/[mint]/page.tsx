@@ -22,8 +22,11 @@ export async function generateMetadata({ params }: { params: Promise<{ mint: str
   const data = await fetchTokenData(mint);
   const name = data?.name ?? `Token ${mint.slice(0, 8)}…`;
   return {
-    title: `${name} — Solana Token`,
+    title: `${name} — Token Safety & Analytics | Solana Token`,
     description: `Security, holders, and analytics for Solana token ${mint}.`,
+    // Per-mint pages are thin, programmatic, and unbounded — keep them out of the
+    // index to protect overall site quality, but let link equity flow through.
+    robots: { index: false, follow: true },
   };
 }
 

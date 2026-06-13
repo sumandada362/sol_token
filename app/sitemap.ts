@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
-import { getAllSlugs } from "@/lib/content";
-
-const BASE = "https://solanatoken.app";
+import { getAllArticles, getAllSlugs } from "@/lib/content";
+import { SITE_URL } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date().toISOString();
+
+  // High-intent conversion pages get the top priority.
+  const primary = ["/create-token", "/tools/multisender", "/tools/mint-tokens", "/burn"];
 
   const staticRoutes = [
     "/",
@@ -27,6 +29,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/tools/revoke-freeze",
     "/tools/revoke-update",
     "/tools/make-immutable",
+    "/tools/freeze-account",
+    "/tools/unfreeze-account",
+    "/tools/burn-lp",
     "/tools/market/create",
     "/tools/unit-converter",
     "/tools/sol-converter",
@@ -35,32 +40,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/legal/risk",
   ];
 
-  const blogSlugs = getAllSlugs("blog");
+  const blogArticles = getAllArticles("blog");
   const docSlugs = getAllSlugs("docs");
 
   return [
     ...staticRoutes.map((route) => ({
-      url: `${BASE}${route}`,
+      url: `${SITE_URL}${route}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
-      priority:
-        route === "/"
-          ? 1.0
-          : route.startsWith("/tools") || route.startsWith("/blog")
-          ? 0.9
-          : 0.8,
+      priority: route === "/" ? 1.0 : primary.includes(route) ? 0.95 : route.startsWith("/tools") ? 0.9 : 0.7,
     })),
-    ...blogSlugs.map((slug) => ({
-      url: `${BASE}/blog/${slug}`,
-      lastModified: now,
+    ...blogArticles.map((a) => ({
+      url: `${SITE_URL}/blog/${a.frontmatter.slug}`,
+      lastModified: a.frontmatter.updated ?? a.frontmatter.date ?? now,
       changeFrequency: "monthly" as const,
       priority: 0.85,
     })),
     ...docSlugs.map((slug) => ({
-      url: `${BASE}/docs/${slug}`,
+      url: `${SITE_URL}/docs/${slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
-      priority: 0.7,
+      priority: 0.75,
     })),
   ];
 }

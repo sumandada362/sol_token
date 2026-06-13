@@ -1,5 +1,38 @@
 import type { FaqItem } from "@/lib/content";
 
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
+
+/** Organization — used site-wide so Google links the brand, logo, and socials. */
+export function JsonLdOrganization() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Solana Token",
+    url: BASE,
+    logo: `${BASE}/coin_gold.png`,
+    description:
+      "No-code toolkit to create, manage, and launch Solana tokens (SPL & Token-2022) from your own wallet.",
+    sameAs: [] as string[], // add X/Telegram/GitHub URLs here once live
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
+}
+
+/** WebSite + Sitelinks SearchAction — enables a search box in Google results. */
+export function JsonLdWebSite() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Solana Token",
+    url: BASE,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: `${BASE}/token/{search_term_string}` },
+      "query-input": "required name=search_term_string",
+    },
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
+}
+
 export function JsonLdSoftwareApplication() {
   const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
   const data = {
@@ -18,6 +51,42 @@ export function JsonLdSoftwareApplication() {
       price: "0.1",
       priceCurrency: "SOL",
       description: "Token creation from 0.1 SOL all-in",
+    },
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
+}
+
+export function JsonLdArticle({
+  title,
+  description,
+  slug,
+  datePublished,
+  dateModified,
+  image,
+}: {
+  title: string;
+  description: string;
+  slug: string;
+  datePublished?: string;
+  dateModified?: string;
+  image?: string;
+}) {
+  const url = `${BASE}/blog/${slug}`;
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description,
+    image: image ?? `${BASE}/coin_gold.png`,
+    datePublished,
+    dateModified: dateModified ?? datePublished,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    url,
+    author: { "@type": "Organization", name: "Solana Token", url: BASE },
+    publisher: {
+      "@type": "Organization",
+      name: "Solana Token",
+      logo: { "@type": "ImageObject", url: `${BASE}/coin_gold.png` },
     },
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;

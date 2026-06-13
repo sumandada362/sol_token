@@ -8,9 +8,9 @@ import { Fee } from "@/components/mdx/Fee";
 import { Warning } from "@/components/mdx/Warning";
 import { CTA } from "@/components/mdx/CTA";
 import { Disclaimer } from "@/components/mdx/Disclaimer";
-import { JsonLdFaqPage, JsonLdHowTo, JsonLdBreadcrumb } from "@/components/JsonLd";
+import { JsonLdFaqPage, JsonLdBreadcrumb, JsonLdArticle } from "@/components/JsonLd";
 
-const BASE = "https://solanatoken.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.app";
 
 const mdxComponents = { Fee, Warning, CTA, Disclaimer };
 
@@ -33,9 +33,12 @@ export async function generateMetadata({
     description: fm.description,
     alternates: { canonical: `${BASE}/blog/${fm.slug}` },
     openGraph: {
+      type: "article",
       title: fm.title,
       description: fm.description,
       url: `${BASE}/blog/${fm.slug}`,
+      publishedTime: fm.date,
+      modifiedTime: fm.updated ?? fm.date,
       images: [{ url: ogUrl, width: 1200, height: 630 }],
     },
     twitter: {
@@ -75,6 +78,13 @@ export default async function BlogArticlePage({
   return (
     <div className="app-page">
       <JsonLdBreadcrumb items={breadcrumbs} />
+      <JsonLdArticle
+        title={fm.title}
+        description={fm.description}
+        slug={fm.slug}
+        datePublished={fm.date}
+        dateModified={fm.updated ?? fm.date}
+      />
       {fm.faq && fm.faq.length > 0 && <JsonLdFaqPage faq={fm.faq} />}
 
       <div className="blog-article-layout">
