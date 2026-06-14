@@ -17,7 +17,9 @@ cd "$(dirname "$0")/.."
 # download it without an interactive prompt.
 export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
-ENV_FILE=".env.local"
+# Env now lives in app_configs/; fall back to the legacy root location if present.
+ENV_FILE="app_configs/.env.local"
+[[ -f "$ENV_FILE" ]] || ENV_FILE=".env.local"
 RUN_MIGRATE=false
 [[ "${1:-}" == "--migrate" ]] && RUN_MIGRATE=true
 
@@ -26,7 +28,7 @@ green() { printf "\033[32m%s\033[0m\n" "$*"; }
 info()  { printf "\033[36m▶ %s\033[0m\n" "$*"; }
 
 # ── 1. Env presence ─────────────────────────────────────────────────────────
-[[ -f "$ENV_FILE" ]] || { red "Missing $ENV_FILE — copy .env.mainnet.example to .env.local and fill it in."; exit 1; }
+[[ -f "$ENV_FILE" ]] || { red "Missing $ENV_FILE — copy .env.mainnet.example to app_configs/.env.local and fill it in."; exit 1; }
 
 getenv() { grep -E "^$1=" "$ENV_FILE" | head -1 | cut -d= -f2- | sed 's/[[:space:]]*$//'; }
 

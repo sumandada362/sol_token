@@ -6,6 +6,8 @@ import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
 import { WalletProvider } from "@/lib/wallet/WalletProvider";
 import { JsonLdOrganization, JsonLdWebSite } from "@/components/JsonLd";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { googleVerificationToken } from "@/app_configs/integrations";
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
 
@@ -37,7 +39,7 @@ export const metadata: Metadata = {
   // / Bing, which is the fastest way to get a new domain indexed. Undefined codes
   // are simply omitted.
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    google: googleVerificationToken() ?? process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
     other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
       ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
@@ -73,6 +75,8 @@ export default function RootLayout({
           {/* z-index: 1 — scrollable content (hero + every other section) */}
           <div id="content">{children}</div>
           <MotionProvider />
+          {/* GA4 — injected on every page from lib/integrations.ts (no-op when unset) */}
+          <GoogleAnalytics />
         </WalletProvider>
       </body>
     </html>
