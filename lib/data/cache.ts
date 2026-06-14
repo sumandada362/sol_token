@@ -18,7 +18,11 @@ export interface TokenPageData {
   // Authorities
   mintAuthority: string | null;
   freezeAuthority: string | null;
+  updateAuthority: string | null;
   isMutable: boolean;
+  // Custom creator info (off-chain JSON `creator` field)
+  creatorName: string | null;
+  creatorWebsite: string | null;
   // Holder stats
   totalHolders: number | null;
   topHolderPct: number;
@@ -112,6 +116,9 @@ async function fetchLiveTokenPageData(mint: string): Promise<TokenPageData> {
   const name = meta?.name ?? null;
   const symbol = meta?.symbol ?? null;
   const image = meta?.image ?? null;
+  const updateAuthority = meta?.updateAuthority ?? null;
+  const creatorName = meta?.creatorName ?? null;
+  const creatorWebsite = meta?.creatorWebsite ?? null;
 
   const holders = topHoldersRaw.status === "fulfilled" ? topHoldersRaw.value : [];
   const supplyVal = supply.status === "fulfilled" ? supply.value : BigInt(0);
@@ -152,7 +159,10 @@ async function fetchLiveTokenPageData(mint: string): Promise<TokenPageData> {
     image,
     mintAuthority,
     freezeAuthority,
+    updateAuthority,
     isMutable,
+    creatorName,
+    creatorWebsite,
     totalHolders,
     topHolderPct,
     top10Pct,
@@ -172,6 +182,9 @@ interface MetaplexMeta {
   symbol: string | null;
   image: string | null;
   isMutable: boolean;
+  updateAuthority: string | null;
+  creatorName: string | null;
+  creatorWebsite: string | null;
 }
 
 async function fetchMetaplexMetadata(mint: string): Promise<MetaplexMeta> {
@@ -179,14 +192,18 @@ async function fetchMetaplexMetadata(mint: string): Promise<MetaplexMeta> {
     const metadata = await fetchMetadataFromSeeds(getUmi(), { mint: umiPublicKey(mint) });
 
     let image: string | null = null;
+    let creatorName: string | null = null;
+    let creatorWebsite: string | null = null;
     if (metadata.uri && isSafeExternalUrl(metadata.uri)) {
       try {
         const res = await fetch(metadata.uri, { signal: AbortSignal.timeout(4000) });
         if (res.ok) {
-          const json = await res.json() as { image?: string };
+          const json = await res.json() as { image?: string; creator?: { name?: string; site?: string } };
           image = json.image ?? null;
+          creatorName = json.creator?.name ?? null;
+          creatorWebsite = json.creator?.site ?? null;
         }
-      } catch { /* image fetch is best-effort */ }
+      } catch { /* off-chain fetch is best-effort */ }
     }
 
     return {
@@ -194,8 +211,11 @@ async function fetchMetaplexMetadata(mint: string): Promise<MetaplexMeta> {
       symbol: metadata.symbol ?? null,
       image,
       isMutable: metadata.isMutable,
+      updateAuthority: metadata.updateAuthority ? String(metadata.updateAuthority) : null,
+      creatorName,
+      creatorWebsite,
     };
   } catch {
-    return { name: null, symbol: null, image: null, isMutable: true };
+    return { name: null, symbol: null, image: null, isMutable: true, updateAuthority: null, creatorName: null, creatorWebsite: null };
   }
 }

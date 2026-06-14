@@ -32,11 +32,23 @@ export const metadata: Metadata = {
       "The fastest and safest way to create and launch tokens on Solana. No coding, no complexity.",
     images: ["/coin_gold.png"],
   },
+  // Search-engine ownership verification. Drop the codes into your env to emit the
+  // <meta> tags — required to submit the sitemap in Google Search Console / Yandex
+  // / Bing, which is the fastest way to get a new domain indexed. Undefined codes
+  // are simply omitted.
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : {},
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#0a0a0a",
 };
 
 export default function RootLayout({
@@ -54,6 +66,8 @@ export default function RootLayout({
           <BgCanvas />
           {/* Visible only on non-mainnet builds — prevents wrong-cluster confusion */}
           <DevnetBanner />
+          {/* Opaque top scrim — content scrolling up disappears cleanly behind the navbar */}
+          <div className="nav-scrim" aria-hidden="true" />
           {/* z-index: 2 — glassmorphism navbar */}
           <Navbar />
           {/* z-index: 1 — scrollable content (hero + every other section) */}

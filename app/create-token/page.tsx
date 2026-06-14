@@ -18,7 +18,7 @@ interface FormState {
   name: string; symbol: string; supply: string; decimals: string;
   description: string; website: string; twitter: string; telegram: string;
   standard: "spl" | "token2022";
-  revokeMint: boolean; revokeFreeze: boolean; revokeUpdate: boolean;
+  revokeMint: boolean; revokeFreeze: boolean; revokeUpdate: boolean; revokeUpdateAuthority: boolean;
   vanityAddress: boolean;
   customCreator: boolean; creatorName: string; creatorWebsite: string;
 }
@@ -26,7 +26,7 @@ interface FormState {
 const DEFAULT_FORM: FormState = {
   name: "", symbol: "", supply: "1000000000", decimals: "9",
   description: "", website: "", twitter: "", telegram: "",
-  standard: "spl", revokeMint: false, revokeFreeze: false, revokeUpdate: false, vanityAddress: false,
+  standard: "spl", revokeMint: false, revokeFreeze: false, revokeUpdate: false, revokeUpdateAuthority: false, vanityAddress: false,
   customCreator: false, creatorName: "", creatorWebsite: "",
 };
 
@@ -124,6 +124,7 @@ export default function CreatePage() {
   const platformFee = 0.1
     + (form.revokeMint ? 0.05 : 0)
     + (form.revokeFreeze ? 0.05 : 0)
+    + (form.revokeUpdateAuthority ? 0.05 : 0)
     + (form.customCreator ? 0.1 : 0);
   const totalFee = platformFee + 0.018;
 
@@ -179,6 +180,7 @@ export default function CreatePage() {
               revokeMint: form.revokeMint,
               revokeFreeze: form.revokeFreeze,
               revokeUpdate: form.revokeUpdate,
+              revokeUpdateAuthority: form.revokeUpdateAuthority,
               customCreator: form.customCreator,
             }),
           }).then(async (r) => {
@@ -376,7 +378,8 @@ export default function CreatePage() {
                 <div className="wizard-divider" />
                 <ToggleRow label="Revoke mint authority" hint="Permanently cap supply — +0.05 SOL" checked={form.revokeMint} onChange={(v) => setForm({ ...form, revokeMint: v })} />
                 <ToggleRow label="Revoke freeze authority" hint="No wallet can ever be frozen — +0.05 SOL" checked={form.revokeFreeze} onChange={(v) => setForm({ ...form, revokeFreeze: v })} />
-                <ToggleRow label="Make immutable" hint="Lock metadata permanently — Free" checked={form.revokeUpdate} onChange={(v) => setForm({ ...form, revokeUpdate: v })} />
+                <ToggleRow label="Revoke update authority" hint="Hand update authority to no one — explorers show it revoked — +0.05 SOL" checked={form.revokeUpdateAuthority} onChange={(v) => setForm({ ...form, revokeUpdateAuthority: v })} />
+                <ToggleRow label="Make immutable" hint="Lock metadata permanently so it can never change — Free" checked={form.revokeUpdate} onChange={(v) => setForm({ ...form, revokeUpdate: v })} />
                 <ToggleRow label="Custom creator info" hint="Show your own creator name on explorers — +0.1 SOL" checked={form.customCreator} onChange={(v) => setForm({ ...form, customCreator: v })} />
                 {form.customCreator && (
                   <div className="wizard-form-grid" style={{ marginTop: "0.75rem" }}>
@@ -413,7 +416,8 @@ export default function CreatePage() {
                 <ReviewRow label="Standard" value={form.standard === "token2022" ? "Token-2022" : "SPL"} />
                 <ReviewRow label="Mint authority" value={form.revokeMint ? "Will be revoked" : "Active"} />
                 <ReviewRow label="Freeze authority" value={form.revokeFreeze ? "Will be revoked" : "Active"} />
-                <ReviewRow label="Update authority" value={form.revokeUpdate ? "Will be revoked (immutable)" : "Active"} />
+                <ReviewRow label="Update authority" value={form.revokeUpdateAuthority ? "Will be revoked" : "Active"} />
+                <ReviewRow label="Metadata" value={form.revokeUpdate ? "Will be immutable" : "Mutable"} />
                 {form.customCreator && <ReviewRow label="Creator" value={form.creatorName || "—"} />}
                 {logoFile && <ReviewRow label="Logo" value={logoFile.name} />}
               </div>
@@ -422,6 +426,7 @@ export default function CreatePage() {
                 <div className="cost-row"><span>Base fee</span><span className="lp-mono">0.1 SOL</span></div>
                 {form.revokeMint && <div className="cost-row"><span>Revoke mint authority</span><span className="lp-mono">0.05 SOL</span></div>}
                 {form.revokeFreeze && <div className="cost-row"><span>Revoke freeze authority</span><span className="lp-mono">0.05 SOL</span></div>}
+                {form.revokeUpdateAuthority && <div className="cost-row"><span>Revoke update authority</span><span className="lp-mono">0.05 SOL</span></div>}
                 {form.revokeUpdate && <div className="cost-row"><span>Make immutable</span><span className="lp-mono">Free</span></div>}
                 {form.customCreator && <div className="cost-row"><span>Custom creator info</span><span className="lp-mono">0.1 SOL</span></div>}
                 <div className="cost-row"><span>Network rent (est.)</span><span className="lp-mono">~0.018 SOL</span></div>

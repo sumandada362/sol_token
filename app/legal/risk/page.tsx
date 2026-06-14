@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { abs } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Risk Disclaimer — Solana Token",
   description: "Important risk information for using Solana Token to create and trade Solana tokens.",
+  alternates: { canonical: abs("/legal/risk") },
 };
 
 const sections = [
@@ -75,14 +77,8 @@ export default function RiskPage() {
         </nav>
 
         <article className="legal-content" data-reveal>
-          <div className="legal-risk-notice">
-            ⚠ This disclaimer contains important risk information. Please read it carefully before using Solana Token.
-          </div>
-          <div className="legal-attorney-notice">
-            ⚖️ Template only — not legal advice. Requires attorney review before publishing.
-          </div>
           <h1 className="docs-article-h1">Risk Disclaimer</h1>
-          <p className="legal-date">Last updated: [Date]</p>
+          <p className="legal-date">Last updated: June 14, 2026</p>
 
           {sections.map((s) => (
             <section key={s.id} id={s.id} className="legal-section">

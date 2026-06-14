@@ -4,6 +4,7 @@ import { updateV1, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token
 import { publicKey as umiPublicKey, createNoopSigner, signerIdentity } from "@metaplex-foundation/umi";
 import { toWeb3JsInstruction } from "@metaplex-foundation/umi-web3js-adapters";
 import { getConnection } from "./connection";
+import { assertSimulates } from "./simulate";
 import { getUmi } from "./umi";
 import { getMintProgramId } from "./program";
 import { feeIx, FEES } from "./fees";
@@ -87,5 +88,6 @@ export async function buildRevokeTx(input: RevokeInput): Promise<Transaction> {
     if (fee) tx.add(fee);
   }
 
+  await assertSimulates(connection, tx, "revoke");
   return tx;
 }

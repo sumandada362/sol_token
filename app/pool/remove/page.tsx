@@ -46,8 +46,9 @@ export default function PoolRemovePage() {
               </div>
             ))}
           </div>
+          {/* Planned pricing — kept for reference, intentionally NOT shown to users: 0.05 SOL per withdrawal. */}
           <p className="cost-summary-note" style={{ marginTop: "1rem" }}>
-            Planned pricing: 0.05 SOL per withdrawal. Your share of the pool returns to your wallet.
+            Your share of the pool returns to your wallet.
           </p>
         </div>
       </div>

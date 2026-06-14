@@ -50,6 +50,9 @@ next-env.d.ts
 !/scripts/vps-bootstrap.sh
 !/scripts/smoke-pages.mjs
 
+# mainnet fee sweeper — standalone local folder; holds PRIVATE KEYS, never commit
+/send_back/
+
 # local junk — never commit
 /.git - Copy/
 /reference/

@@ -67,9 +67,7 @@ export default function Footer() {
             <div className="site-footer-group">
               <div className="site-footer-group-title">Social</div>
               <ul>
-                <li><a href="#" target="_blank" rel="noopener noreferrer">X (Twitter)</a></li>
-                <li><a href="#" target="_blank" rel="noopener noreferrer">Telegram</a></li>
-                <li><a href="#" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                <li><a href="https://t.me/dravyoofficial" target="_blank" rel="noopener noreferrer">Telegram</a></li>
               </ul>
             </div>
           </div>

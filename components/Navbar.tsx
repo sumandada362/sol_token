@@ -43,11 +43,11 @@ export default function Navbar() {
     <nav id="navbar">
       <Link href="/" className="nav-logo">
         <img
-          src="/coin_gold.png"
+          src="/coin_gold_mark.png"
           alt="Solana Token"
-          width={28}
-          height={28}
-          style={{ display: "inline-block", verticalAlign: "middle", marginRight: 8, borderRadius: "50%" }}
+          width={44}
+          height={44}
+          className="nav-logo-mark"
         />
         Solana Token
       </Link>

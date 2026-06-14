@@ -1,97 +1,65 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { abs } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Terms of Service — Solana Token",
-  description: "Solana Token Terms of Service.",
+  description:
+    "Terms of Service for Solana Token (Dravyo) — the non-custodial toolkit to create and manage Solana tokens. Your rights and obligations when using the platform.",
+  alternates: { canonical: abs("/legal/terms") },
 };
 
 const sections = [
   {
-    id: "acceptance",
-    title: "1. Acceptance of Terms",
-    body: `By accessing or using Solana Token, you agree to be bound by these Terms of Service. You represent that you are of legal age and capacity to enter into a binding agreement, and that you are not located in a jurisdiction where use of the Service is prohibited. If you do not agree, do not use the Service.`,
+    id: "general",
+    title: "1. General Information",
+    body: `These Terms of Service ("Terms") govern the access and use of the internet website, the address of which is https://solanatoken.dravyo.com (hereinafter "Website"), including the software and tools provided through it. For more information about us as the provider of the services (hereinafter "we", "us", or "Dravyo"), please refer to the Website.
+
+The subject matter of these Terms is the regulation of the rights and obligations of the users of the Website. Dravyo is a web-based platform offering a range of features, one of which is the creation, launching, and management of personalized tokens on the Solana blockchain. This feature includes, among others, creating SPL and Token-2022 tokens, creating liquidity pools on third-party decentralized exchanges, minting additional supply, burning tokens, and revoking mint, freeze, or update authorities. You may need to connect your wallet to the Website to access some or all of the services.
+
+Dravyo operates as an interface on the Solana blockchain and distinguishes itself from a trader, contractor, broker, seller, financial institution, or credit provider. The software facilitates the creation of tokens and related on-chain actions through smart contracts and Solana programs. Dravyo does not store, send, or receive digital assets, private keys, or digital goods.
+
+Each time the user accesses the Website, the user irrevocably agrees to comply with these Terms posted on this Website. If the user does not agree to any of the provisions set out in these Terms, the user should not use the Website.`,
   },
   {
-    id: "description",
-    title: "2. Description of Service",
-    body: `Solana Token is a non-custodial interface that enables users to: create SPL and Token-2022 tokens on Solana; create liquidity pools on third-party decentralized exchanges; and burn token holdings. Solana Token does not custody funds or private keys, does not control the Solana network or any third-party DEX, and does not issue, endorse, or guarantee any token created through the Service.`,
+    id: "acknowledgements",
+    title: "2. User Acknowledgements",
+    body: `All token transactions facilitated through Dravyo are conducted on the Solana blockchain using the SPL and Token-2022 standards. Dravyo is not affiliated with the Solana Foundation or Solana Labs and cannot guarantee the availability, security, or proper functioning of the Solana blockchain for every individual transaction. This limitation specifically includes situations where a third party gains unauthorized access to any and all transactions, assets, or files.
+
+In addition, all transactions resulting in token creation or management are based on smart contracts, Solana programs, and blockchain technology, which may contain inherent technology and speculation risks. Users acknowledge and agree to these risks.
+
+The user understands that Dravyo does not own or control any third-party site, product, or service that they might access, visit, or use outside of Dravyo, including decentralized exchanges, wallet providers, RPC or data providers, and blockchain explorers. Dravyo will not be liable for the acts or omissions of any such third parties, nor will it be liable for any damage that users may suffer because of their transactions or any other interaction with any such third parties.`,
   },
   {
-    id: "non-custodial",
-    title: "3. Non-Custodial Nature & Wallets",
-    body: `You are solely responsible for your wallet, private keys, seed phrases, and transaction approvals. Solana Token never receives, holds, or transmits your private keys or funds. All transactions are initiated and signed by you. Lost keys cannot be recovered by Solana Token.`,
-  },
-  {
-    id: "fees",
-    title: "4. Fees",
-    body: `Solana Token charges the following platform fees: 0.1 SOL to create a token; 0.1 SOL per liquidity pool; 0.1 SOL to mint additional tokens; 0.05 SOL to revoke mint authority; 0.05 SOL to revoke freeze authority; 0.01 SOL per address to freeze or unfreeze a token account. Burn, Burn LP tokens, and Make Immutable carry no Solana Token fee. All fees are charged on-chain at the time of signing and are non-refundable once confirmed. Network rent and DEX setup costs are pass-through costs separate from platform fees. Fees are subject to change with notice.`,
-  },
-  {
-    id: "user-responsibilities",
-    title: "5. User Responsibilities & Acceptable Use",
-    body: `You agree to provide accurate token information and not use the Service to create tokens that violate applicable laws or misrepresent their nature. You will not use the Service to create securities or financial instruments without full regulatory compliance.`,
-  },
-  {
-    id: "prohibited",
-    title: "6. Prohibited Activities",
-    body: `You must not use Solana Token to: engage in fraud, rug pulls, or market manipulation; conduct money laundering or violate sanctions laws; impersonate any person or project; create tokens that infringe intellectual property or violate any law; scrape or abuse the platform's infrastructure.`,
-  },
-  {
-    id: "third-party",
-    title: "7. Third-Party Services",
-    body: `DEXs (Raydium, Orca, Meteora, PumpSwap, Invariant, FluxBeam), wallet providers, RPC/data providers, and blockchain explorers are independent third parties. Solana Token is not responsible for their performance, availability, fees, or any losses arising from their use.`,
-  },
-  {
-    id: "no-advice",
-    title: "8. No Financial, Legal, or Tax Advice",
-    body: `Nothing on Solana Token constitutes financial, investment, legal, or tax advice. Analytics data is informational and may be inaccurate or delayed. Always consult qualified professionals before making financial decisions.`,
-  },
-  {
-    id: "ip",
-    title: "9. Intellectual Property",
-    body: `Solana Token's brand, interface, and content are owned by [Entity Name]. You are granted a limited, revocable license to use the Service. You retain rights to content you upload but grant Solana Token a license to display it within the Service.`,
+    id: "eligibility",
+    title: "3. Eligibility",
+    body: `To access or use Dravyo, you represent that you are at least the age of majority in your jurisdiction. You further represent that your access and use of Dravyo will fully comply with all applicable laws and regulations and that you will not access or use Dravyo to conduct, promote, or otherwise facilitate any illegal activity, including fraud, market manipulation, money laundering, or the creation of tokens that misrepresent their nature. Furthermore, you represent that neither you nor any entity you represent are included in any trade embargoes or sanctions list, nor are you a resident, citizen, national, or agent of, or an entity organized, incorporated, or doing business in, any such territories.`,
   },
   {
     id: "disclaimer",
-    title: "10. Disclaimers of Warranty",
-    body: `THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. Solana Token DOES NOT WARRANT UPTIME, ACCURACY, FITNESS FOR ANY PURPOSE, OR THAT TRANSACTIONS WILL SUCCEED.`,
+    title: "4. Disclaimer",
+    body: `All materials on the Dravyo Website are for informational purposes only. Dravyo and its affiliates do not provide legal, fiscal, trading, economic, financial, or any other kind of advice or recommendation that may be relied upon. The information from the Website cannot be used as the basis for an investment strategy, and Dravyo makes no guarantee that it contains no errors, mistakes, misrepresentations, or failures. Tokens are created solely at the direction of the user, and Dravyo does not issue, endorse, audit, or guarantee any token created through the Service. Users will act at their own risk in accessing or relying on the content of the Website and are solely responsible for any consequences thereof.`,
   },
   {
-    id: "risk",
-    title: "11. Assumption of Risk",
-    body: `You acknowledge the risks inherent in blockchain-based services, including volatility, smart-contract risk, and total loss of funds. See the Risk Disclaimer for full details. By using the Service, you accept all such risks.`,
+    id: "proprietary-rights",
+    title: "5. Proprietary Rights",
+    body: `Dravyo owns the intellectual property generated by its contributors, including but not limited to software, text, designs, images, and copyrights. Unless otherwise stated, Dravyo reserves exclusive rights to its intellectual property, and no part of the Website, services, or content indicated therein may be copied, reproduced, republished, uploaded, posted, publicly displayed, encoded, translated, transmitted, or distributed in any way to any other computer, server, website, or other medium for publication or distribution for any commercial purpose, without Dravyo's express prior written consent. You retain rights to the content you upload but grant Dravyo a license to display it within the Service.`,
   },
   {
-    id: "liability",
-    title: "12. Limitation of Liability",
-    body: `TO THE MAXIMUM EXTENT PERMITTED BY LAW, Solana Token IS NOT LIABLE FOR INDIRECT, CONSEQUENTIAL, SPECIAL, OR INCIDENTAL DAMAGES, LOST PROFITS, OR LOSSES ARISING FROM BLOCKCHAIN OR THIRD-PARTY FAILURES. Solana Token'S AGGREGATE LIABILITY IS LIMITED TO THE FEES YOU PAID IN THE PRECEDING THREE MONTHS.`,
-  },
-  {
-    id: "indemnification",
-    title: "13. Indemnification",
-    body: `You agree to indemnify and hold harmless Solana Token and its affiliates from any claims, damages, or expenses (including attorneys' fees) arising from your use of the Service, your tokens, or your violation of these Terms.`,
-  },
-  {
-    id: "termination",
-    title: "14. Termination",
-    body: `Solana Token may suspend or limit your access for violations of these Terms. Because the Service is non-custodial, termination of your account does not affect your on-chain assets, which remain under your wallet's control.`,
-  },
-  {
-    id: "governing-law",
-    title: "15. Governing Law & Dispute Resolution",
-    body: `These Terms are governed by the laws of [Jurisdiction]. Any disputes shall be resolved by binding arbitration on an individual basis. Class actions are waived to the extent permitted by law.`,
+    id: "violation",
+    title: "6. Violation of the Terms",
+    body: `Dravyo may disclose any information it has about the user if it determines that such disclosure is necessary in connection with any investigation or complaint regarding the use of the Website, or to identify, contact, or bring legal action against someone who may be causing injury to or interference with Dravyo's rights or property. Dravyo may also disclose such information when applicable law requires or permits such disclosure, including exchanging information with other companies and organizations for fraud protection purposes. If Dravyo takes legal action against the user as a result of their violation of these Terms, Dravyo will be entitled to recover all reasonable fees and costs of such action.`,
   },
   {
     id: "changes",
-    title: "16. Changes to Terms",
-    body: `We may update these Terms. Continued use after changes take effect constitutes acceptance. Material changes will be announced in advance.`,
+    title: "7. Changes to the Terms",
+    body: `Dravyo reserves the right, at its sole discretion, to modify or replace these Terms at any time. If a revision is material, Dravyo will provide at least 30 days' notice prior to any new terms taking effect. The continued use of the Website after the end of the notification period will constitute an acceptance of the revised Terms. What constitutes a material change is determined at Dravyo's sole discretion.`,
   },
   {
     id: "contact",
-    title: "17. Contact",
-    body: `For legal inquiries, contact us at legal@[domain].`,
+    title: "8. Contact",
+    body: `To address a question, resolve a complaint regarding the Website, or receive further information regarding the services, please contact Dravyo via email at support@solanatoken.dravyo.com.`,
   },
 ];
 
@@ -110,16 +78,13 @@ export default function TermsPage() {
         </nav>
 
         <article className="legal-content" data-reveal>
-          <div className="legal-attorney-notice">
-            ⚖️ Template only — not legal advice. Requires attorney review before publishing.
-          </div>
           <h1 className="docs-article-h1">Terms of Service</h1>
-          <p className="legal-date">Last updated: [Date]</p>
+          <p className="legal-date">Last updated: June 14, 2026</p>
 
           {sections.map((s) => (
             <section key={s.id} id={s.id} className="legal-section">
               <h2 className="docs-article-h2">{s.title}</h2>
-              <p className="lp-body">{s.body}</p>
+              <p className="lp-body" style={{ whiteSpace: "pre-line" }}>{s.body}</p>
             </section>
           ))}
         </article>

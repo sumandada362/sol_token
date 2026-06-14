@@ -52,9 +52,9 @@ export default function PoolPage() {
               </div>
             ))}
           </div>
-          <p className="cost-summary-note" style={{ marginTop: "1rem" }}>
-            Planned pricing: flat 0.1 SOL Solana Token fee per pool. DEX setup costs (~0.4–0.6 SOL) go directly to the DEX protocol — never to Solana Token.
-          </p>
+          {/* Planned pricing — kept for reference, intentionally NOT shown to users:
+              flat 0.1 SOL Solana Token fee per pool; DEX setup costs (~0.4–0.6 SOL)
+              go directly to the DEX protocol — never to Solana Token. */}
         </div>
 
         <div className="tools-cta lp-card" data-reveal>

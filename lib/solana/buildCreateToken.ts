@@ -11,7 +11,7 @@ import {
   TOKEN_2022_PROGRAM_ID,
   getMintLen,
 } from "@solana/spl-token";
-import { createV1, TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
+import { createV1, updateV1, TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
 import { getUmi } from "./umi";
 import {
   publicKey as umiPublicKey,
@@ -22,10 +22,13 @@ import {
 } from "@metaplex-foundation/umi";
 import { toWeb3JsInstruction } from "@metaplex-foundation/umi-web3js-adapters";
 import { getConnection } from "./connection";
+import { assertSimulates } from "./simulate";
 import { feeIx, FEES } from "./fees";
 import type { CreateTokenInput } from "./validate";
 
 const TOKEN_2022_ID = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
+// System program — once the update authority points here, no key can ever sign as it.
+const REVOKED_UPDATE_AUTHORITY = "11111111111111111111111111111111";
 
 export async function buildCreateTokenTx(input: CreateTokenInput): Promise<Transaction> {
   const connection = getConnection();
@@ -79,7 +82,9 @@ export async function buildCreateTokenTx(input: CreateTokenInput): Promise<Trans
     uri: input.metadataUri,
     sellerFeeBasisPoints: percentAmount(0),
     tokenStandard: TokenStandard.Fungible,
-    isMutable: !input.revokeUpdate,
+    // When revoking the update authority below, keep the metadata mutable here so
+    // the follow-up updateV1 can run; that instruction applies final immutability.
+    isMutable: input.revokeUpdateAuthority ? true : !input.revokeUpdate,
     // Custom creator info: embed the payer as the verified on-chain creator
     // (payer signs the tx, so on-chain verification succeeds)
     creators: input.customCreator
@@ -89,6 +94,20 @@ export async function buildCreateTokenTx(input: CreateTokenInput): Promise<Trans
   });
 
   tx.add(...metadataBuilder.getInstructions().map(toWeb3JsInstruction));
+
+  // Optional: transfer the update authority to the system program so explorers
+  // show it revoked. Done as a follow-up updateV1 in the same transaction (the
+  // payer is still the authority at this point); it also applies final
+  // immutability when "Make immutable" was chosen.
+  if (input.revokeUpdateAuthority) {
+    const updBuilder = updateV1(umi, {
+      mint: umiPublicKey(input.mintPublicKey),
+      authority: payerSigner,
+      newUpdateAuthority: umiPublicKey(REVOKED_UPDATE_AUTHORITY),
+      isMutable: !input.revokeUpdate,
+    });
+    tx.add(...updBuilder.getInstructions().map(toWeb3JsInstruction));
+  }
 
   // 6. Optional authority revocations
   if (input.revokeMint) {
@@ -102,9 +121,11 @@ export async function buildCreateTokenTx(input: CreateTokenInput): Promise<Trans
   let totalFee = FEES.createToken;
   if (input.revokeMint) totalFee += FEES.revokeMint;
   if (input.revokeFreeze) totalFee += FEES.revokeFreeze;
+  if (input.revokeUpdateAuthority) totalFee += FEES.revokeUpdate;
   if (input.customCreator) totalFee += FEES.customCreator;
   const fee = feeIx(payer, totalFee);
   if (fee) tx.add(fee);
 
+  await assertSimulates(connection, tx, "create-token");
   return tx;
 }
