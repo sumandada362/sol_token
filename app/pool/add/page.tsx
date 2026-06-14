@@ -46,8 +46,9 @@ export default function PoolAddPage() {
               </div>
             ))}
           </div>
+          {/* Planned pricing — kept for reference, intentionally NOT shown to users: 0.05 SOL per deposit. */}
           <p className="cost-summary-note" style={{ marginTop: "1rem" }}>
-            Planned pricing: 0.05 SOL per deposit. Your token/SOL deposit becomes your LP position, not a fee.
+            Your token/SOL deposit becomes your LP position, not a fee.
           </p>
         </div>
       </div>

@@ -1,5 +1,15 @@
 import { Connection } from "@solana/web3.js";
 
+// Local-dev TLS escape hatch. On some machines/proxies, Node cannot verify
+// certain RPC providers' certificate chains (it throws UNABLE_TO_VERIFY_LEAF_
+// SIGNATURE), which surfaces in the app as an intermittent "network error" on
+// server-side RPC calls. Opt in locally by setting DEV_INSECURE_TLS=1 in
+// .env.local — the same posture the project's scripts already take. Double-gated
+// to non-production so it can never weaken TLS on a deployed server.
+if (process.env.DEV_INSECURE_TLS === "1" && process.env.NODE_ENV !== "production") {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 // Cross-cluster guardrail: catch mainnet/devnet RPC mismatches at startup
 // rather than silently sending real transactions to the wrong cluster.
 const _rpcUrl = process.env.SOLANA_RPC_URL ?? "";

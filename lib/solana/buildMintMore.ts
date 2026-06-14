@@ -6,6 +6,7 @@ import {
   getMint,
 } from "@solana/spl-token";
 import { getConnection } from "./connection";
+import { assertSimulates } from "./simulate";
 import { getMintProgramId } from "./program";
 import { feeIx, FEES } from "./fees";
 import type { MintMoreInput } from "./validate";
@@ -38,5 +39,6 @@ export async function buildMintMoreTx(input: MintMoreInput): Promise<Transaction
   const fee = feeIx(payer, FEES.mintMore);
   if (fee) tx.add(fee);
 
+  await assertSimulates(connection, tx, "mint-more");
   return tx;
 }

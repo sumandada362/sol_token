@@ -3,6 +3,7 @@ import { updateV1, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token
 import { publicKey as umiPublicKey, createNoopSigner, signerIdentity } from "@metaplex-foundation/umi";
 import { toWeb3JsInstruction } from "@metaplex-foundation/umi-web3js-adapters";
 import { getConnection } from "./connection";
+import { assertSimulates } from "./simulate";
 import { getUmi } from "./umi";
 import { feeIx, FEES } from "./fees";
 import type { UpdateMetadataInput } from "./validate";
@@ -41,5 +42,6 @@ export async function buildUpdateMetadataTx(input: UpdateMetadataInput): Promise
   const fee = feeIx(payer, FEES.updateMetadata);
   if (fee) tx.add(fee);
 
+  await assertSimulates(connection, tx, "update-metadata");
   return tx;
 }

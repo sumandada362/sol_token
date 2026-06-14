@@ -9,6 +9,7 @@ import TokenSelect from "@/components/TokenSelect";
 import BalanceCheck from "@/components/BalanceCheck";
 import { useTransaction, type TxState } from "@/lib/wallet/useTransaction";
 import { parseError } from "@/lib/wallet/parseError";
+import { useConsentShake } from "@/lib/useConsentShake";
 import type { AuthorityInfo } from "@/app/api/check-authority/route";
 
 type Phase = "input" | "checking" | "confirmed" | "denied" | "signing" | "done";
@@ -25,6 +26,7 @@ export default function MakeImmutablePage() {
   const [tokenInfo, setTokenInfo] = useState<AuthorityInfo | null>(null);
   const [checkError, setCheckError] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const { shakeClass, guard } = useConsentShake();
   const [txState, setTxState] = useState<TxState>("idle");
   const [sig, setSig] = useState("");
   const [txError, setTxError] = useState("");
@@ -162,7 +164,7 @@ export default function MakeImmutablePage() {
               </div>
             </div>
 
-            <label className="revoke-confirm-check" style={{ marginTop: "1rem" }}>
+            <label className={`revoke-confirm-check ${shakeClass}`} style={{ marginTop: "1rem" }}>
               <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
               I understand this permanently locks all on-chain metadata
             </label>
@@ -187,7 +189,7 @@ export default function MakeImmutablePage() {
                   <button className="lp-btn lp-btn--secondary" onClick={() => { setPhase("input"); setConfirmed(false); setTxError(""); }}>
                     Back
                   </button>
-                  <button className="lp-btn lp-btn--primary burn-btn" disabled={!confirmed} onClick={handleRevoke}>
+                  <button className="lp-btn lp-btn--primary burn-btn" onClick={() => { if (guard(confirmed)) handleRevoke(); }}>
                     Make Immutable
                   </button>
                 </>

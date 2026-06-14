@@ -66,7 +66,7 @@ body {
     width: 90%;
     max-width: 1200px;
     height: 6.5vh;
-    min-height: 48px;
+    min-height: 56px;
     z-index: var(--z-sticky);
     display: flex;
     align-items: center;
@@ -80,9 +80,51 @@ body {
     box-shadow: none;
 }
 
+/* Opaque top scrim — masks content scrolling up so it disappears cleanly behind
+   the navbar with a crisp cutoff line at the navbar's bottom edge, instead of
+   bleeding through/around the floating glass navbar. Height = navbar top (1.8vh)
+   + navbar height (6.5vh, min 56px), so its bottom aligns with the navbar's. */
+.nav-scrim {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(1.8vh + max(6.5vh, 56px));
+    background: #030109;
+    z-index: calc(var(--z-sticky) - 1); /* above #content (1), below #navbar (100) */
+    pointer-events: none;
+}
+
+/* Consent shake — a gated action clicked without ticking its checkbox shakes the
+   consent row (checkbox + text) to draw the eye, instead of the click doing nothing. */
+@keyframes consentShake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-6px); }
+    30% { transform: translateX(6px); }
+    45% { transform: translateX(-5px); }
+    60% { transform: translateX(5px); }
+    75% { transform: translateX(-3px); }
+    90% { transform: translateX(3px); }
+}
+.consent-shake {
+    animation: consentShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@media (prefers-reduced-motion: reduce) {
+    /* No motion — flash an outline instead so the cue is still visible. */
+    .consent-shake {
+        animation: none;
+        outline: 2px solid var(--error);
+        outline-offset: 4px;
+        border-radius: 8px;
+    }
+}
+
 #navbar .nav-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-family: 'Segoe UI', Inter, Arial, sans-serif;
-    font-size: clamp(1.5rem, 2.1vw, 2.1rem);
+    font-size: clamp(1.05rem, 1.47vw, 1.47rem);
     font-weight: 700;
     letter-spacing: 0.04em;
     background: linear-gradient(90deg, #845ef7 0%, #29b6f6 100%);
@@ -90,6 +132,11 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-decoration: none;
+}
+
+#navbar .nav-logo-mark {
+    display: block;
+    flex-shrink: 0;
 }
 
 #navbar .nav-links {

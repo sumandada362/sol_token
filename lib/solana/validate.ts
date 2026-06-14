@@ -56,6 +56,7 @@ export const createTokenSchema = z.object({
   revokeMint: z.boolean(),
   revokeFreeze: z.boolean(),
   revokeUpdate: z.boolean(),
+  revokeUpdateAuthority: z.boolean().default(false),
   customCreator: z.boolean(),
 }).refine(
   (d) => {

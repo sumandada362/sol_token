@@ -1,14 +1,28 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import ToolsGrid from "./ToolsGrid";
+import ToolsGrid, { type Tool } from "./ToolsGrid";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Token Tools — Solana Token",
-  description: "All Solana token management tools: multisender, mint, metadata, authority revocation, OpenBook market creation, and free converters.",
-};
+export const metadata = pageMeta({
+  title: "Solana Token Tools — Multisender, Mint, Burn & Authority Manager",
+  description:
+    "Every Solana token tool in one place: multisender/airdrop, mint more supply, burn, update metadata, revoke mint/freeze/update authority, freeze accounts, OpenBook market creation, and free converters. No code, signed from your own wallet.",
+  path: "/tools",
+  ogTitle: "Solana Token Tools",
+  ogSub: "Multisend · mint · burn · revoke authorities",
+  keywords: [
+    "solana token tools",
+    "solana multisender",
+    "solana airdrop tool",
+    "mint solana tokens",
+    "burn solana tokens",
+    "revoke mint authority solana",
+    "update token metadata solana",
+    "spl token manager",
+  ],
+});
 
-const tools = [
+const tools: Tool[] = [
   {
     href: "/tools/multisender",
     icon: "◈",
@@ -230,11 +244,11 @@ export default function ToolsPage() {
               <span className="pricing-fee-val">0.1 SOL</span>
               <span className="pricing-fee-note">Your name and website embedded as the token&apos;s verified creator</span>
             </div>
-            {/* Tools */}
+            {/* Tools — only active services; coming-soon tools are hidden from the fee table */}
             <div className="pricing-fee-row pricing-fee-row--group">
               <span className="pricing-fee-group-label" style={{ gridColumn: "1/-1" }}>Token tools</span>
             </div>
-            {tools.map((t) => (
+            {tools.filter((t) => !t.comingSoon).map((t) => (
               <div key={t.href} className="pricing-fee-row">
                 <Link href={t.href} className="pricing-fee-link">{t.name}</Link>
                 <span className={`pricing-fee-val${t.fee === "Free" ? " pricing-fee-val--free" : ""}`}>{t.fee}</span>

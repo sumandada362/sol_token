@@ -71,6 +71,19 @@ export default async function TokenPage({ params }: { params: Promise<{ mint: st
               <span className="token-symbol-badge">{symbol}</span>
               <span className="lp-mono token-mint-addr">{mint}</span>
             </div>
+            {token?.creatorName && (
+              <div className="token-header-creator" style={{ marginTop: "0.45rem", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                Creator: <strong style={{ color: "var(--text-primary)" }}>{token.creatorName}</strong>
+                {token.creatorWebsite && /^https?:\/\//i.test(token.creatorWebsite) && (
+                  <>
+                    {" · "}
+                    <a href={token.creatorWebsite} target="_blank" rel="noopener noreferrer nofollow" className="lp-link">
+                      {token.creatorWebsite.replace(/^https?:\/\//i, "")}
+                    </a>
+                  </>
+                )}
+              </div>
+            )}
           </div>
           <div className="token-header-actions">
             <a
@@ -114,6 +127,16 @@ export default async function TokenPage({ params }: { params: Promise<{ mint: st
               <span>Freeze authority</span>
               <span className={`lp-pill ${token?.freezeAuthority === null ? "lp-pill--ok" : "lp-pill--warn"}`}>
                 {!token ? "—" : token.freezeAuthority === null ? "Revoked" : "Active"}
+              </span>
+            </div>
+            <div className="lp-card-row">
+              <span>Update authority</span>
+              <span className={`lp-pill ${!token ? "" : token.updateAuthority === null || token.updateAuthority === "11111111111111111111111111111111" ? "lp-pill--ok" : "lp-pill--warn"}`}>
+                {!token
+                  ? "—"
+                  : token.updateAuthority === null || token.updateAuthority === "11111111111111111111111111111111"
+                    ? "Revoked"
+                    : `${token.updateAuthority.slice(0, 4)}…${token.updateAuthority.slice(-4)}`}
               </span>
             </div>
             <div className="lp-card-row">

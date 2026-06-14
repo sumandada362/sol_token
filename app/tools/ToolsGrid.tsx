@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
-interface Tool {
+export interface Tool {
   href: string;
   icon: string;
   name: string;

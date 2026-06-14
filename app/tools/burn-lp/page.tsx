@@ -45,8 +45,9 @@ export default function BurnLpPage() {
               </div>
             ))}
           </div>
+          {/* Planned pricing — kept for reference, intentionally NOT shown to users: free (only Solana gas). */}
           <p className="cost-summary-note" style={{ marginTop: "1rem" }}>
-            Planned pricing: free — only Solana gas. Burning LP tokens is irreversible; the underlying liquidity stays in the pool forever.
+            Burning LP tokens is irreversible; the underlying liquidity stays in the pool forever.
           </p>
         </div>
 

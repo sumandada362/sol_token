@@ -6,6 +6,7 @@ import {
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
 import { getConnection } from "./connection";
+import { assertSimulates } from "./simulate";
 import { getMintProgramId } from "./program";
 import { feeIx, FEES } from "./fees";
 
@@ -43,5 +44,6 @@ export async function buildFreezeAccountsTx(input: FreezeAccountsInput): Promise
   const fee = feeIx(payer, totalFee);
   if (fee) tx.add(fee);
 
+  await assertSimulates(connection, tx, "freeze-accounts");
   return tx;
 }

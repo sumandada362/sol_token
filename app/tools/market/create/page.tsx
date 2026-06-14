@@ -35,9 +35,9 @@ export default function MarketCreatePage() {
             <li>Configurable minimum order size and tick size</li>
             <li>One transaction, signed from your browser wallet</li>
           </ul>
-          <p className="cost-summary-note" style={{ marginTop: "1rem" }}>
-            Planned pricing: 0.05 SOL Solana Token fee + ~2.85 SOL protocol deposit paid directly to OpenBook v2 for on-chain market accounts.
-          </p>
+          {/* Planned pricing — kept here for reference, intentionally NOT shown to users:
+              0.05 SOL Solana Token fee + ~2.85 SOL protocol deposit paid directly to
+              OpenBook v2 for on-chain market accounts. */}
         </div>
 
         <div className="tools-cta lp-card" data-reveal>

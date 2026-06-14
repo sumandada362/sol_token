@@ -1,6 +1,7 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { createBurnInstruction } from "@solana/spl-token";
 import { getConnection } from "./connection";
+import { assertSimulates } from "./simulate";
 import { getMintProgramId } from "./program";
 import { feeIx, FEES } from "./fees";
 import type { BurnInput } from "./validate";
@@ -21,5 +22,6 @@ export async function buildBurnTx(input: BurnInput): Promise<Transaction> {
   tx.add(ix);
   if (fee) tx.add(fee);
 
+  await assertSimulates(connection, tx, "burn");
   return tx;
 }
