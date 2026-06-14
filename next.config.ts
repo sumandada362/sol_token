@@ -1,4 +1,24 @@
 import type { NextConfig } from "next";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+
+// Env lives in app_configs/.env.local. Next only auto-loads .env files from the
+// project root, so we load this one explicitly here — this runs before the consts
+// below read process.env, and on every command (dev / build / start) since Next
+// always loads next.config first. A var already set (a root .env Next loaded, or
+// the host's real env) is never overridden, so the legacy root location still works.
+const _envFile = join(process.cwd(), "app_configs", ".env.local");
+if (existsSync(_envFile)) {
+  for (const _line of readFileSync(_envFile, "utf8").split(/\r?\n/)) {
+    const _m = _line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+    if (!_m) continue;
+    let _val = _m[2].replace(/\s+$/, "");
+    if ((_val.startsWith('"') && _val.endsWith('"')) || (_val.startsWith("'") && _val.endsWith("'"))) {
+      _val = _val.slice(1, -1);
+    }
+    if (process.env[_m[1]] === undefined) process.env[_m[1]] = _val;
+  }
+}
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://solanatoken.dravyo.com";
 
@@ -43,18 +63,24 @@ const RPC_SOURCES = [
   ...(process.env.CSP_CONNECT_SRC_EXTRA?.split(/\s+/).filter(Boolean) ?? []),
 ].join(" ");
 
+// Google Analytics (GA4): gtag.js loads from googletagmanager; events/beacons go
+// to google-analytics. Listed unconditionally — harmless when analytics is off.
+const GA_SCRIPT = "https://www.googletagmanager.com";
+const GA_IMG = "https://www.google-analytics.com https://*.google-analytics.com";
+const GA_CONNECT = "https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com";
+
 // Next.js injects inline hydration scripts — 'unsafe-inline' is required unless
 // you implement nonce-per-request via middleware (tracked as a future hardening step).
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${GA_SCRIPT}`,
   // BgCanvas runs its render loop in a Worker created from a blob: URL —
   // worker-src falls back to script-src (no blob:) without this.
   "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: ${IPFS_SOURCES}`,
+  `img-src 'self' data: blob: ${IPFS_SOURCES} ${GA_IMG}`,
   "font-src 'self' data:",
-  `connect-src 'self' ${RPC_SOURCES} ${IPFS_SOURCES}`,
+  `connect-src 'self' ${RPC_SOURCES} ${IPFS_SOURCES} ${GA_CONNECT}`,
   "frame-src 'none'",
   "frame-ancestors 'none'",
   "object-src 'none'",
