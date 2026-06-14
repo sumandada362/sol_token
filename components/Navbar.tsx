@@ -5,6 +5,9 @@ import { useRef, useEffect } from "react";
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { WalletReadyState } from "@solana/wallet-adapter-base";
+import { isIOS } from "@/lib/wallet/mobile";
+import MobileWalletButton from "@/components/MobileWalletButton";
 
 function shortAddress(addr: string) {
   return `${addr.slice(0, 4)}…${addr.slice(-4)}`;
@@ -13,10 +16,22 @@ function shortAddress(addr: string) {
 export default function Navbar() {
   const pathname = usePathname();
   const [chipOpen, setChipOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const chipRef = useRef<HTMLDivElement>(null);
 
-  const { connected, publicKey, disconnect } = useWallet();
+  const { connected, publicKey, disconnect, wallets } = useWallet();
   const { setVisible } = useWalletModal();
+
+  // Detection touches navigator, so defer to after mount to avoid an SSR/client
+  // hydration mismatch on the connect control.
+  useEffect(() => setMounted(true), []);
+
+  // On iOS Safari there is no injected wallet and no Mobile Wallet Adapter, so the
+  // standard modal can't connect — route the user into a wallet's in-app browser
+  // instead. Android is handled by the Mobile Wallet Adapter inside the modal, and
+  // an already-injected wallet (incl. wallet in-app browsers) uses the modal too.
+  const hasInjectedWallet = wallets.some((w) => w.readyState === WalletReadyState.Installed);
+  const useDeepLink = mounted && isIOS() && !hasInjectedWallet;
 
   useEffect(() => {
     function handleOutside(e: MouseEvent) {
@@ -114,6 +129,8 @@ export default function Navbar() {
             </div>
           )}
         </div>
+      ) : useDeepLink ? (
+        <MobileWalletButton />
       ) : (
         <button className="nav-cta" onClick={() => setVisible(true)}>
           Connect Wallet
