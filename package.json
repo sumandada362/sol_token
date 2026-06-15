@@ -6,6 +6,11 @@
   "engines": {
     "node": ">=20"
   },
+  "browserslist": [
+    "last 2 years",
+    "not dead",
+    "not op_mini all"
+  ],
   "pnpm": {
     "onlyBuiltDependencies": []
   },
