@@ -6,10 +6,19 @@
 
 1. **Confirm the outage** — try `curl https://api.mainnet-beta.solana.com -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1,"method":"getHealth"}'`. If your primary RPC is down and this returns OK, the issue is your provider, not Solana itself.
 
-2. **Flip to backup RPC** — update the `SOLANA_RPC_URL` environment variable in Vercel to your secondary RPC URL, then redeploy (Vercel → Settings → Environment Variables → Edit → Redeploy).
+2. **Flip to / add a backup RPC** — server RPC endpoints live in the rotation pool in `app_configs/integrations.ts` (`RPC_ENDPOINTS`), not in an env var. Edit that list and redeploy:
 
-   **Primary:** `SOLANA_RPC_URL=<your primary provider URL>`
-   **Backup:** `SOLANA_RPC_URL=<your backup provider URL>`
+   - **Remove or replace** the dead provider's `{ tag, url }` entry, **or**
+   - **Add** a healthy provider as a new entry (e.g. `{ tag: "B", url: "<backup provider URL>" }`). With 2+ entries the pool round-robins automatically, so a second healthy endpoint also halves the load on the survivor.
+
+   ```ts
+   export const RPC_ENDPOINTS: RpcEndpoint[] = [
+     // { tag: "A", url: "<dead primary>" },   // ← comment out / remove the down one
+     { tag: "B", url: "<your backup provider URL>" },
+   ];
+   ```
+
+   Then rebuild + redeploy. The startup guardrail (`lib/solana/rpcPool.ts`) refuses to boot if an endpoint's cluster doesn't match `NEXT_PUBLIC_SOLANA_NETWORK`, so a wrong-cluster paste fails fast instead of silently.
 
 3. **Verify recovery** — after redeploy, test `/api/tx/burn` with a valid request. If it returns a transaction (even a dummy one that would fail on-chain), the RPC connection is back.
 
@@ -28,7 +37,7 @@ Solana mainnet itself may be degraded. Monitor https://status.solana.com. Post a
 
 ## Recovery checklist
 
-- [ ] `SOLANA_RPC_URL` updated in Vercel
+- [ ] `RPC_ENDPOINTS` in `app_configs/integrations.ts` updated (dead provider removed/replaced)
 - [ ] Redeploy triggered and green
 - [ ] Test transaction build succeeds
 - [ ] Status page updated ("operational" once resolved)

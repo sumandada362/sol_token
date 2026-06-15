@@ -1,6 +1,5 @@
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { Umi } from "@metaplex-foundation/umi";
+import { leaseRpc, umiFor } from "./rpcPool";
 
 /**
  * Umi client pinned to "confirmed" commitment, matching getConnection().
@@ -8,9 +7,11 @@ import type { Umi } from "@metaplex-foundation/umi";
  * enough that a metadata account created or revoked moments ago looks
  * missing/unchanged to authority checks (404s on fresh mints, missing 403s
  * after revokes).
+ *
+ * Pass the tag from an earlier leaseRpc()/getConnection() lease so the Umi
+ * client uses the SAME RPC as the rest of the transaction (sticky rotation).
+ * With no tag it leases the next RPC from the pool on its own.
  */
-export function getUmi(): Umi {
-  return createUmi(process.env.SOLANA_RPC_URL!, { commitment: "confirmed" }).use(
-    mplTokenMetadata()
-  );
+export function getUmi(tag?: string): Umi {
+  return umiFor(leaseRpc(tag).url);
 }
