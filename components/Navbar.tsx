@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useEffect } from "react";
@@ -57,12 +58,13 @@ export default function Navbar() {
   return (
     <nav id="navbar">
       <Link href="/" className="nav-logo">
-        <img
+        <Image
           src="/coin_gold_mark.png"
           alt="Solana Token"
           width={44}
           height={44}
           className="nav-logo-mark"
+          priority
         />
         Solana Token
       </Link>

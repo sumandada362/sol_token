@@ -124,6 +124,14 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=86400, immutable" },
         ],
       },
+      {
+        // Static image assets in /public (logos, coins, etc.) are content-stable
+        // and were only being cached for ~4h. Cache for a year so repeat visits
+        // and Lighthouse "efficient cache lifetime" are satisfied. Bump the file
+        // name if an asset's bytes ever change.
+        source: "/:path*.(png|jpg|jpeg|gif|svg|webp|avif|ico)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
     ];
   },
 };
