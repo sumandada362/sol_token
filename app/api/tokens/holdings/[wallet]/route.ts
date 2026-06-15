@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { getConnection } from "@/lib/solana/connection";
+import { leaseRpc } from "@/lib/solana/rpcPool";
 import { cacheGet, cacheSet, CACHE_KEYS } from "@/lib/db/redis";
 import { rateLimit, RATE_LIMITS } from "@/lib/rateLimit";
 import { isSafeExternalUrl } from "@/lib/safeUrl";
@@ -44,7 +45,10 @@ const LOGO_LOOKUP_CAP = 12;
 /** Helius DAS — returns symbol/name/logo in a single call. Null if unavailable. */
 async function fetchViaDas(wallet: string): Promise<WalletHolding[] | null> {
   try {
-    const res = await fetch(process.env.SOLANA_RPC_URL!, {
+    // searchAssets is a DAS method (Helius/Triton). Lease an endpoint from the
+    // rotation pool; on a provider that doesn't support DAS this returns null and
+    // the caller falls back to the plain-RPC path below.
+    const res = await fetch(leaseRpc().url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

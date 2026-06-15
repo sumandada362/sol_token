@@ -4,6 +4,7 @@ import { updateV1, fetchMetadataFromSeeds } from "@metaplex-foundation/mpl-token
 import { publicKey as umiPublicKey, createNoopSigner, signerIdentity } from "@metaplex-foundation/umi";
 import { toWeb3JsInstruction } from "@metaplex-foundation/umi-web3js-adapters";
 import { getConnection } from "./connection";
+import { leaseRpc } from "./rpcPool";
 import { assertSimulates } from "./simulate";
 import { getUmi } from "./umi";
 import { getMintProgramId } from "./program";
@@ -14,7 +15,9 @@ import type { RevokeInput } from "./validate";
 export const REVOKED_UPDATE_AUTHORITY = "11111111111111111111111111111111";
 
 export async function buildRevokeTx(input: RevokeInput): Promise<Transaction> {
-  const connection = getConnection();
+  // One RPC for the whole transaction — connection + any Umi calls share the tag.
+  const { tag } = leaseRpc();
+  const connection = getConnection(tag);
   const payer = new PublicKey(input.payer);
   const mint = new PublicKey(input.mint);
   const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
@@ -41,7 +44,7 @@ export async function buildRevokeTx(input: RevokeInput): Promise<Transaction> {
     if (fee) tx.add(fee);
 
   } else if (input.type === "update") {
-    const umi = getUmi();
+    const umi = getUmi(tag);
     const payerSigner = createNoopSigner(umiPublicKey(input.payer));
     umi.use(signerIdentity(payerSigner));
 
@@ -63,7 +66,7 @@ export async function buildRevokeTx(input: RevokeInput): Promise<Transaction> {
     // make-immutable is free — no fee instruction needed
 
   } else if (input.type === "updateAuthority") {
-    const umi = getUmi();
+    const umi = getUmi(tag);
     const payerSigner = createNoopSigner(umiPublicKey(input.payer));
     umi.use(signerIdentity(payerSigner));
 
