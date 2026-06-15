@@ -181,6 +181,46 @@ body {
     #navbar .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
 }
 
+/* Right cluster: wallet control + (mobile) hamburger */
+#navbar .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* Wallet control sits in the navbar on desktop; the dropdown copy is hidden until
+   the mobile breakpoint moves it into the hamburger menu. */
+#navbar .nav-wallet-desktop { display: flex; align-items: center; }
+#navbar .nav-links__wallet { display: none; }
+
+/* Hamburger — hidden on desktop, revealed ≤768px (see media query below) */
+#navbar .nav-burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+#navbar .nav-burger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    margin: 0 auto;
+    background: #e7eaf2;
+    border-radius: 2px;
+    transition: transform 0.22s var(--ease-out), opacity 0.18s var(--ease-out);
+}
+/* Animate to an "X" when open */
+#navbar .nav-burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+#navbar .nav-burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+#navbar .nav-burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
 /* Scrollable content layer — holds the hero + every other section */
 #content {
     position: relative;
@@ -730,10 +770,58 @@ body {
     .hero-cta { width: 100%; justify-content: center; }
 }
 
-/* Collapse the nav links on narrow screens so the bar never overflows */
+/* Collapse the nav links into a hamburger dropdown on narrow screens so the
+   bar never overflows and the links stay reachable on mobile. */
 @media (max-width: 768px) {
-    #navbar .nav-links { display: none; }
     #navbar { padding: 0 4%; }
+    #navbar .nav-burger { display: flex; }
+
+    /* Links become a panel anchored under the floating navbar, shown only when
+       the hamburger is toggled (.nav-links--open). */
+    #navbar .nav-links {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 8px;
+        background: rgba(10, 8, 24, 0.96);
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        border: 1px solid var(--surface-border);
+        border-radius: 1.4vh;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+    }
+    #navbar .nav-links.nav-links--open { display: flex; }
+    #navbar .nav-links li { width: 100%; }
+    #navbar .nav-links a {
+        display: block;
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 1rem;
+    }
+    #navbar .nav-links a:active { background: var(--surface-2); }
+
+    /* Move the connect control INTO the dropdown (with the links) and hide the
+       navbar copy, so mobile shows only logo + hamburger until the menu opens. */
+    #navbar .nav-wallet-desktop { display: none; }
+    #navbar .nav-links__wallet {
+        display: flex;
+        margin-top: 4px;
+        padding-top: 10px;
+        border-top: 1px solid var(--surface-border);
+    }
+    #navbar .nav-links__wallet > * { width: 100%; }
+    #navbar .nav-links__wallet .nav-cta {
+        display: block;
+        width: 100%;
+        text-align: center;
+        font-size: 0.95rem;
+        padding: 11px 14px;
+    }
 }
 
 /* ════════════════════════════════════════════════════════════════════
