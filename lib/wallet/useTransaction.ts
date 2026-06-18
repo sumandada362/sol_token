@@ -1,7 +1,53 @@
 "use client";
 import { useCallback } from "react";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import { Transaction } from "@solana/web3.js";
+import { Transaction, type Connection } from "@solana/web3.js";
+
+/**
+ * Confirm a signature by HTTP polling instead of connection.confirmTransaction().
+ *
+ * Why: all RPC goes through our /api/rpc proxy, which is HTTP-only. web3.js's
+ * confirmTransaction() opens a WebSocket (signatureSubscribe); with no WS it would
+ * hang until the blockhash expires and then throw a FALSE "expired" — even for a
+ * tx that actually landed. Polling getSignatureStatuses over HTTP is correct here.
+ */
+async function pollConfirmation(
+  connection: Connection,
+  signature: string,
+  lastValidBlockHeight: number,
+): Promise<void> {
+  const TIMEOUT_MS = 90_000;
+  const start = Date.now();
+
+  while (Date.now() - start < TIMEOUT_MS) {
+    const { value } = await connection.getSignatureStatuses([signature]);
+    const st = value[0];
+    if (st) {
+      if (st.err) throw new Error(`Transaction failed: ${JSON.stringify(st.err)}`);
+      if (st.confirmationStatus === "confirmed" || st.confirmationStatus === "finalized") return;
+    }
+
+    // Blockhash-expiry check: if the chain has advanced past the tx's last valid
+    // block height and the signature still isn't known, it will never land.
+    try {
+      const height = await connection.getBlockHeight("confirmed");
+      if (height > lastValidBlockHeight) {
+        const { value: recheck } = await connection.getSignatureStatuses([signature]);
+        const s2 = recheck[0];
+        if (s2?.err) throw new Error(`Transaction failed: ${JSON.stringify(s2.err)}`);
+        if (s2 && (s2.confirmationStatus === "confirmed" || s2.confirmationStatus === "finalized")) return;
+        throw new Error("Transaction expired before it was confirmed. Please try again.");
+      }
+    } catch (e) {
+      if (e instanceof Error && /failed|expired/i.test(e.message)) throw e;
+      // transient RPC hiccup on the height check — keep polling
+    }
+
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+
+  throw new Error("Timed out waiting for confirmation. Check the transaction signature on an explorer.");
+}
 
 export type TxState =
   | "idle"
@@ -57,22 +103,14 @@ export function useTransaction() {
       const signed = await signTransaction(tx);
 
       onState("submitting");
-      const blockhash = tx.recentBlockhash!;
       const sig = await connection.sendRawTransaction(signed.serialize(), {
         skipPreflight: true,
         maxRetries: 3,
       });
 
       onState("confirming");
-      const result = await connection.confirmTransaction(
-        { signature: sig, blockhash, lastValidBlockHeight },
-        "confirmed"
-      );
-
-      if (result.value.err) {
-        onState("failed");
-        throw new Error(`Transaction failed: ${JSON.stringify(result.value.err)}`);
-      }
+      // HTTP polling (proxy is WS-less) — throws on on-chain error or expiry.
+      await pollConfirmation(connection, sig, lastValidBlockHeight);
 
       onState("confirmed");
 

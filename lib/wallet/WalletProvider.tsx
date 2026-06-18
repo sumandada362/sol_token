@@ -10,19 +10,24 @@ import {
   createDefaultAuthorizationResultCache,
   createDefaultWalletNotFoundHandler,
 } from "@solana-mobile/wallet-adapter-mobile";
-import { clusterApiUrl } from "@solana/web3.js";
 import { WalletSessionGuard } from "./WalletSessionGuard";
 
 // Wallet adapter CSS — scoped to the modal only, does not affect app styles
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 const NETWORK = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as "devnet" | "testnet" | "mainnet-beta") ?? "devnet";
-// Prefer an explicit public RPC URL (e.g. Helius public endpoint) over the slow,
-// browser-throttled default. clusterApiUrl(mainnet) returns the public
-// api.mainnet-beta.solana.com endpoint, which 403/429s browser sendTransaction —
-// so NEXT_PUBLIC_RPC_URL must be set in any real (esp. mainnet/mobile) deployment.
-const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_URL ?? clusterApiUrl(NETWORK);
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
+
+// The browser NEVER gets a keyed RPC URL. Every Solana call from the app goes
+// through our own /api/rpc proxy, which forwards to the server-side rotation pool
+// (the RPC controller picks the endpoint per call). So there is no RPC key in the
+// client bundle. web3.js needs an absolute URL, so build one from the live origin
+// (or the canonical domain during SSR).
+const RPC_PROXY_PATH = "/api/rpc";
+function rpcProxyEndpoint(): string {
+  if (typeof window !== "undefined") return `${window.location.origin}${RPC_PROXY_PATH}`;
+  return `${APP_URL.replace(/\/$/, "")}${RPC_PROXY_PATH}`;
+}
 
 // Map our env network string to the adapter network enum so the explicit wallet
 // adapters deep-link to the right cluster (e.g. Solflare's hosted mobile flow).
@@ -57,7 +62,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter({ network: ADAPTER_NETWORK }),
     ];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Surface wallet errors instead of failing silently — a silent connect/sign
@@ -68,8 +72,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     console.error("[wallet]", error?.name ?? "WalletError", error?.message ?? error);
   }, []);
 
+  const endpoint = useMemo(() => rpcProxyEndpoint(), []);
+
   return (
-    <ConnectionProvider endpoint={RPC_ENDPOINT}>
+    <ConnectionProvider endpoint={endpoint}>
       <AdapterWalletProvider wallets={wallets} autoConnect onError={onError}>
         <WalletSessionGuard>
           <WalletModalProvider>{children}</WalletModalProvider>

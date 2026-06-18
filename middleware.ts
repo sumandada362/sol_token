@@ -24,6 +24,7 @@ function isStateMutatingApiRoute(pathname: string): boolean {
   if (pathname.startsWith("/api/tx/")) return true;
   if (pathname === "/api/confirm") return true;
   if (pathname === "/api/upload") return true;
+  if (pathname === "/api/rpc") return true; // browser RPC proxy — same-origin only
   if (pathname === "/api/subscriptions") return true;
   return false;
 }

@@ -67,16 +67,7 @@ export const RPC_ENDPOINTS: RpcEndpoint[] = [
   // { tag: "C", url: `https://your-third-provider.example/?api-key=...` },
 ];
 
-/* ──────────────────────────────────────────────────────────────────────────
- * Browser (PUBLIC) Solana RPC — the ONE endpoint shipped to every visitor
- * ──────────────────────────────────────────────────────────────────────────
- * ⚠️  PUBLIC, unlike RPC_ENDPOINTS above. The browser wallet adapter connects to
- *     this directly, so its value is visible to every visitor. next.config.ts
- *     copies it into NEXT_PUBLIC_RPC_URL at build time — so you paste every RPC
- *     link in THIS file and never touch .env.local for RPC.
- *
- *     Because it is public, use a SEPARATE, domain/IP-restricted key here — do
- *     NOT reuse a private RPC_ENDPOINTS key. Leave "" to fall back to the public
- *     cluster endpoint (heavily rate-limited; fine for local dev only).
- * ────────────────────────────────────────────────────────────────────────── */
-export const PUBLIC_RPC_URL = `https://mainnet.helius-rpc.com/?api-key=d38d9e94-7b1b-420d-9761-be347fc0570a`;
+// NOTE: there is no separate "public/browser" RPC. The frontend never receives a
+// keyed RPC URL — it sends every Solana call to our own /api/rpc proxy, which
+// forwards them through this same RPC_ENDPOINTS pool (see app/api/rpc/route.ts).
+// So this file is the ONLY place RPC links live, and none of them reach the browser.
