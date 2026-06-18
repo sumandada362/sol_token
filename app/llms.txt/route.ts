@@ -6,7 +6,7 @@ export function GET() {
   const u = (p: string) => `${SITE_URL}${p}`;
   const body = `# Solana Token
 
-> Solana Token is a free, no-code web app to create, manage, and launch tokens on Solana (SPL and Token-2022) directly from your own wallet. It is non-custodial — keys never leave your wallet — with transparent flat fees.
+> Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — a free, no-code web app for SPL and Token-2022 tokens, used directly from your own wallet. No coding, no complexity: customize your token in a few clicks. It is non-custodial — keys never leave your wallet — with transparent flat fees.
 
 ## What you can do
 - [Create a Solana token](${u("/create-token")}): SPL or Token-2022 with a logo, on-chain metadata, and optional one-click authority revocation. From 0.1 SOL.

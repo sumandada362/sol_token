@@ -40,6 +40,9 @@ export default function CreatePage() {
   const [form, setForm] = useState<FormState>(DEFAULT_FORM);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState("");
+  // Logo provided as a URL (e.g. pasted on the homepage panel). Used as the
+  // metadata image when no file was uploaded, so homepage input isn't lost.
+  const [logoUrl, setLogoUrl] = useState("");
   const [dragActive, setDragActive] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [prefilled, setPrefilled] = useState(false);
@@ -76,10 +79,10 @@ export default function CreatePage() {
         setLogoFile(file);
         setLogoPreview(d.logoBase64);
       } else if (d.logoUrl) {
+        // No file, but the homepage panel had an image URL — keep it so the
+        // metadata upload uses it as the token image (instead of dropping it).
+        setLogoUrl(d.logoUrl);
         setLogoPreview(d.logoUrl);
-        // Create a tiny sentinel so the upload step sends the URL as the metadataUri
-        // The IPFS upload can accept an external URL in place of a file in future;
-        // for now we leave logoFile null and let the user upload on step 3 if desired.
       }
       setPrefilled(true);
       // Skip past Connect step if wallet already connected — or jump to Basics
@@ -87,7 +90,6 @@ export default function CreatePage() {
     } catch {
       // ignore malformed prefill
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
   const [txState, setTxState] = useState<TxState>("idle");
@@ -106,7 +108,11 @@ export default function CreatePage() {
     }
     setUploadError("");
     setLogoFile(file);
-    setLogoPreview(URL.createObjectURL(file));
+    setLogoUrl(""); // a chosen file wins over any prefilled URL
+    setLogoPreview((prev) => {
+      if (prev.startsWith("blob:")) URL.revokeObjectURL(prev); // avoid leaking object URLs
+      return URL.createObjectURL(file);
+    });
   }
 
   function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -135,12 +141,26 @@ export default function CreatePage() {
     setTxState("building");
 
     try {
-      // 1. Upload logo + metadata to IPFS
+      // 1. Upload logo + metadata to IPFS. Build the metadata JSON whenever the
+      //    user supplied ANY off-chain data — a logo file, a logo URL, a
+      //    description, socials, or custom-creator info. Previously this only ran
+      //    when a file was present, so a pasted logo URL and any description /
+      //    socials were silently dropped (the token shipped with no metadata URI).
       let metadataUri = "";
-      if (logoFile) {
+      const hasBranding =
+        !!logoFile ||
+        !!logoUrl ||
+        !!form.description.trim() ||
+        !!form.website.trim() ||
+        !!form.twitter.trim() ||
+        !!form.telegram.trim() ||
+        (form.customCreator && !!form.creatorName.trim());
+
+      if (hasBranding) {
         setTxState("building"); // still building while uploading
         const uploadForm = new FormData();
-        uploadForm.append("file", logoFile);
+        if (logoFile) uploadForm.append("file", logoFile);
+        else if (logoUrl) uploadForm.append("imageUrl", logoUrl);
         uploadForm.append("name", form.name);
         uploadForm.append("symbol", form.symbol);
         uploadForm.append("description", form.description);

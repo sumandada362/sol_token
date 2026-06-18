@@ -14,6 +14,16 @@ function shortAddress(addr: string) {
   return `${addr.slice(0, 4)}…${addr.slice(-4)}`;
 }
 
+// navigator.clipboard is undefined in non-secure contexts / some mobile webviews —
+// guard so a copy tap never throws an unhandled error.
+function copyText(text: string) {
+  try {
+    navigator.clipboard?.writeText(text);
+  } catch {
+    /* clipboard unavailable — ignore */
+  }
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const [chipOpen, setChipOpen] = useState(false);
@@ -88,7 +98,7 @@ export default function Navbar() {
             <div className="wallet-chip-menu" role="menu">
               <button
                 role="menuitem"
-                onClick={() => { navigator.clipboard.writeText(address); setChipOpen(false); }}
+                onClick={() => { copyText(address); setChipOpen(false); }}
               >
                 Copy address
               </button>

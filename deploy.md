@@ -39,8 +39,8 @@ counts).
 3. You'll get a **mainnet RPC URL** that looks like:
    `https://mainnet.helius-rpc.com/?api-key=YOUR_KEY_HERE`
 4. Create **two** keys (Helius lets you add multiple, each with its own settings):
-   - **Server key** → used for `SOLANA_RPC_URL`. Leave it **unrestricted** (it's only used server‑side, never exposed).
-   - **Browser key** → used for `NEXT_PUBLIC_RPC_URL`. In its settings add an **Allowed Origin / domain restriction** = `https://solanatoken.dravyo.com`. This key ships to the browser, so the restriction stops anyone else from using it.
+   - **Server key** → goes into the rotation pool `RPC_ENDPOINTS` in `app_configs/integrations.ts` (as `{ tag: "A", url: "...?api-key=<server key>" }`). It's used server‑side only. ⚠️ This file is committed to git, so prefer a usage/IP‑restricted key here rather than a fully unrestricted one, and rotate it if the repo is ever shared. Add more providers as `{ tag: "B", url }`, `{ tag: "C", url }` to round‑robin the load.
+   - **Browser key** → used for `NEXT_PUBLIC_RPC_URL` in `.env.local`. In its settings add an **Allowed Origin / domain restriction** = `https://solanatoken.dravyo.com`. This key ships to the browser, so the restriction stops anyone else from using it.
 5. The **key string itself** (the part after `api-key=`) is your `HELIUS_API_KEY` (used for holder‑count lookups).
 
 **Free tier** (~1M credits/month) is enough to launch. Upgrade (~$49/mo) when traffic grows.
@@ -257,9 +257,10 @@ nano .env.local
 Fill it in using this table. **Bold = you must change.** The rest are already
 correct for your setup.
 
+> **Server RPC** is no longer an env var — it lives in `app_configs/integrations.ts` (`RPC_ENDPOINTS`). The table below is just the env vars.
+
 | Variable | What to set it to | From |
 |---|---|---|
-| `SOLANA_RPC_URL` | **your Helius server RPC URL** (`https://mainnet.helius-rpc.com/?api-key=...`) | Part 1.1 |
 | `NEXT_PUBLIC_RPC_URL` | **your Helius browser RPC URL** (domain‑restricted key) | Part 1.1 |
 | `NEXT_PUBLIC_SOLANA_NETWORK` | `mainnet-beta` | (already set) |
 | `CSP_CONNECT_SRC_EXTRA` | leave empty (only needed for a non‑Helius RPC host) | Part 1.1 |
@@ -391,7 +392,8 @@ git pull
 | Symptom | Fix |
 |---|---|
 | `deploy.sh` exits red naming a variable | That env var still has a placeholder — fix it in `.env.local`, re‑run. |
-| App boots then crashes with `[guardrail]` | `NEXT_PUBLIC_SOLANA_NETWORK` and `SOLANA_RPC_URL` disagree (e.g. mainnet vs devnet). Make both mainnet. |
+| App boots then crashes with `[guardrail]` | `NEXT_PUBLIC_SOLANA_NETWORK` and an `RPC_ENDPOINTS` entry in `app_configs/integrations.ts` disagree (e.g. mainnet vs devnet). Make them match. |
+| App won't start: `[rpcPool] No RPC endpoints configured` | `RPC_ENDPOINTS` in `app_configs/integrations.ts` is empty — add at least one `{ tag, url }`. |
 | Wallet can't connect / RPC errors in browser | `NEXT_PUBLIC_RPC_URL` wrong, or its domain restriction doesn't include `solanatoken.dravyo.com`, or you changed it without rebuilding. |
 | 502 Bad Gateway from nginx | App not running on 3333 — `pm2 status`, `pm2 logs solana-token`. |
 | `/api/confirm` returns `recorded:false` | Postgres unreachable — check `DATABASE_URL` and `psql` test (Part 4.3). On mainnet this is a launch blocker. |

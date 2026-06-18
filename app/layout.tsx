@@ -8,20 +8,32 @@ import { WalletProvider } from "@/lib/wallet/WalletProvider";
 import { JsonLdOrganization, JsonLdWebSite } from "@/components/JsonLd";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { googleVerificationToken } from "@/app_configs/integrations";
-
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
+import { SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Solana Token — Create & Launch Solana Tokens",
   description:
-    "Solana Token is the fastest and safest way to create and launch tokens on Solana. No coding, no complexity.",
+    "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity. Customize your token in a few clicks and it's ready to touch a million-dollar market cap.",
+  applicationName: "Solana Token",
+  keywords: [
+    "Solana Token",
+    "Dravyo Solana Token creator",
+    "Dravyo",
+    "create solana token",
+    "solana token creator",
+    "launch solana token",
+    "no-code solana token",
+    "spl token maker",
+  ],
+  // App NAME stays "Solana Token"; the marketing description uses the
+  // "Dravyo Solana Token creator" brand line (per product copy).
   // Favicon + apple-touch icon come from the file conventions app/icon.png and
   // app/apple-icon.png (coin_gold.png) — Next emits the <link> tags automatically.
   openGraph: {
     title: "Solana Token — Create & Launch Solana Tokens",
     description:
-      "The fastest and safest way to create and launch tokens on Solana. No coding, no complexity.",
+      "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity. Customize your token in a few clicks and it's ready to touch a million-dollar market cap.",
     url: SITE_URL,
     siteName: "Solana Token",
     images: [{ url: "/coin_gold.png", width: 1024, height: 1024, alt: "Solana Token" }],
@@ -31,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Solana Token — Create & Launch Solana Tokens",
     description:
-      "The fastest and safest way to create and launch tokens on Solana. No coding, no complexity.",
+      "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity. Customize and launch in a few clicks.",
     images: ["/coin_gold.png"],
   },
   // Search-engine ownership verification. Drop the codes into your env to emit the

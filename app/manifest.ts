@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Solana Token — Create & Launch Solana Tokens",
     short_name: "Solana Token",
     description:
-      "Create, manage, and launch Solana tokens (SPL & Token-2022) in minutes — no code. Mint, burn, multisend, update metadata, and revoke authorities from your own wallet.",
+      "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity. Customize your token in a few clicks and it's ready to touch a million-dollar market cap.",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0a",

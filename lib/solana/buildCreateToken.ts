@@ -22,6 +22,7 @@ import {
 } from "@metaplex-foundation/umi";
 import { toWeb3JsInstruction } from "@metaplex-foundation/umi-web3js-adapters";
 import { getConnection } from "./connection";
+import { leaseRpc } from "./rpcPool";
 import { assertSimulates } from "./simulate";
 import { feeIx, FEES } from "./fees";
 import type { CreateTokenInput } from "./validate";
@@ -31,7 +32,10 @@ const TOKEN_2022_ID = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 const REVOKED_UPDATE_AUTHORITY = "11111111111111111111111111111111";
 
 export async function buildCreateTokenTx(input: CreateTokenInput): Promise<Transaction> {
-  const connection = getConnection();
+  // Lease one RPC for the whole transaction; getUmi() below reuses the same tag
+  // so the connection and the Metaplex calls hit a single endpoint.
+  const { tag } = leaseRpc();
+  const connection = getConnection(tag);
   const payer = new PublicKey(input.payer);
   const mint = new PublicKey(input.mintPublicKey);
 
@@ -69,7 +73,7 @@ export async function buildCreateTokenTx(input: CreateTokenInput): Promise<Trans
   tx.add(createMintToInstruction(mint, ata, payer, supply, [], tokenProgramId));
 
   // 5. Metaplex metadata — pass mint as publicKey (non-signer) so createV1 only makes metadata
-  const umi = getUmi();
+  const umi = getUmi(tag);
   const payerSigner = createNoopSigner(umiPublicKey(input.payer));
   umi.use(signerIdentity(payerSigner));
 
