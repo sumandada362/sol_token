@@ -1,17 +1,19 @@
 /**
- * Third-party tags — paste what each platform gives you here and the app injects
- * it into the page <head> on EVERY page automatically. Leave "" to disable.
- * After editing, rebuild (`pnpm build`) and redeploy so the change is baked in.
+ * Third-party tags — paste what each platform gives you BETWEEN THE BACKTICKS
+ * (`…`) and the app injects it into the page <head> on EVERY page automatically.
+ * Backticks (not quotes) so you can paste a multi-line snippet that contains
+ * quotes. Leave empty to disable. After editing, rebuild (`pnpm build`) + redeploy.
  */
 
-// Google Search Console (https://search.google.com/search-console) — add a
-// "URL prefix" property, choose the "HTML tag" method, paste the whole <meta> tag
-// or just its token.
-export const GOOGLE_SITE_VERIFICATION = "";
+// Google Search Console (https://search.google.com/search-console) — "HTML tag"
+// method. Paste the whole <meta …> tag, OR just its token, between the backticks.
+export const GOOGLE_SITE_VERIFICATION = ``;
 
 // Google Analytics GA4 (https://analytics.google.com -> Admin -> Data streams ->
-// your web stream) — paste the Measurement ID (G-XXXXXXX) or the whole gtag snippet.
-export const GOOGLE_ANALYTICS = "";
+// your web stream). Paste the whole gtag <script>…</script> snippet, OR just the
+// Measurement ID (G-XXXXXXX), between the backticks. Example:
+//   export const GOOGLE_ANALYTICS = `G-QC8BQXXXXX`;
+export const GOOGLE_ANALYTICS = ``;
 
 /** Token to emit as <meta name="google-site-verification">, or undefined if unset. */
 export function googleVerificationToken(): string | undefined {

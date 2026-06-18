@@ -1,10 +1,14 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useEffect } from "react";
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { WalletReadyState } from "@solana/wallet-adapter-base";
+import { isIOS } from "@/lib/wallet/mobile";
+import MobileWalletButton from "@/components/MobileWalletButton";
 
 function shortAddress(addr: string) {
   return `${addr.slice(0, 4)}…${addr.slice(-4)}`;
@@ -13,20 +17,42 @@ function shortAddress(addr: string) {
 export default function Navbar() {
   const pathname = usePathname();
   const [chipOpen, setChipOpen] = useState(false);
-  const chipRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
-  const { connected, publicKey, disconnect } = useWallet();
+  const { connected, publicKey, disconnect, wallets } = useWallet();
   const { setVisible } = useWalletModal();
 
+  // Detection touches navigator, so defer to after mount to avoid an SSR/client
+  // hydration mismatch on the connect control.
+  useEffect(() => setMounted(true), []);
+
+  // On iOS Safari there is no injected wallet and no Mobile Wallet Adapter, so the
+  // standard modal can't connect — route the user into a wallet's in-app browser
+  // instead. Android is handled by the Mobile Wallet Adapter inside the modal, and
+  // an already-injected wallet (incl. wallet in-app browsers) uses the modal too.
+  const hasInjectedWallet = wallets.some((w) => w.readyState === WalletReadyState.Installed);
+  const useDeepLink = mounted && isIOS() && !hasInjectedWallet;
+
   useEffect(() => {
+    // A click anywhere outside the navbar closes both the mobile menu and the
+    // wallet-chip dropdown (the chip is rendered inside the navbar in both layouts).
     function handleOutside(e: MouseEvent) {
-      if (chipRef.current && !chipRef.current.contains(e.target as Node)) {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
         setChipOpen(false);
       }
     }
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
+
+  // Close the mobile menu (and any chip dropdown) on navigation.
+  useEffect(() => {
+    setMenuOpen(false);
+    setChipOpen(false);
+  }, [pathname]);
 
   const navLinks = [
     { href: "/create-token", label: "Create" },
@@ -39,34 +65,14 @@ export default function Navbar() {
   const address = publicKey?.toBase58() ?? "";
   const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet";
 
-  return (
-    <nav id="navbar">
-      <Link href="/" className="nav-logo">
-        <img
-          src="/coin_gold_mark.png"
-          alt="Solana Token"
-          width={44}
-          height={44}
-          className="nav-logo-mark"
-        />
-        Solana Token
-      </Link>
-
-      <ul className="nav-links">
-        {navLinks.map(({ href, label }) => (
-          <li key={href}>
-            <Link
-              href={href}
-              className={pathname === href || pathname.startsWith(href + "/") ? "nav-active" : ""}
-            >
-              {label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-      {connected && publicKey ? (
-        <div className="wallet-chip" ref={chipRef}>
+  // The connect control — wallet chip when connected, the iOS deep-link button, or
+  // the Connect button. Rendered in two spots (navbar on desktop, inside the
+  // hamburger dropdown on mobile); CSS reveals only the one for the active layout.
+  // A function so each placement renders its own element tree.
+  const renderWalletControl = () => {
+    if (connected && publicKey) {
+      return (
+        <div className="wallet-chip">
           <button
             className="wallet-chip-btn"
             onClick={() => setChipOpen((o) => !o)}
@@ -114,11 +120,61 @@ export default function Navbar() {
             </div>
           )}
         </div>
-      ) : (
-        <button className="nav-cta" onClick={() => setVisible(true)}>
-          Connect Wallet
+      );
+    }
+    if (useDeepLink) return <MobileWalletButton />;
+    return (
+      <button className="nav-cta" onClick={() => setVisible(true)}>
+        Connect Wallet
+      </button>
+    );
+  };
+
+  return (
+    <nav id="navbar" ref={navRef}>
+      <Link href="/" className="nav-logo">
+        <Image
+          src="/coin_gold_mark.png"
+          alt="Solana Token"
+          width={44}
+          height={44}
+          className="nav-logo-mark"
+          priority
+        />
+        Solana Token
+      </Link>
+
+      <ul className={`nav-links${menuOpen ? " nav-links--open" : ""}`}>
+        {navLinks.map(({ href, label }) => (
+          <li key={href}>
+            <Link
+              href={href}
+              className={pathname === href || pathname.startsWith(href + "/") ? "nav-active" : ""}
+              onClick={() => setMenuOpen(false)}
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
+        {/* Connect control inside the mobile dropdown (hidden on desktop via CSS) */}
+        <li className="nav-links__wallet">{renderWalletControl()}</li>
+      </ul>
+
+      <div className="nav-right">
+        {/* Connect control in the navbar (hidden on mobile via CSS) */}
+        <div className="nav-wallet-desktop">{renderWalletControl()}</div>
+        <button
+          className="nav-burger"
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+          aria-controls="navbar"
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          <span />
+          <span />
+          <span />
         </button>
-      )}
+      </div>
     </nav>
   );
 }

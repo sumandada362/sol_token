@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import BgCanvas from "@/components/BgCanvas";
+import DeferredBg from "@/components/DeferredBg";
 import DevnetBanner from "@/components/DevnetBanner";
 import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
@@ -64,8 +64,10 @@ export default function RootLayout({
         <JsonLdOrganization />
         <JsonLdWebSite />
         <WalletProvider>
-          {/* z-index: -1 — fixed rotating-disc background (never scrolls) */}
-          <BgCanvas />
+          {/* z-index: -1 — fixed rotating-disc background (never scrolls).
+              Deferred (client-only) so its WebGL/shader chunk stays off the
+              critical path and out of the initial bundle. */}
+          <DeferredBg />
           {/* Visible only on non-mainnet builds — prevents wrong-cluster confusion */}
           <DevnetBanner />
           {/* Opaque top scrim — content scrolling up disappears cleanly behind the navbar */}
