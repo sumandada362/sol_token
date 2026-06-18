@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Footer() {
@@ -7,7 +8,7 @@ export default function Footer() {
         <div className="site-footer-top">
           <div className="site-footer-brand">
             <Link href="/" className="site-footer-logo">
-              <img
+              <Image
                 src="/coin_gold.png"
                 alt="Solana Token"
                 width={24}
