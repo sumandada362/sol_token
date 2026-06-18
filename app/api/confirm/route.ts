@@ -79,6 +79,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Transaction not confirmed or failed" }, { status: 400 });
     }
 
+    // The claimed wallet must actually be a signer of this transaction. In every
+    // build path the connected wallet is the fee payer (a required signer), so a
+    // mismatch means the caller is trying to attribute someone else's tx — reject
+    // it so DB rows (tokens, fee_events) can't be spoofed for arbitrary wallets.
+    const message = txInfo.transaction.message;
+    const signerKeys = message.staticAccountKeys
+      .slice(0, message.header.numRequiredSignatures)
+      .map((k) => k.toBase58());
+    if (!signerKeys.includes(wallet)) {
+      return NextResponse.json({ error: "Wallet did not sign this transaction" }, { status: 400 });
+    }
+
     // Verify the fee wallet received the correct minimum amount for paid actions.
     // The expected amount comes from server constants only — count is the only client input used (× per-wallet fee).
     const minLamports =

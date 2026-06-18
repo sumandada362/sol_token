@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
+import { SITE_URL as BASE } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
   return {

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { JsonLdBreadcrumb, JsonLdHowTo } from "@/components/JsonLd";
-
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
+import { SITE_URL as BASE } from "@/lib/seo";
 const TITLE = "Burn Solana Tokens — Reduce Token Supply — Solana Token";
 const DESCRIPTION =
   "Permanently burn SPL or Token-2022 tokens from your wallet to reduce total supply. Free — only Solana gas. Irreversible and verifiable on-chain.";
