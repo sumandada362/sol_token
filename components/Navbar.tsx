@@ -35,7 +35,9 @@ export default function Navbar() {
   const { setVisible } = useWalletModal();
 
   // Detection touches navigator, so defer to after mount to avoid an SSR/client
-  // hydration mismatch on the connect control.
+  // hydration mismatch on the connect control. A one-shot mount flag is exactly
+  // the case where a synchronous setState in an effect is correct.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   // On iOS Safari there is no injected wallet and no Mobile Wallet Adapter, so the
