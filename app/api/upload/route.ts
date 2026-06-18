@@ -44,9 +44,19 @@ export async function POST(req: NextRequest) {
     const form = await req.formData();
     const file = form.get("file") as File | null;
     const existingImageUrl = (form.get("imageUrl") as string | null)?.trim() ?? "";
+    const nameField = sanitizeText(form.get("name") as string | null, 30);
+    const descriptionField = sanitizeText(form.get("description") as string | null, 500);
 
-    if (!file && !existingImageUrl) {
-      return NextResponse.json({ error: "No file or image URL provided" }, { status: 400 });
+    // Only accept https image URLs — never http: / javascript: / data: passed in.
+    if (existingImageUrl && !existingImageUrl.startsWith("https://")) {
+      return NextResponse.json({ error: "Image URL must be an https:// URL" }, { status: 400 });
+    }
+
+    // Allow a metadata-only upload (no image) as long as there is something to
+    // store — a name or description. This lets a token keep its description /
+    // socials even when the creator didn't add a logo.
+    if (!file && !existingImageUrl && !nameField && !descriptionField) {
+      return NextResponse.json({ error: "Nothing to upload" }, { status: 400 });
     }
 
     let imageUri = existingImageUrl;
@@ -75,9 +85,9 @@ export async function POST(req: NextRequest) {
     }
 
     const metadata = {
-      name: sanitizeText(form.get("name") as string | null, 30),
+      name: nameField,
       symbol: sanitizeText(form.get("symbol") as string | null, 10),
-      description: sanitizeText(form.get("description") as string | null, 500) || undefined,
+      description: descriptionField || undefined,
       image: imageUri,
       extensions: {
         ...(form.get("website") ? { website: sanitizeText(form.get("website") as string, 200) } : {}),

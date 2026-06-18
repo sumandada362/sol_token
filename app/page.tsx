@@ -9,6 +9,9 @@ import { abs } from "@/lib/seo";
 export const metadata: Metadata = {
   alternates: { canonical: abs("/") },
   keywords: [
+    "Solana Token",
+    "Dravyo Solana Token creator",
+    "Dravyo",
     "create solana token",
     "solana token creator",
     "spl token maker",
@@ -55,8 +58,9 @@ export default function Home() {
             <span className="brand-blend">Solana Token</span> in Minutes
           </div>
           <p className="tagline">
-            <strong>Solana Token</strong> is the fastest and safest way to create and launch
-            tokens on Solana Network. No Coding, No Complexity
+            <strong>Dravyo Solana Token creator</strong> is the fastest and safest way to create and
+            launch tokens on Solana — no coding, no complexity. Customize your token in a few clicks
+            and it&apos;s ready to touch a million-dollar market cap.
           </p>
         </div>
 
