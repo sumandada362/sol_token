@@ -60,11 +60,14 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
-  // Close the mobile menu (and any chip dropdown) on navigation.
+  // Close the mobile menu (and any chip dropdown) on navigation — resetting UI
+  // state in response to a route change is a valid synchronous-setState effect.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setMenuOpen(false);
     setChipOpen(false);
   }, [pathname]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const navLinks = [
     { href: "/create-token", label: "Create" },
