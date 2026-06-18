@@ -34,7 +34,8 @@ getenv() { grep -E "^$1=" "$ENV_FILE" | head -1 | cut -d= -f2- | sed 's/[[:space
 
 # ── 2. Validate — fail on empty or known placeholder values ─────────────────
 PLACEHOLDER_RE='YOUR_|your-domain|your-rpc-provider|PUBLIC_TIER_KEY|user:password@host|YOUR_RANDOM|STRONG_PASSWORD'
-REQUIRED=(SOLANA_RPC_URL NEXT_PUBLIC_RPC_URL NEXT_PUBLIC_SOLANA_NETWORK NEXT_PUBLIC_APP_URL FEE_WALLET_ADDRESS PINATA_JWT DATABASE_URL REDIS_URL WEBHOOK_AUTH_SECRET CRON_SECRET)
+# SOLANA_RPC_URL is gone — server RPC endpoints now live in app_configs/integrations.ts (RPC_ENDPOINTS).
+REQUIRED=(NEXT_PUBLIC_RPC_URL NEXT_PUBLIC_SOLANA_NETWORK NEXT_PUBLIC_APP_URL FEE_WALLET_ADDRESS PINATA_JWT DATABASE_URL REDIS_URL WEBHOOK_AUTH_SECRET CRON_SECRET)
 errs=0
 for key in "${REQUIRED[@]}"; do
   val="$(getenv "$key")"
@@ -45,9 +46,11 @@ done
 # Mainnet sanity: network must be mainnet-beta and RPCs must not be test clusters
 net="$(getenv NEXT_PUBLIC_SOLANA_NETWORK)"
 if [[ "$net" == "mainnet-beta" ]]; then
-  for key in SOLANA_RPC_URL NEXT_PUBLIC_RPC_URL; do
+  for key in NEXT_PUBLIC_RPC_URL; do
     echo "$(getenv "$key")" | grep -Eq 'devnet|testnet' && { red "  ✗ $key points at a test cluster but network is mainnet-beta"; errs=$((errs+1)); }
   done
+  # Server RPC endpoints (app_configs/integrations.ts) are cluster-checked at app
+  # startup by lib/solana/rpcPool.ts; the app refuses to boot on a mismatch.
   [[ "$(getenv NEXT_PUBLIC_APP_URL)" == https://* ]] || { red "  ✗ NEXT_PUBLIC_APP_URL must be https:// in production"; errs=$((errs+1)); }
 fi
 

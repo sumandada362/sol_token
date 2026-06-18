@@ -36,7 +36,8 @@ getenv(){ grep -E "^$1=" "$ENV_FILE" | head -1 | cut -d= -f2- | sed 's/[[:space:
 # DATABASE_URL / REDIS_URL are provisioned by this script, so they are NOT required here.
 info "Step 1/6 — checking required API keys in $ENV_FILE"
 PLACEHOLDER_RE='YOUR_|your-domain|your-rpc-provider|PUBLIC_TIER_KEY|CHANGE_ME|STRONG_PASSWORD|paste-'
-REQUIRED_KEYS=(SOLANA_RPC_URL NEXT_PUBLIC_RPC_URL NEXT_PUBLIC_SOLANA_NETWORK NEXT_PUBLIC_APP_URL FEE_WALLET_ADDRESS PINATA_JWT HELIUS_API_KEY WEBHOOK_AUTH_SECRET CRON_SECRET)
+# SOLANA_RPC_URL is gone — server RPC endpoints now live in app_configs/integrations.ts (RPC_ENDPOINTS).
+REQUIRED_KEYS=(NEXT_PUBLIC_RPC_URL NEXT_PUBLIC_SOLANA_NETWORK NEXT_PUBLIC_APP_URL FEE_WALLET_ADDRESS PINATA_JWT HELIUS_API_KEY WEBHOOK_AUTH_SECRET CRON_SECRET)
 missing=()
 for k in "${REQUIRED_KEYS[@]}"; do
   v="$(getenv "$k")"

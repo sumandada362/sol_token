@@ -2,14 +2,32 @@ import type { Metadata } from "next";
 
 /**
  * Single source of truth for SEO. SITE_URL is env-driven so canonical/OG URLs
- * follow the real deployment domain (set NEXT_PUBLIC_APP_URL); the fallback is
- * only used when the env var is absent.
+ * follow the real deployment domain (set NEXT_PUBLIC_APP_URL, or the legacy
+ * NEXT_PUBLIC_SITE_URL). The production domain is the default.
+ *
+ * Hardening: a localhost / non-https value is IGNORED. A sitemap, robots host,
+ * canonical, or OG URL must never point at localhost — that silently breaks
+ * indexing and social previews. So if the env var is empty, http, or a
+ * localhost/127.0.0.1 origin, we fall back to the canonical production domain.
  */
-export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com").replace(/\/$/, "");
+export const PRODUCTION_SITE_URL = "https://solanatoken.dravyo.com";
+
+function resolveSiteUrl(): string {
+  const raw = (process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
+  const usable =
+    raw &&
+    /^https:\/\//i.test(raw) &&
+    !/^https:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:|\/|$)/i.test(raw);
+  return (usable ? raw : PRODUCTION_SITE_URL).replace(/\/$/, "");
+}
+
+export const SITE_URL = resolveSiteUrl();
 export const SITE_NAME = "Solana Token";
 export const SITE_TAGLINE = "Create & Launch Solana Tokens";
+// App NAME stays "Solana Token"; descriptions/metadata use the
+// "Dravyo Solana Token creator" brand line (per product copy).
 export const DEFAULT_DESCRIPTION =
-  "Create, manage, and launch Solana tokens (SPL & Token-2022) in minutes — no code. Mint, burn, multisend, update metadata, and revoke authorities from your own wallet.";
+  "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity. Customize your token in a few clicks and it's ready to touch a million-dollar market cap.";
 
 /** Absolute URL for a path. */
 export function abs(path = "/"): string {

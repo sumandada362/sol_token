@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { JsonLdBreadcrumb, JsonLdHowTo } from "@/components/JsonLd";
-
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
+import { SITE_URL as BASE } from "@/lib/seo";
 const TITLE = "Revoke Update Authority on a Solana Token — Solana Token";
 const DESCRIPTION =
   "Permanently revoke your Solana token's update authority so the name, symbol, and logo can never be changed. Flat 0.05 SOL fee, done in one transaction.";

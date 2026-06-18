@@ -24,10 +24,11 @@ function isInsufficientFunds(err: unknown, logs: string): boolean {
  *   • Catches instruction-level failures: insufficient SOL for fees/rent,
  *     bad/uninitialized accounts, a program instruction that errors.
  *   • Does NOT catch an app↔wallet *cluster mismatch*. That's a config issue:
- *     SOLANA_RPC_URL and NEXT_PUBLIC_RPC_URL must be on the same cluster the
- *     user's wallet is set to. This dry-run runs against OUR RPC, so a tx that
- *     is fine on our cluster still fails in the wallet if the wallet is on a
- *     different one. The guardrail in connection.ts covers the RPC/network env.
+ *     the server RPC pool (app_configs/integrations.ts → RPC_ENDPOINTS) and
+ *     NEXT_PUBLIC_RPC_URL must be on the same cluster the user's wallet is set
+ *     to. This dry-run runs against OUR RPC, so a tx that is fine on our cluster
+ *     still fails in the wallet if the wallet is on a different one. The startup
+ *     guardrail in rpcPool.ts covers the server RPC/network match.
  *
  * Fail-soft: a transport/RPC error never blocks the user — infra flakiness
  * shouldn't stop a valid transaction. Only a definitive on-chain simulation

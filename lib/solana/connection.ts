@@ -1,49 +1,22 @@
-import { Connection } from "@solana/web3.js";
+import type { Connection } from "@solana/web3.js";
+import { leaseRpc, connectionFor, rpcCount } from "./rpcPool";
 
-// Local-dev TLS escape hatch. On some machines/proxies, Node cannot verify
-// certain RPC providers' certificate chains (it throws UNABLE_TO_VERIFY_LEAF_
-// SIGNATURE), which surfaces in the app as an intermittent "network error" on
-// server-side RPC calls. Opt in locally by setting DEV_INSECURE_TLS=1 in
-// .env.local — the same posture the project's scripts already take. Double-gated
-// to non-production so it can never weaken TLS on a deployed server.
-if (process.env.DEV_INSECURE_TLS === "1" && process.env.NODE_ENV !== "production") {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
+// The RPC pool (lib/solana/rpcPool.ts) owns endpoint config, the TLS escape
+// hatch, and the startup cluster guardrail — importing it here runs that
+// validation at app start. Server-side RPC endpoints now live in
+// app_configs/integrations.ts (RPC_ENDPOINTS), not in SOLANA_RPC_URL.
+export { rpcCount };
 
-// Cross-cluster guardrail: catch mainnet/devnet RPC mismatches at startup
-// rather than silently sending real transactions to the wrong cluster.
-const _rpcUrl = process.env.SOLANA_RPC_URL ?? "";
-const _network = process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet";
-const _rpcIsMainnet = /mainnet/.test(_rpcUrl);
-const _rpcIsDevnet = /devnet/.test(_rpcUrl);
-const _rpcIsTestnet = /testnet/.test(_rpcUrl);
-
-if (_network === "mainnet-beta" && (_rpcIsDevnet || _rpcIsTestnet)) {
-  throw new Error(
-    `[guardrail] NEXT_PUBLIC_SOLANA_NETWORK=mainnet-beta but SOLANA_RPC_URL points at a test cluster. Check your .env.`
-  );
-}
-if (_network !== "mainnet-beta" && _rpcIsMainnet) {
-  throw new Error(
-    `[guardrail] NEXT_PUBLIC_SOLANA_NETWORK=${_network} but SOLANA_RPC_URL contains "mainnet". Check your .env.`
-  );
-}
-if (_network === "testnet" && _rpcIsDevnet) {
-  throw new Error(
-    `[guardrail] NEXT_PUBLIC_SOLANA_NETWORK=testnet but SOLANA_RPC_URL contains "devnet". Check your .env.`
-  );
-}
-if (_network === "devnet" && _rpcIsTestnet) {
-  throw new Error(
-    `[guardrail] NEXT_PUBLIC_SOLANA_NETWORK=devnet but SOLANA_RPC_URL contains "testnet". Check your .env.`
-  );
-}
-
-let _conn: Connection | null = null;
-
-export function getConnection(): Connection {
-  if (!_conn) {
-    _conn = new Connection(_rpcUrl, "confirmed");
-  }
-  return _conn;
+/**
+ * A ready-to-use server-side Connection.
+ *
+ *   • No tag → leases the next RPC from the pool: round-robin when 2+ endpoints
+ *     are configured, or the single endpoint otherwise. Call this ONCE per
+ *     transaction/request and reuse the returned object, so the whole flow stays
+ *     on one endpoint (the "ask once, keep it for the transaction" model).
+ *   • With a tag (from a prior leaseRpc()) → pins to that same endpoint. Use this
+ *     when a transaction also needs getUmi() and both must hit the SAME RPC.
+ */
+export function getConnection(tag?: string): Connection {
+  return connectionFor(leaseRpc(tag).url);
 }

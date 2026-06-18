@@ -9,8 +9,7 @@ import { Warning } from "@/components/mdx/Warning";
 import { CTA } from "@/components/mdx/CTA";
 import { Disclaimer } from "@/components/mdx/Disclaimer";
 import { JsonLdFaqPage, JsonLdBreadcrumb } from "@/components/JsonLd";
-
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
+import { SITE_URL as BASE } from "@/lib/seo";
 
 const mdxComponents = { Fee, Warning, CTA, Disclaimer };
 
