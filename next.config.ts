@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-// Single source of truth for the PUBLIC browser RPC. This runs only at
-// build/server time (next.config is never bundled to the client), so importing
-// the server config module here does NOT leak the secret RPC_ENDPOINTS pool.
-import { PUBLIC_RPC_URL } from "./app_configs/integrations";
 
 // Env lives in app_configs/.env.local. Next only auto-loads .env files from the
 // project root, so we load this one explicitly here — this runs before the consts
@@ -24,13 +20,9 @@ if (existsSync(_envFile)) {
   }
 }
 
-// Browser RPC: the single source of truth is app_configs/integrations.ts →
-// PUBLIC_RPC_URL. Bridge it into NEXT_PUBLIC_RPC_URL at build so the client bundle
-// inlines it (the wallet adapter + the CSP below read NEXT_PUBLIC_RPC_URL) without
-// duplicating the URL in .env.local. A real host/CI env var still wins.
-if (PUBLIC_RPC_URL && !process.env.NEXT_PUBLIC_RPC_URL) {
-  process.env.NEXT_PUBLIC_RPC_URL = PUBLIC_RPC_URL;
-}
+// No browser RPC env needed: the frontend talks to Solana only through the
+// /api/rpc proxy (same-origin), which forwards to the server-side RPC pool. So
+// there is no keyed RPC URL in the client bundle, and nothing to set here.
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://solanatoken.dravyo.com";
 
