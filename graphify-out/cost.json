@@ -1,0 +1,20 @@
+{
+  "runs": [
+    {
+      "date": "2026-06-15T15:13:14.679567+00:00",
+      "input_tokens": 672639,
+      "output_tokens": 0,
+      "note": "combined subagent token total (14 extraction agents)",
+      "files": 167
+    },
+    {
+      "date": "2026-06-19T06:10:18.012548+00:00",
+      "input_tokens": 155295,
+      "output_tokens": 0,
+      "note": "production_build refresh: 46 changed files re-extracted (2 subagents), 124 cache hits",
+      "files": 170
+    }
+  ],
+  "total_input_tokens": 827934,
+  "total_output_tokens": 0
+}

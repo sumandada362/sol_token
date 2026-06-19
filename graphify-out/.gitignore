@@ -1,0 +1,5 @@
+# Machine-specific interpreter path — graphify regenerates this each run
+.graphify_python
+# Transient pipeline scratch files
+.graphify_*
+.needs_update
