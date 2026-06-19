@@ -805,22 +805,20 @@ body {
     }
     #navbar .nav-links a:active { background: var(--surface-2); }
 
-    /* Move the connect control INTO the dropdown (with the links) and hide the
-       navbar copy, so mobile shows only logo + hamburger until the menu opens. */
-    #navbar .nav-wallet-desktop { display: none; }
-    #navbar .nav-links__wallet {
-        display: flex;
-        margin-top: 4px;
-        padding-top: 10px;
-        border-top: 1px solid var(--surface-border);
-    }
-    #navbar .nav-links__wallet > * { width: 100%; }
-    #navbar .nav-links__wallet .nav-cta {
-        display: block;
-        width: 100%;
-        text-align: center;
-        font-size: 0.95rem;
-        padding: 11px 14px;
+    /* Keep the connect control VISIBLE on the bar (next to the hamburger) so it's
+       always discoverable — burying it in the dropdown made it look like "nothing
+       happens" on mobile. Hide the dropdown copy; the hamburger holds nav links only. */
+    #navbar .nav-wallet-desktop { display: flex; }
+    #navbar .nav-links__wallet { display: none; }
+
+    /* Drop the wordmark on mobile (keep the coin icon) to make room for the button. */
+    #navbar .nav-logo-text { display: none; }
+
+    /* Compact connect/deep-link button so logo + button + hamburger fit one row. */
+    #navbar .nav-wallet-desktop .nav-cta {
+        font-size: 0.9rem;
+        padding: 9px 13px;
+        white-space: nowrap;
     }
 }
 
