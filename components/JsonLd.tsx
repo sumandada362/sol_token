@@ -1,6 +1,5 @@
 import type { FaqItem } from "@/lib/content";
-
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
+import { SITE_URL as BASE } from "@/lib/seo";
 
 /** Organization — used site-wide so Google links the brand, logo, and socials. */
 export function JsonLdOrganization() {
@@ -11,7 +10,7 @@ export function JsonLdOrganization() {
     url: BASE,
     logo: `${BASE}/coin_gold.png`,
     description:
-      "No-code toolkit to create, manage, and launch Solana tokens (SPL & Token-2022) from your own wallet.",
+      "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity.",
     sameAs: [] as string[], // add X/Telegram/GitHub URLs here once live
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
@@ -34,7 +33,7 @@ export function JsonLdWebSite() {
 }
 
 export function JsonLdSoftwareApplication() {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://solanatoken.dravyo.com";
+  const base = BASE;
   const data = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -42,7 +41,7 @@ export function JsonLdSoftwareApplication() {
     applicationCategory: "FinanceApplication",
     operatingSystem: "Web",
     description:
-      "No-code Solana token toolkit. Create SPL tokens, add liquidity, manage authorities, and analyze tokens — all from your browser wallet.",
+      "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity. Customize your token in a few clicks and it's ready to touch a million-dollar market cap.",
     url: base,
     logo: `${base}/coin_gold.png`,
     image: `${base}/coin_gold.png`,

@@ -20,6 +20,10 @@ if (existsSync(_envFile)) {
   }
 }
 
+// No browser RPC env needed: the frontend talks to Solana only through the
+// /api/rpc proxy (same-origin), which forwards to the server-side RPC pool. So
+// there is no keyed RPC URL in the client bundle, and nothing to set here.
+
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://solanatoken.dravyo.com";
 
 // Trusted IPFS gateways that serve token images
@@ -123,6 +127,14 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Cache-Control", value: "public, max-age=86400, immutable" },
         ],
+      },
+      {
+        // Static image assets in /public (logos, coins, etc.) are content-stable
+        // and were only being cached for ~4h. Cache for a year so repeat visits
+        // and Lighthouse "efficient cache lifetime" are satisfied. Bump the file
+        // name if an asset's bytes ever change.
+        source: "/:path*.(png|jpg|jpeg|gif|svg|webp|avif|ico)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
     ];
   },
