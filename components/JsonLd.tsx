@@ -11,7 +11,16 @@ export function JsonLdOrganization() {
     logo: `${BASE}/coin_gold.png`,
     description:
       "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity.",
-    sameAs: [] as string[], // add X/Telegram/GitHub URLs here once live
+    email: "support@solanatoken.dravyo.com",
+    // Verified profiles that let Google/AI engines resolve the brand entity.
+    // Add X/GitHub here as those launch.
+    sameAs: ["https://t.me/dravyoofficial"],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: "support@solanatoken.dravyo.com",
+      url: `${BASE}/docs/faq`,
+    },
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
 }

@@ -8,7 +8,15 @@ import { WalletProvider } from "@/lib/wallet/WalletProvider";
 import { JsonLdOrganization, JsonLdWebSite } from "@/components/JsonLd";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { googleVerificationToken } from "@/app_configs/integrations";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, ogImage } from "@/lib/seo";
+
+// Homepage social card: reuse the dynamic 1200×630 OG generator (same one every
+// other page uses) instead of the square logo, so links unfurl as a rich
+// large-image card on X/Slack/Discord and in AI snippet previews.
+const HOME_OG = ogImage(
+  "Create & Launch Solana Tokens",
+  "The fastest, safest no-code Solana token creator",
+);
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -36,15 +44,15 @@ export const metadata: Metadata = {
       "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity. Customize your token in a few clicks and it's ready to touch a million-dollar market cap.",
     url: SITE_URL,
     siteName: "Solana Token",
-    images: [{ url: "/coin_gold.png", width: 1024, height: 1024, alt: "Solana Token" }],
+    images: [{ url: HOME_OG, width: 1200, height: 630, alt: "Solana Token — Create & Launch Solana Tokens" }],
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Solana Token — Create & Launch Solana Tokens",
     description:
       "Dravyo Solana Token creator is the fastest and safest way to create and launch tokens on Solana — no coding, no complexity. Customize and launch in a few clicks.",
-    images: ["/coin_gold.png"],
+    images: [HOME_OG],
   },
   // Search-engine ownership verification. Drop the codes into your env to emit the
   // <meta> tags — required to submit the sitemap in Google Search Console / Yandex
