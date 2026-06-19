@@ -158,7 +158,7 @@ export default function Navbar() {
           className="nav-logo-mark"
           priority
         />
-        Solana Token
+        <span className="nav-logo-text">Solana Token</span>
       </Link>
 
       <ul className={`nav-links${menuOpen ? " nav-links--open" : ""}`}>
