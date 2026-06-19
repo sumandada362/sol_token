@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { WalletReadyState } from "@solana/wallet-adapter-base";
-import { isIOS } from "@/lib/wallet/mobile";
+import { isMobileBrowser } from "@/lib/wallet/mobile";
 import MobileWalletButton from "@/components/MobileWalletButton";
 
 function shortAddress(addr: string) {
@@ -40,12 +40,14 @@ export default function Navbar() {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
-  // On iOS Safari there is no injected wallet and no Mobile Wallet Adapter, so the
-  // standard modal can't connect — route the user into a wallet's in-app browser
-  // instead. Android is handled by the Mobile Wallet Adapter inside the modal, and
-  // an already-injected wallet (incl. wallet in-app browsers) uses the modal too.
+  // On a plain mobile browser (iOS Safari AND Android Chrome) there is no injected
+  // wallet, and the in-modal Mobile Wallet Adapter handshake is unreliable on a
+  // deployed HTTPS site (and silently fails behind CSP). The robust path on BOTH
+  // platforms is to deep-link the user into a wallet's in-app browser, where the
+  // site reloads with window.solana injected and connect works normally. Once a
+  // wallet IS injected (incl. inside a wallet's in-app browser), use the modal.
   const hasInjectedWallet = wallets.some((w) => w.readyState === WalletReadyState.Installed);
-  const useDeepLink = mounted && isIOS() && !hasInjectedWallet;
+  const useDeepLink = mounted && isMobileBrowser() && !hasInjectedWallet;
 
   useEffect(() => {
     // A click anywhere outside the navbar closes both the mobile menu and the
