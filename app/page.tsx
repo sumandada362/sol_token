@@ -58,9 +58,10 @@ export default function Home() {
             <span className="brand-blend">Solana Token</span> in Minutes
           </div>
           <p className="tagline">
-            <strong>Dravyo Solana Token creator</strong> is the fastest and safest way to create and
-            launch tokens on Solana — no coding, no complexity. Customize your token in a few clicks
-            and it&apos;s ready to touch a million-dollar market cap.
+            <strong>Dravyo Solana Token creator</strong>{" "}
+            is the fastest and safest way to create and launch tokens on Solana — no coding, no
+            complexity. Customize your token in a few clicks and it&apos;s ready to touch a
+            million-dollar market cap.
           </p>
         </div>
 
